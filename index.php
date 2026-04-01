@@ -1031,10 +1031,10 @@ $quote = $quotes[date('z') % count($quotes)];
             style="margin-top:40px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
             <p class="foot-copy" style="font-size:0.75rem; color:rgba(255,255,255,0.5);">© <?= date('Y') ?> Cozy-Library —
                 Sistem Manajemen Perpustakaan · All rights reserved.</p>
-            <div style="font-size:0.7rem; color:rgba(255,255,255,0.4); text-align:right;">
+            <div class="credit">
                 <p>Developed by: <strong>@f1qxzz_</strong></p>
                 <p>Inspired by: <strong>@chlszaaa</strong></p>
-                <p>On Instagram</p> 
+                <p>On Instagram</p>
                 <p>© 2026 Cozy-Library Project</p>
             </div>
         </div>

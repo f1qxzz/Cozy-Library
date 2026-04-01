@@ -29,18 +29,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
 
     if (empty($old['nis']) || empty($old['nama']) || empty($old['username']) || empty($old['kelas']) || empty($password)) {
         $error = 'Semua field bertanda * wajib diisi!';
+    } elseif (strlen($password) < 6) {
+        $error = 'Password minimal 6 karakter.';
+    } elseif (!empty($old['email']) && !filter_var($old['email'], FILTER_VALIDATE_EMAIL)) {
+        $error = 'Email tidak valid.';
     } else {
-        $chk = $conn->query("SELECT id_anggota FROM anggota WHERE username='{$old['username']}' OR nis='{$old['nis']}'");
-        if ($chk->num_rows > 0) {
-            $error = 'NIS atau Username sudah terdaftar!';
+        $chkStmt = $conn->prepare("SELECT id_anggota FROM anggota WHERE username = ? OR nis = ? OR (email <> '' AND email = ?) LIMIT 1");
+        $chkStmt->bind_param('sss', $old['username'], $old['nis'], $old['email']);
+        $chkStmt->execute();
+        $chkResult = $chkStmt->get_result();
+
+        if ($chkResult && $chkResult->num_rows > 0) {
+            $error = 'NIS, username, atau email sudah terdaftar!';
+            $chkStmt->close();
         } else {
-            $stmt = $conn->prepare("INSERT INTO anggota (nis,nama_anggota,username,password,email,kelas) VALUES (?,?,?,?,?,?)");
-            $stmt->bind_param("ssssss", $old['nis'], $old['nama'], $old['username'], $password, $old['email'], $old['kelas']);
+            $chkStmt->close();
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $conn->prepare("INSERT INTO anggota (nis, nama_anggota, username, password, email, kelas) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param('ssssss', $old['nis'], $old['nama'], $old['username'], $hashedPassword, $old['email'], $old['kelas']);
             if ($stmt->execute()) {
+                $stmt->close();
+                closeConnection($conn);
                 header('Location: login.php?registered=1');
                 exit;
             } else {
                 $error = 'Registrasi gagal. Silakan coba lagi.';
+                $stmt->close();
             }
         }
     }
@@ -214,9 +228,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 <p class="footer-text">
                     © <?= date('Y') ?> Cozy-Library · Daftar gratis untuk semua siswa terdaftar
                 </p>
-                <div class="credit" style="font-size:0.7rem; color:rgba(255,255,255,0.4); text-align:right;">
+                <div class="credit">
                     <p>Developed by: <strong>@f1qxzz_</strong></p>
-                    <p>Inspired by: <strong>@ndyaghni_</strong></p>
+                    <p>Inspired by: <strong>@chlszaaa</strong></p>
                     <p>© 2026 Cozy-Library Project</p>
                 </div>
             </div>

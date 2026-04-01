@@ -1015,6 +1015,11 @@ body.index-page .footer-bottom,body.index-page .foot-btmr{
   font-size:.74rem;color:rgba(255,255,255,.35)!important;
 }
 body.index-page .foot-copy{font-size:.74rem;color:rgba(255,255,255,.35)!important;}
+body.index-page .credit{font-size:.7rem;color:rgba(255,255,255,.4);text-align:right;line-height:1.45;}
+
+@media (max-width: 768px) {
+  body.index-page .credit{width:100%;text-align:center;}
+}
 
 /* ── REVEAL ANIMATION ────────────────────────────────────────── */
 body.index-page .reveal{opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s;}

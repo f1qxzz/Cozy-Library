@@ -233,9 +233,9 @@ $quote = $quotes[date('z') % count($quotes)];
                 <p class="footer-text">
                     © <?= date('Y') ?> Cozy-Library · Sistem Manajemen Perpustakaan
                 </p>
-                <div class="credit" style="font-size:0.7rem; color:rgba(255,255,255,0.4); text-align:right;">
+                <div class="credit">
                     <p>Developed by: <strong>@f1qxzz_</strong></p>
-                    <p>Inspired by: <strong>@ndyaghni_</strong></p>
+                    <p>Inspired by: <strong>@chlszaaa</strong></p>
                     <p>© 2026 Cozy-Library Project</p>
                 </div>
             </div>

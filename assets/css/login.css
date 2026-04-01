@@ -157,6 +157,8 @@ body {
 .register-link a { color: var(--primary-700); font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: var(--transition); }
 .register-link a:hover { color: var(--primary-500); gap: 8px; }
 .footer-text { text-align: center; margin-top: 24px; font-size: 0.7rem; color: var(--neutral-400); }
+.credit { font-size: 0.7rem; color: var(--neutral-400); text-align: right; line-height: 1.4; margin-top: 8px; }
+@media (max-width: 768px) { .credit { text-align: center; } }
 
 /* Loading animation */
 .btn-login.loading { pointer-events: none; opacity: 0.8; }
