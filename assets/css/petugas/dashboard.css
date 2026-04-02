@@ -444,3 +444,34 @@
     .sidebar, .sidebar-overlay, .no-print { display: none !important; }
     .main-area { margin-left: 0 !important; }
 }
+
+/* 🔥 FORCE CENTER (PALING KUAT) */
+.stat-card {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+
+  padding: 24px;
+  min-height: 160px;
+  gap: 10px;
+}
+
+/* 🔥 PAKSA TEXT CENTER */
+.stat-info {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+/* 🔥 HAPUS SEMUA ALIGN KANAN */
+.stat-info * {
+  text-align: center !important;
+}
+
+/* 🔥 ICON JUGA CENTER */
+.stat-icon {
+  margin: 0 auto !important;
+}

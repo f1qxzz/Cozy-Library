@@ -445,17 +445,18 @@
         margin-bottom: 24px;
     }
 
-    .stat-card {
-        background: rgba(255,255,255,0.85);
-        border-radius: var(--radius-xl);
-        padding: 20px;
-        box-shadow: var(--shadow-md);
-        border: 1px solid rgba(86,28,36,0.10);
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        transition: var(--transition);
-    }
+.stat-card {
+  display: flex;
+  align-items: center;        /* 🔥 sejajarin icon + teks */
+  justify-content: space-between;
+
+  padding: 20px 24px;
+  border-radius: var(--radius-xl);
+  background: rgba(255,255,255,0.7);
+  box-shadow: var(--shadow-md);
+
+  min-height: 100px;          /* 🔥 samakan tinggi */
+}
 
     .stat-card:hover {
         transform: translateY(-4px);
@@ -486,20 +487,23 @@
         background: var(--danger-50);
         color: var(--danger-600);
     }
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;  /* 🔥 angka di kanan seperti dashboard */
+}
 
-    .stat-info h3 {
-        font-size: 0.85rem;
-        color: var(--neutral-500);
-        font-weight: 600;
-        margin-bottom: 4px;
-    }
+.stat-info h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--neutral-500);
+}
 
-    .stat-number {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--neutral-900);
-    }
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
 
     /* Filter Bar */
     .filter-bar {
@@ -934,3 +938,46 @@
   .stats-grid, .srow { grid-template-columns: 1fr !important; }
   .content { padding: 12px !important; }
 }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* 🔥 FORCE CENTER (PALING KUAT) */
+.stat-card {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+
+  padding: 24px;
+  min-height: 160px;
+  gap: 10px;
+}
+
+/* 🔥 PAKSA TEXT CENTER */
+.stat-info {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+/* 🔥 HAPUS SEMUA ALIGN KANAN */
+.stat-info * {
+  text-align: center !important;
+}
+
+/* 🔥 ICON JUGA CENTER */
+.stat-icon {
+  margin: 0 auto !important;
+} 

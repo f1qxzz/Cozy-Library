@@ -160,6 +160,7 @@ $quote = $quotes[date('z') % count($quotes)];
             try { if (localStorage.getItem('cozy_library_dark') === '1') document.documentElement.classList.add('dark-mode-active'); } catch (e) { }
         })();
     </script>
+    <link rel="icon" href="https://i.ibb.co.com/XZjP8Xmh/Gemini-Generated-Image-rurkqhrurkqhrurk.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/index.css">
@@ -215,19 +216,24 @@ $quote = $quotes[date('z') % count($quotes)];
 
     <div class="drawer" id="mob">
         <button class="drawer-x" onclick="document.getElementById('mob').classList.remove('open')">✕</button>
-        <a href="#featured">Unggulan</a>
-        <a href="#kategori">Kategori</a>
-        <a href="#ulasan">Ulasan</a>
-        <a href="#leaderboard">Peringkat</a>
-        <a href="#kontak">Kontak</a>
+        <div class="drawer-logo">
+            <span class="drawer-logo-icon">📚</span>
+            <span class="drawer-logo-text">Cozy-Library</span>
+        </div>
+        <div class="drawer-divider"></div>
+        <a href="#featured" class="drawer-item"><span class="drawer-item-icon">⭐</span><span>Unggulan</span></a>
+        <a href="#kategori" class="drawer-item"><span class="drawer-item-icon">🗂️</span><span>Kategori</span></a>
+        <a href="#ulasan" class="drawer-item"><span class="drawer-item-icon">💬</span><span>Ulasan</span></a>
+        <a href="#leaderboard" class="drawer-item"><span class="drawer-item-icon">🏆</span><span>Peringkat</span></a>
+        <a href="#kontak" class="drawer-item"><span class="drawer-item-icon">📍</span><span>Kontak</span></a>
+        <div class="drawer-divider"></div>
         <?php if ($loggedIn): ?>
             <a href="<?= $isAdmin ? 'admin/dashboard.php' : ($isPetugas ? 'petugas/dashboard.php' : 'anggota/dashboard.php') ?>"
-                class="btn-primary" style="text-align:center; margin-top:10px;">Dashboard Utama</a>
-            <a href="logout.php" style="color:var(--danger); text-align:center; margin-top:10px; display:block;">Keluar</a>
+                class="btn-primary drawer-btn">⚡ Dashboard Utama</a>
+            <a href="logout.php" class="btn-logout">⏻ Keluar</a>
         <?php else: ?>
-            <a href="login.php" class="btn-outline" style="text-align:center; margin-top:10px; display:block;">Masuk</a>
-            <a href="register.php" class="btn-primary" style="text-align:center; margin-top:10px; display:block;">Daftar
-                Gratis</a>
+            <a href="login.php" class="btn-outline drawer-btn" style="text-align:center;display:flex;align-items:center;justify-content:center;gap:7px;">🔑 Masuk</a>
+            <a href="register.php" class="btn-primary drawer-btn">✨ Daftar Gratis</a>
         <?php endif; ?>
     </div>
 

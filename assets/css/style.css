@@ -1706,69 +1706,72 @@ textarea.form-control {
 
 /* ─── SIDEBAR ANGGOTA (Light Theme) ─────────────────────────── */
 .sidebar-anggota {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border-right: 1px solid rgba(181, 138, 186, 0.2) !important;
+  background: var(--navy) !important;
+  border-right: none !important;
+  box-shadow: 2px 0 20px rgba(86,28,36,0.15), 4px 0 40px rgba(0,0,0,.04) !important;
 }
 .sidebar-anggota .sidebar-brand {
-  background: rgba(255, 255, 255, 0.5) !important;
-  border-bottom: 1px solid rgba(181, 138, 186, 0.15) !important;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
 }
 .sidebar-anggota .brand-icon-anggota {
-  background: linear-gradient(135deg, #9b8c9c, #b8a9c9) !important;
-  box-shadow: 0 4px 12px rgba(155, 140, 156, 0.25) !important;
-  width: 44px !important;
-  height: 44px !important;
-  font-size: 1.4rem !important;
+  background: var(--success) !important;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2) !important;
+  width: 38px !important;
+  height: 38px !important;
+  font-size: 1.1rem !important;
 }
 .sidebar-anggota .brand-name {
-  font-size: 0.95rem !important;
-  color: #332e3a !important;
+  font-size: 0.875rem !important;
+  color: var(--white) !important;
 }
 .sidebar-anggota .brand-role {
-  color: #b8b0c0 !important;
+  color: rgba(255, 255, 255, 0.45) !important;
 }
 .sidebar-anggota .sidebar-nav {
-  padding: 10px 10px 16px !important;
+  padding: 12px 12px 8px !important;
 }
 .sidebar-anggota .nav-section-label {
-  color: #b8b0c0 !important;
-  padding: 18px 10px 6px !important;
+  color: rgba(255, 255, 255, 0.3) !important;
+  padding: 10px 8px 4px !important;
 }
 .sidebar-anggota .nav-link {
-  color: #6b6475 !important;
-  border-radius: 10px !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  border-radius: 8px !important;
   transition: all 0.2s ease !important;
 }
 .sidebar-anggota .nav-link i {
-  color: #c4b5d4 !important;
+  color: rgba(255, 255, 255, 0.5) !important;
 }
 .sidebar-anggota .nav-link:hover {
-  background: rgba(181, 138, 186, 0.12) !important;
-  color: #7c5c8c !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: var(--white) !important;
 }
 .sidebar-anggota .nav-link:hover i {
-  color: #9b7aad !important;
+  color: var(--white) !important;
 }
 .sidebar-anggota .nav-link.active {
-  background: rgba(181, 138, 186, 0.18) !important;
-  color: #7c5c8c !important;
-  font-weight: 700 !important;
+  background: var(--success) !important;
+  color: var(--white) !important;
+  font-weight: 500 !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
 }
 .sidebar-anggota .nav-link.active i {
-  color: #9b7aad !important;
+  color: var(--white) !important;
 }
 .sidebar-anggota .nav-link.logout {
-  color: #c2556b !important;
+  color: rgba(239, 68, 68, 0.7) !important;
 }
 .sidebar-anggota .nav-link.logout i {
-  color: #c2556b !important;
+  color: rgba(239, 68, 68, 0.7) !important;
 }
 .sidebar-anggota .nav-link.logout:hover {
-  background: #fde9ec !important;
+  background: rgba(239, 68, 68, 0.12) !important;
+  color: #f87171 !important;
 }
 .sidebar-anggota .sidebar-foot {
-  border-top: 1px solid rgba(181, 138, 186, 0.15) !important;
-  padding: 12px 10px 20px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.07) !important;
+  padding: 12px 12px 18px !important;
 }
 
 /* Sidebar overlay */

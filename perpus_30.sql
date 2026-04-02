@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 31 Mar 2026 pada 05.16
+-- Waktu pembuatan: 02 Apr 2026 pada 16.26
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.0.30
 
@@ -47,8 +47,8 @@ CREATE TABLE `anggota` (
 --
 
 INSERT INTO `anggota` (`id_anggota`, `nis`, `nama_anggota`, `username`, `password`, `email`, `kelas`, `alamat`, `no_telepon`, `foto`, `status`, `created_at`) VALUES
-(2, '002', 'Siti Rahayu', 'siti', '$2y$10$j5VFqswv2qrzG4hhjBcI0.7WONmlgsYZj5aieQDiUb5mzMo6ojYf2', 'siti@email.com', 'XI TKJ', NULL, NULL, NULL, 'aktif', '2026-03-26 08:59:12'),
-(4, '2024001', 'Kuncoro', 'Kun', '$2y$10$TXtxc59Bv2u6sxXd8MfB8.U9WPiOc5YvzuMJhb/uVTVVB3muq6zRS', 'kun@gmail.com', 'XII RPL', NULL, NULL, NULL, 'aktif', '2026-03-29 15:04:54');
+(4, '2024001', 'Kuncoro', 'Kun', '$2y$10$TXtxc59Bv2u6sxXd8MfB8.U9WPiOc5YvzuMJhb/uVTVVB3muq6zRS', 'kun@gmail.com', 'XII RPL', NULL, NULL, NULL, 'aktif', '2026-03-29 15:04:54'),
+(5, '12345', 'Taufiq', 'f1q', '$2y$10$LOuG8IawsdGPCWSwukdueOe3EWe3Op/ZLOwvbERtOk4SrhhgMJACq', 'f1q123@gmail.com', 'XII RPL', NULL, NULL, NULL, 'aktif', '2026-04-02 19:50:17');
 
 -- --------------------------------------------------------
 
@@ -285,7 +285,7 @@ ALTER TABLE `ulasan_buku`
 -- AUTO_INCREMENT untuk tabel `anggota`
 --
 ALTER TABLE `anggota`
-  MODIFY `id_anggota` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_anggota` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT untuk tabel `buku`
@@ -321,7 +321,7 @@ ALTER TABLE `permintaan_pinjam`
 -- AUTO_INCREMENT untuk tabel `transaksi`
 --
 ALTER TABLE `transaksi`
-  MODIFY `id_transaksi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id_transaksi` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT untuk tabel `ulasan_buku`
