@@ -79,7 +79,9 @@ $page_sub   = 'Kelola kategori buku Cozy-Library';
         href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/admin/kategori.css?v=<?= @filemtime('../assets/css/admin/kategori.css')?:time() ?>">
+    <link rel="stylesheet" href="../assets/css/admin/dashboard.css?v=<?= @filemtime('../assets/css/admin/dashboard.css') ?: time() ?>">
+    <link rel="stylesheet" href="../assets/css/admin/kategori.css?v=<?= @filemtime('../assets/css/admin/kategori.css') ?: time() ?>">
+    <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
 </head>
 
 <body>

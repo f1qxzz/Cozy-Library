@@ -323,6 +323,28 @@ textarea {
   color: var(--gray-700);
 }
 
+.topbar-logout {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fde9ec;
+  color: #c2556b;
+  border: 1.5px solid #f9c0cb;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.topbar-logout:hover {
+  background: #fbd0d8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(194, 85, 107, 0.2);
+}
+
 .sidebar-toggle {
   display: none;
   padding: 6px;
@@ -333,6 +355,19 @@ textarea {
 }
 .sidebar-toggle:hover {
   background: var(--gray-100);
+}
+
+/* Pastikan tombol hamburger muncul di layout responsif (tablets/mobil) */
+@media (max-width: 1024px) {
+  .sidebar-toggle {
+    display: inline-flex !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar-toggle {
+    display: inline-flex !important;
+  }
 }
 .sidebar-toggle svg {
   width: 22px;
@@ -1667,6 +1702,91 @@ textarea.form-control {
   .book-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
+}
+
+/* ─── SIDEBAR ANGGOTA (Light Theme) ─────────────────────────── */
+.sidebar-anggota {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-right: 1px solid rgba(181, 138, 186, 0.2) !important;
+}
+.sidebar-anggota .sidebar-brand {
+  background: rgba(255, 255, 255, 0.5) !important;
+  border-bottom: 1px solid rgba(181, 138, 186, 0.15) !important;
+}
+.sidebar-anggota .brand-icon-anggota {
+  background: linear-gradient(135deg, #9b8c9c, #b8a9c9) !important;
+  box-shadow: 0 4px 12px rgba(155, 140, 156, 0.25) !important;
+  width: 44px !important;
+  height: 44px !important;
+  font-size: 1.4rem !important;
+}
+.sidebar-anggota .brand-name {
+  font-size: 0.95rem !important;
+  color: #332e3a !important;
+}
+.sidebar-anggota .brand-role {
+  color: #b8b0c0 !important;
+}
+.sidebar-anggota .sidebar-nav {
+  padding: 10px 10px 16px !important;
+}
+.sidebar-anggota .nav-section-label {
+  color: #b8b0c0 !important;
+  padding: 18px 10px 6px !important;
+}
+.sidebar-anggota .nav-link {
+  color: #6b6475 !important;
+  border-radius: 10px !important;
+  transition: all 0.2s ease !important;
+}
+.sidebar-anggota .nav-link i {
+  color: #c4b5d4 !important;
+}
+.sidebar-anggota .nav-link:hover {
+  background: rgba(181, 138, 186, 0.12) !important;
+  color: #7c5c8c !important;
+}
+.sidebar-anggota .nav-link:hover i {
+  color: #9b7aad !important;
+}
+.sidebar-anggota .nav-link.active {
+  background: rgba(181, 138, 186, 0.18) !important;
+  color: #7c5c8c !important;
+  font-weight: 700 !important;
+}
+.sidebar-anggota .nav-link.active i {
+  color: #9b7aad !important;
+}
+.sidebar-anggota .nav-link.logout {
+  color: #c2556b !important;
+}
+.sidebar-anggota .nav-link.logout i {
+  color: #c2556b !important;
+}
+.sidebar-anggota .nav-link.logout:hover {
+  background: #fde9ec !important;
+}
+.sidebar-anggota .sidebar-foot {
+  border-top: 1px solid rgba(181, 138, 186, 0.15) !important;
+  padding: 12px 10px 20px !important;
+}
+
+/* Sidebar overlay */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 99;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  cursor: pointer;
+}
+.sidebar-overlay.show {
+  opacity: 1;
+  visibility: visible;
 }
 
 .sidebar-overlay {

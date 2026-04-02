@@ -198,7 +198,9 @@ $current_label = $jenis_labels[$jenis] ?? 'Laporan';
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="../assets/css/petugas/laporan.css?v=<?= $cssVer ?>">
+    <link rel="stylesheet" href="../assets/css/petugas/petugas.css?v=<?= @filemtime('../assets/css/petugas/petugas.css') ?: time() ?>">
+    <link rel="stylesheet" href="../assets/css/petugas/laporan.css?v=<?= $cssVer ?>">
+    <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
 <style>
 /* ── Filter Card ─────────────────────────────────────────────── */
 .filter-card {
@@ -259,44 +261,7 @@ $current_label = $jenis_labels[$jenis] ?? 'Laporan';
 
 /* ── Empty Row ────────────────────────────────────────────────── */
 .empty-row td { text-align:center; padding:48px 16px; color:#9ca3af; }
-    /* ====== RESPONSIVE ====== */
-    @media (max-width: 1024px) {
-        .app-wrap { flex-direction: column; }
-        .sidebar { width: 100%; position: relative; box-shadow: none; border-right: none; }
-        .sidebar .sidebar-nav { display: flex; flex-wrap: wrap; justify-content: center; }
-        .sidebar .nav-link { flex: 0 0 48%; margin: 4px; text-align: center; }
-        .main-area { width: 100%; }
-        .topbar, .filter-card, .stats-grid, .report-card { margin: 0; border-radius: 0; }
-        .stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; }
-        .filter-card { padding: 14px; }
-        .filter-group { width: 100%; }
-        .filter-select, .filter-input { width: 100%; }
-        .no-print .page-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-        .btn-print, .btn-filter, .btn-reset { width: 100%; justify-content: center; }
-        .report-card-header { flex-direction: column; align-items: flex-start; gap: 8px; }
-        .report-table thead th, .report-table tbody td { padding: 10px 8px; font-size: 0.72rem; }
-        .report-table tbody td { white-space: normal; word-wrap: break-word; }
-    }
 
-    @media (max-width: 768px) {
-        .sidebar { width: 100%; position: relative; top: 0; left: 0; box-shadow: none; border-right: none; }
-        .sidebar-overlay { display: none; }
-        .topbar { padding: 12px 14px; }
-        .page-header-title { font-size: 1rem; }
-        .page-header-sub { font-size: 0.78rem; }
-        .stats-grid { grid-template-columns: 1fr; gap: 10px; }
-        .filter-card { flex-direction: column; align-items: stretch; }
-        .filter-group, .btn-filter, .btn-reset, .btn-print { width: 100%; }
-        .report-card { margin: 0 0 14px; border-radius: 10px; }
-        .report-card-header { flex-direction: column; align-items: flex-start; gap: 8px; }
-        .report-table { min-width: 100%; }
-        .report-card > div[style*="overflow-x:auto"] { overflow-x: auto; }
-    }
-
-    @media (min-width: 1200px) {
-        .main-area { padding: 0 20px; }
-        .filter-card { max-width: calc(100% - 40px); }
-    }
 /* ── Print Header/Footer ─────────────────────────────────────── */
 .print-header, .print-footer { display:none; }
 

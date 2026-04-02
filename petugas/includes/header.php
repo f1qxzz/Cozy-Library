@@ -1,19 +1,15 @@
-<?php /* petugas/includes/header.php */
+<?php /* petugas/includes/header.php — v4.0 */
 $page_title = $page_title ?? 'Dashboard';
 $page_sub   = $page_sub   ?? 'Panel Petugas · Cozy-Library';
 
-// Ambil data pengguna untuk foto profil
-require_once dirname(__DIR__, 2) . '/config/database.php';
-require_once dirname(__DIR__, 2) . '/includes/session.php';
-$conn = getConnection();
+$conn   = getConnection();
 $userId = getPenggunaId();
-$stmt = $conn->prepare("SELECT foto, nama_pengguna FROM pengguna WHERE id_pengguna = ?");
+$stmt   = $conn->prepare("SELECT foto, nama_pengguna FROM pengguna WHERE id_pengguna = ?");
 $stmt->bind_param("i", $userId);
 $stmt->execute();
 $userData = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 
-// Inisial untuk fallback avatar
 $initials = '';
 $nama = $userData['nama_pengguna'] ?? getPenggunaName();
 foreach (explode(' ', trim($nama)) as $w) {
@@ -21,19 +17,17 @@ foreach (explode(' ', trim($nama)) as $w) {
     if (strlen($initials) >= 2) break;
 }
 
-// Cek apakah foto tersedia
-$fotoPath = (!empty($userData['foto']) && file_exists(dirname(__DIR__, 2) . '/' . $userData['foto'])) 
-            ? '../' . htmlspecialchars($userData['foto']) 
+$fotoPath = (!empty($userData['foto']) && file_exists(dirname(__DIR__, 2) . '/' . $userData['foto']))
+            ? '../' . htmlspecialchars($userData['foto'])
             : null;
 ?>
 <header class="topbar no-print">
     <div class="topbar-left">
-        <button class="sidebar-toggle"
-            onclick="document.querySelector('.sidebar').classList.toggle('open');document.querySelector('.sidebar-overlay').classList.toggle('show')">
-            <svg viewBox="0 0 24 24" width="20" height="20">
-                <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="2" />
-                <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2" />
-                <line x1="3" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="2" />
+        <button class="sidebar-toggle" type="button" aria-label="Buka/Tutup Menu">
+            <svg viewBox="0 0 24 24">
+                <line x1="3" y1="6"  x2="21" y2="6"  />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
             </svg>
         </button>
         <div>
@@ -41,120 +35,94 @@ $fotoPath = (!empty($userData['foto']) && file_exists(dirname(__DIR__, 2) . '/' 
             <div class="page-breadcrumb"><?= htmlspecialchars($page_sub) ?></div>
         </div>
     </div>
+
     <div class="topbar-right">
-        <div class="topbar-date">
-            <i class="far fa-calendar-alt"></i> <?= date('d M Y') ?>
+        <div class="topbar-date modern-date">
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round">
+                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8"  y1="2" x2="8"  y2="6"/>
+                <line x1="3"  y1="10" x2="21" y2="10"/>
+            </svg>
+            <?php date_default_timezone_set('Asia/Jakarta'); echo date('d M Y'); ?>
         </div>
-        <div class="topbar-user">
+
+        <div class="topbar-user modern-user">
             <?php if ($fotoPath): ?>
             <div class="topbar-avatar">
                 <img src="<?= $fotoPath ?>" alt="Foto Profil">
             </div>
             <?php else: ?>
-            <div class="topbar-avatar petugas"><?= $initials ?></div>
+            <div class="topbar-avatar petugas-avatar"><?= $initials ?></div>
             <?php endif; ?>
             <span class="topbar-username"><?= htmlspecialchars(getPenggunaName()) ?></span>
         </div>
-        <a href="logout.php" class="btn-logout">
-            <i class="fas fa-sign-out-alt"></i>
+
+        <a href="logout.php" class="modern-btn-logout no-print">
+            <svg viewBox="0 0 24 24">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
             <span>Logout</span>
         </a>
     </div>
 </header>
 
 <style>
-/* Header Styles */
+/* ── Petugas Header Styles ── */
 .topbar {
-    background: white;
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--neutral-200);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: var(--shadow-sm);
-}
-
-.topbar-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.sidebar-toggle {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--neutral-600);
-    display: none;
-    padding: 4px;
-}
-
-.sidebar-toggle svg {
-    width: 24px;
-    height: 24px;
-}
-
-@media (max-width: 768px) {
-    .sidebar-toggle {
-        display: block;
-    }
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(86,28,36,0.10);
+    box-shadow: 0 1px 10px rgba(86,28,36,0.06);
 }
 
 .page-title {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    color: var(--neutral-900);
-    margin-bottom: 2px;
+    color: #1e1b4b;
 }
 
 .page-breadcrumb {
-    font-size: 0.8rem;
-    color: var(--neutral-500);
+    font-size: 0.75rem;
+    color: #9ca3af;
 }
 
-.topbar-right {
+.modern-date {
+    background: #F5EFE6;
+    color: #561C24;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 999px;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 6px;
 }
 
-.topbar-date {
-    font-size: 0.9rem;
-    color: var(--neutral-600);
-    background: var(--neutral-100);
-    padding: 8px 16px;
-    border-radius: var(--radius-full);
+.modern-user {
     display: flex;
     align-items: center;
     gap: 8px;
-}
-
-.topbar-date i {
-    color: var(--petugas-500);
-}
-
-.topbar-user {
-    display: flex;
-    align-items: center;
-    gap: 10px;
     padding: 4px 12px 4px 4px;
-    background: var(--neutral-100);
-    border-radius: var(--radius-full);
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
 }
 
 .topbar-avatar {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--petugas-500), var(--petugas-600));
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    font-weight: 600;
-    font-size: 0.9rem;
-    overflow: hidden;
+    font-weight: 700;
+    font-size: 0.8rem;
+    flex-shrink: 0;
 }
 
 .topbar-avatar img {
@@ -163,200 +131,48 @@ $fotoPath = (!empty($userData['foto']) && file_exists(dirname(__DIR__, 2) . '/' 
     object-fit: cover;
 }
 
-.topbar-username {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--neutral-700);
+.petugas-avatar {
+    background: linear-gradient(135deg, #561C24, #6D2932);
+    color: white;
+    box-shadow: 0 2px 8px rgba(86,28,36,0.25);
 }
 
-.btn-logout {
-    background: var(--danger-50);
-    color: var(--danger-600);
-    border: none;
-    border-radius: var(--radius-full);
-    padding: 8px 16px;
+.topbar-username {
+    font-weight: 700;
     font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
+    color: #374151;
+}
+
+.modern-btn-logout {
     display: flex;
     align-items: center;
     gap: 6px;
+    background: #fff1f2;
+    color: #e11d48;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
     text-decoration: none;
-    transition: var(--transition);
+    transition: all 0.2s ease;
+    border: 1.5px solid #fecdd3;
+    white-space: nowrap;
 }
 
-.btn-logout:hover {
-    background: var(--danger-100);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+.modern-btn-logout:hover {
+    background: #ffe4e6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(225,29,72,0.18);
 }
 
-@media (max-width: 768px) {
-    .topbar-date span {
-        display: none;
-    }
-
-    .topbar-date i {
-        margin: 0;
-    }
-
-    .btn-logout span {
-        display: none;
-    }
-
-    .btn-logout {
-        padding: 8px;
-    }
-}
-
-/* GLOBAL RESPONSIVE LAYOUT (semua role) */
-.sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    display: none;
-    opacity: 0;
-    z-index: 999;
-    transition: opacity .25s ease;
-}
-.sidebar-overlay.show {
-    display: block;
-    opacity: 1;
-}
-
-@media (max-width: 1024px) {
-    .sidebar {
-        position: fixed !important;
-        top: 0;
-        left: 0;
-        transform: translateX(-100%) !important;
-        width: 280px !important;
-        height: 100vh !important;
-        z-index: 1000 !important;
-        box-shadow: 0 10px 28px rgba(0,0,0,0.2) !important;
-    }
-
-    .sidebar.open {
-        transform: translateX(0) !important;
-    }
-
-    .main-area {
-        margin-left: 0 !important;
-    }
-
-    .content {
-        padding: 16px !important;
-    }
-
-    .topbar {
-        padding: 12px 14px !important;
-    }
-
-    .page-title {
-        font-size: 1rem !important;
-    }
-
-    .page-breadcrumb {
-        font-size: 0.74rem !important;
-    }
-
-    .topbar-right {
-        gap: 10px !important;
-    }
-
-    .stats-grid,
-    .srow,
-    .rpt-stats {
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
-
-    .rpt-table,
-    .table-responsive {
-        width: 100% !important;
-        overflow-x: auto !important;
-    }
-
-    .report-document,
-    .report-container {
-        margin: 12px !important;
-        padding: 0 !important;
-    }
-}
-
-@media (max-width: 768px) {
-    .sidebar {
-        width: 100% !important;
-    }
-
-    .sidebar-toggle {
-        display: inline-flex !important;
-    }
-
-    .topbar {
-        flex-wrap: wrap !important;
-        justify-content: space-between !important;
-    }
-
-    .topbar-left,
-    .topbar-right {
-        width: 100% !important;
-        justify-content: space-between !important;
-    }
-
-    .topbar-date,
-    .topbar-user .topbar-username {
-        display: none !important;
-    }
-
-    .btn-logout,
-    .modern-btn-logout {
-        padding: 8px 10px !important;
-        font-size: 0.75rem !important;
-    }
-
-    .stats-grid,
-    .srow,
-    .rpt-stats {
-        grid-template-columns: 1fr !important;
-    }
-
-    .wb,
-    .page-header,
-    .rpt-letterhead,
-    .rpt-title-band {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        gap: 8px !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .page-title {
-        font-size: 0.92rem !important;
-    }
-
-    .nav-link,
-    .topbar-date,
-    .topbar-user,
-    .modern-btn-logout,
-    .btn-logout {
-        font-size: 0.8rem !important;
-    }
-
-    .content {
-        padding: 12px !important;
-    }
-
-    .rpt-table th,
-    .rpt-table td {
-        padding: 8px !important;
-        font-size: 0.75rem !important;
-    }
-
-    .rpt-stats,
-    .stat-card,
-    .sc {
-        padding: 10px !important;
-    }
+.modern-btn-logout svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
 }
 </style>

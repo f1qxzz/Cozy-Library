@@ -49,7 +49,9 @@
         background: transparent;
         display: flex;
         flex-direction: column;
-        margin-left: 260px;
+        margin-left: 270px;
+        min-width: 0;
+        transition: margin-left 0.3s cubic-bezier(0.4,0,0.2,1);
     }
 
     .content {
@@ -417,56 +419,28 @@
         }
     }
 
-    @media (max-width: 768px) {
-        .ms {
-            grid-template-columns: 1fr;
-        }
-
-        .wb {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .wb-actions {
-            margin-left: 0;
-            width: 100%;
-        }
-
-        .wb-btn1,
-        .wb-btn2 {
-            flex: 1;
-            text-align: center;
-            justify-content: center;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .srow {
-            grid-template-columns: 1fr;
-        }
-
-        .content {
-            padding: 16px;
-        }
-    }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.3);
-        border-radius: var(--radius-full);
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: var(--soft-purple-light);
-        border-radius: var(--radius-full);
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: var(--soft-purple);
-    }
-    
+/* ============================================================
+   RESPONSIVE — petugas dashboard
+   ============================================================ */
+@media (max-width: 1200px) {
+    .srow, .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 1024px) {
+    .main-area { margin-left: 0 !important; }
+    .sidebar-toggle { display: inline-flex !important; }
+    .content { padding: 18px !important; }
+}
+@media (max-width: 768px) {
+    .srow, .stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
+    .content { padding: 14px !important; }
+    .wb { flex-direction: column !important; gap: 12px !important; }
+    .wb-actions { margin-left: 0 !important; width: 100% !important; }
+}
+@media (max-width: 480px) {
+    .srow, .stats-grid { grid-template-columns: 1fr !important; }
+    .content { padding: 12px !important; }
+}
+@media print {
+    .sidebar, .sidebar-overlay, .no-print { display: none !important; }
+    .main-area { margin-left: 0 !important; }
+}

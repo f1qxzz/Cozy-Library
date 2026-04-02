@@ -98,111 +98,17 @@ $page_sub   = 'Bagikan pengalaman membaca Anda';
         href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/anggota/ulasan.css?v=<?= @filemtime('../assets/css/anggota/ulasan.css')?:time() ?>">
+    <link rel="stylesheet" href="../assets/css/anggota/dashboard.css?v=<?= @filemtime('../assets/css/anggota/dashboard.css') ?: time() ?>">
+    <link rel="stylesheet" href="../assets/css/anggota/ulasan.css?v=<?= @filemtime('../assets/css/anggota/ulasan.css') ?: time() ?>">
+    <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
 </head>
 
 <body>
-    <!-- Sidebar Overlay -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="app-wrap">
+    <?php include 'includes/nav.php'; ?>
 
-    <div class="app-wrap">
-        <!-- SIDEBAR -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-brand">
-                <div class="brand-icon">📚</div>
-                <div>
-                    <div class="brand-name">Cozy-Library</div>
-                    <div class="brand-role">ANGGOTA</div>
-                </div>
-            </div>
-
-            <nav class="sidebar-nav">
-                <span class="nav-section-label">UTAMA</span>
-                <a href="dashboard.php" class="nav-link">
-                    <i class="fas fa-home"></i>
-                    <span>Dashboard</span>
-                </a>
-
-                <span class="nav-section-label">KATALOG</span>
-                <a href="katalog.php" class="nav-link">
-                    <i class="fas fa-search"></i>
-                    <span>Katalog Buku</span>
-                </a>
-
-                <span class="nav-section-label">TRANSAKSI</span>
-                <a href="pinjam.php" class="nav-link">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Pinjam Buku</span>
-                </a>
-                <a href="kembali.php" class="nav-link">
-                    <i class="fas fa-undo-alt"></i>
-                    <span>Kembalikan Buku</span>
-                </a>
-                <a href="riwayat.php" class="nav-link">
-                    <i class="fas fa-history"></i>
-                    <span>Riwayat</span>
-                </a>
-
-                <span class="nav-section-label">KOMUNITAS</span>
-                <a href="ulasan.php" class="nav-link active">
-                    <i class="fas fa-star"></i>
-                    <span>Ulasan Buku</span>
-                </a>
-
-                <span class="nav-section-label">AKUN</span>
-                <a href="profil.php" class="nav-link">
-                    <i class="fas fa-user"></i>
-                    <span>Profil Saya</span>
-                </a>
-                <a href="../index.php" class="nav-link">
-                    <i class="fas fa-globe"></i>
-                    <span>Beranda</span>
-                </a>
-            </nav>
-
-            <div class="sidebar-foot">
-                <a href="logout.php" class="nav-link logout">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </a>
-            </div>
-        </aside>
-
-        <!-- MAIN AREA -->
-        <div class="main-area">
-            <!-- HEADER -->
-            <header class="topbar">
-                <div class="topbar-left" style="display: flex; align-items: center; gap: 16px;">
-                    <button class="sidebar-toggle" id="sidebarToggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div class="page-info">
-                        <h1 class="page-title"><?= htmlspecialchars($page_title) ?></h1>
-                        <div class="page-breadcrumb"><?= htmlspecialchars($page_sub) ?></div>
-                    </div>
-                </div>
-                <div class="topbar-right">
-                    <div class="topbar-date">
-                        <i class="far fa-calendar-alt"></i>
-                        <span><?= date('d M Y') ?></span>
-                    </div>
-                    <div class="topbar-user">
-                        <div class="topbar-avatar">
-                            <?php if ($fotoPath): ?>
-                            <img src="<?= $fotoPath ?>" alt="Foto">
-                            <?php else: ?>
-                            <?= htmlspecialchars($initials) ?>
-                            <?php endif; ?>
-                        </div>
-                        <span class="topbar-username"><?= htmlspecialchars(getAnggotaName()) ?></span>
-                    </div>
-                    <a href="logout.php" class="btn-logout">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Logout</span>
-                    </a>
-                </div>
-            </header>
-
+    <div class="main-area">
+        <?php include 'includes/header.php'; ?>
             <!-- CONTENT -->
             <main class="content">
                 <?php if ($msg): ?>
@@ -419,78 +325,6 @@ $page_sub   = 'Bagikan pengalaman membaca Anda';
             </main>
         </div>
     </div>
-
-    <script>
-    // Sidebar toggle for mobile
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('open');
-            sidebarOverlay.classList.toggle('show');
-        });
-    }
-
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-            sidebar.classList.remove('open');
-            sidebarOverlay.classList.remove('show');
-        });
-    }
-
-    // Star rating input
-    function setRating(value) {
-        document.getElementById('rating_value').value = value;
-
-        const stars = document.querySelectorAll('.star-input');
-        stars.forEach((star, index) => {
-            if (index < value) {
-                star.classList.add('active');
-            } else {
-                star.classList.remove('active');
-            }
-        });
-
-        const ratingText = document.getElementById('rating_text');
-        const texts = ['1 - Sangat Buruk', '2 - Buruk', '3 - Cukup', '4 - Baik', '5 - Sangat Baik'];
-        ratingText.textContent = texts[value - 1];
-    }
-
-    // Set default rating to 5
-    setRating(5);
-
-    // Hover effect for stars
-    document.querySelectorAll('.star-input').forEach(star => {
-        star.addEventListener('mouseover', function() {
-            const value = this.dataset.value;
-            document.querySelectorAll('.star-input').forEach((s, index) => {
-                if (index < value) {
-                    s.style.color = 'var(--star-color)';
-                } else {
-                    s.style.color = 'var(--star-empty)';
-                }
-            });
-        });
-
-        star.addEventListener('mouseout', function() {
-            const currentRating = document.getElementById('rating_value').value;
-            document.querySelectorAll('.star-input').forEach((s, index) => {
-                if (index < currentRating) {
-                    s.style.color = 'var(--star-color)';
-                } else {
-                    s.style.color = 'var(--star-empty)';
-                }
-            });
-        });
-    });
-
-    // Prevent form resubmission
-    if (window.history.replaceState) {
-        window.history.replaceState(null, null, window.location.href);
-    }
-    </script>
     <script src="../assets/js/script.js"></script>
 </body>
 

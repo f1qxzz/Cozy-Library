@@ -6,15 +6,15 @@
 
 /* ─── ENHANCED TOKENS ──────────────────────────────────────── */
 :root {
-  --admin-accent: #a855f7;
-  --admin-accent-dark: #9333ea;
-  --admin-accent-pink: #ec4899;
-  --admin-accent-glow: rgba(168,85,247,.15);
-  --admin-sidebar-bg: #ffffff;
-  --admin-sidebar-hover: rgba(168,85,247,.08);
-  --admin-sidebar-active-bg: linear-gradient(135deg, #f3e8ff 0%, #fce7f3 100%);
+  --admin-accent: #561C24;
+  --admin-accent-dark: #6D2932;
+  --admin-accent-pink: #8B4A52;
+  --admin-accent-glow: rgba(86,28,36,0.10);
+  --admin-sidebar-bg: #FDFBff;
+  --admin-sidebar-hover: rgba(86,28,36,0.10);
+  --admin-sidebar-active-bg: linear-gradient(135deg, #F5EFE6 0%, #F0E6D8 100%);
   --admin-nav-text: #6b7280;
-  --admin-nav-text-active: #9333ea;
+  --admin-nav-text-active: #561C24;
   --card-border: #e2e8f0;
   --page-bg: #f8f5ff;
 }
@@ -25,22 +25,22 @@ body { background: var(--page-bg); }
 /* ─── SIDEBAR ──────────────────────────────────────────────── */
 .sidebar {
   background: #ffffff;
-  box-shadow: 2px 0 20px rgba(168,85,247,.08), 4px 0 40px rgba(0,0,0,.04);
-  border-right: 1px solid #f3e8ff;
+  box-shadow: 2px 0 20px rgba(86,28,36,0.10), 4px 0 40px rgba(0,0,0,.04);
+  border-right: 1px solid rgba(86,28,36,0.10);
 }
 
 /* ─── BRAND AREA ───────────────────────────────────────────── */
 .sidebar-brand {
   background: #ffffff;
-  border-bottom: 1px solid #f5f3ff;
+  border-bottom: 1px solid rgba(86,28,36,0.10);
   padding: 22px 20px 20px;
   display: flex;
   align-items: center;
   gap: 12px;
 }
 .brand-icon {
-  background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%) !important;
-  box-shadow: 0 4px 14px rgba(168,85,247,.35) !important;
+  background: linear-gradient(135deg, #561C24 0%, #6D2932 100%) !important;
+  box-shadow: 0 4px 14px rgba(86,28,36,.30) !important;
   border-radius: 12px !important;
   font-size: 20px !important;
   width: 44px !important;
@@ -85,7 +85,7 @@ body { background: var(--page-bg); }
 .nav-link {
   padding: 10px 14px !important;
   border-radius: 12px !important;
-  color: #6b7280 !important;
+  color: #6D5A5E !important;
   font-size: .855rem !important;
   font-weight: 500 !important;
   gap: 11px !important;
@@ -102,19 +102,19 @@ body { background: var(--page-bg); }
   transition: color .2s;
 }
 .nav-link:hover {
-  background: #faf5ff !important;
-  color: #7c3aed !important;
+  background: #F5EFE6 !important;
+  color: #561C24 !important;
 }
-.nav-link:hover svg { color: #a855f7; }
+.nav-link:hover svg { color: #561C24; }
 
 /* Active state — pill with soft pink-purple gradient */
 .nav-link.active {
-  background: linear-gradient(135deg, #f3e8ff 0%, #fce7f3 100%) !important;
-  color: #7c3aed !important;
+  background: linear-gradient(135deg, #F5EFE6 0%, #F0E6D8 100%) !important;
+  color: #561C24 !important;
   font-weight: 700 !important;
   box-shadow: none !important;
 }
-.nav-link.active svg { color: #a855f7 !important; opacity: 1; }
+.nav-link.active svg { color: #561C24 !important; opacity: 1; }
 
 /* Logout */
 .nav-link.logout {
@@ -130,7 +130,7 @@ body { background: var(--page-bg); }
 
 /* ─── SIDEBAR FOOTER ───────────────────────────────────────── */
 .sidebar-foot {
-  border-top: 1px solid #f5f3ff;
+  border-top: 1px solid rgba(86,28,36,0.10);
   padding: 10px 12px 18px;
 }
 

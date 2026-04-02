@@ -173,76 +173,10 @@ $page_sub   = 'Sistem Manajemen Cozy-Library';
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="../assets/css/admin/dashboard.css?v=<?= @filemtime('../assets/css/admin/dashboard.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
 <style>
-/* ─── Reset & Base ──────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --primary:   #3b82f6;
-  --primary-d: #2563eb;
-  --success:   #22c55e;
-  --success-d: #16a34a;
-  --danger:    #ef4444;
-  --danger-d:  #dc2626;
-  --warning:   #f59e0b;
-  --navy:      #1e3a5f;
-  --sidebar-w: 240px;
-  --teal:      #0f766e;
-  --radius:    12px;
-  --shadow:    0 1px 3px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.06);
-  --neutral-50:#f8fafc; --neutral-100:#f1f5f9; --neutral-200:#e2e8f0;
-  --neutral-300:#cbd5e1; --neutral-400:#94a3b8; --neutral-500:#64748b;
-  --neutral-600:#475569; --neutral-700:#334155; --neutral-800:#1e293b;
-}
-body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg,#e0f2fe 0%,#dbeafe 40%,#ede9fe 100%); min-height: 100vh; color: var(--neutral-800); }
-
-/* ─── Layout ────────────────────────────────────────────────── */
-.app-wrap { display: flex; min-height: 100vh; }
-.main-area { flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column; min-height: 100vh; }
-
-/* ─── Sidebar ───────────────────────────────────────────────── */
-.sidebar {
-  position: fixed; top: 0; left: 0; width: var(--sidebar-w); height: 100vh;
-  background: var(--navy); color: #fff; display: flex; flex-direction: column;
-  z-index: 200; overflow-y: auto;
-}
-.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 22px 18px 18px; border-bottom: 1px solid rgba(255,255,255,.08); }
-.brand-icon { font-size: 1.6rem; }
-.brand-name { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: .9rem; }
-.brand-role { font-size: .65rem; color: rgba(255,255,255,.5); letter-spacing: .06em; text-transform: uppercase; margin-top: 2px; }
-.sidebar-nav { flex: 1; padding: 14px 10px; display: flex; flex-direction: column; gap: 2px; }
-.nav-section-label { font-size: .6rem; letter-spacing: .1em; color: rgba(255,255,255,.35); text-transform: uppercase; padding: 12px 8px 4px; }
-.nav-link {
-  display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px;
-  color: rgba(255,255,255,.7); font-size: .85rem; font-weight: 500; text-decoration: none;
-  transition: background .15s, color .15s;
-}
-.nav-link:hover { background: rgba(255,255,255,.08); color: #fff; }
-.nav-link.active { background: rgba(255,255,255,.15); color: #fff; font-weight: 600; }
-.nav-link i { width: 18px; text-align: center; font-size: .9rem; }
-.sidebar-foot { padding: 12px 10px; border-top: 1px solid rgba(255,255,255,.08); }
-.nav-link.logout:hover { background: rgba(239,68,68,.18); color: #fca5a5; }
-
-/* ─── Topbar ────────────────────────────────────────────────── */
-.topbar {
-  background: rgba(255,255,255,.9); backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--neutral-200); padding: 14px 28px;
-  display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 100;
-}
-.page-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1.05rem; color: var(--neutral-800); }
-.page-breadcrumb { font-size: .75rem; color: var(--neutral-400); margin-top: 1px; }
-.topbar-right { display: flex; align-items: center; gap: 16px; }
-.topbar-date { font-size: .78rem; color: var(--neutral-500); }
-.topbar-user { display: flex; align-items: center; gap: 8px; }
-.topbar-avatar {
-  width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--navy), var(--teal));
-  color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .8rem; overflow: hidden;
-}
-.topbar-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.topbar-username { font-size: .85rem; font-weight: 600; color: var(--neutral-700); }
-
-/* ─── Content ───────────────────────────────────────────────── */
-.content { flex: 1; padding: 28px; display: flex; flex-direction: column; gap: 22px; }
+/* ─── Permintaan Page Styles ────────────────────────────────── */
 
 /* ─── Summary Header ────────────────────────────────────────── */
 .summary-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.25rem; font-weight: 700; color: var(--neutral-800); margin-bottom: 14px; }
@@ -386,57 +320,12 @@ td { padding: 13px 14px; vertical-align: middle; color: var(--neutral-700); }
 <div class="app-wrap">
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-icon">📚</div>
-      <div>
-        <div class="brand-name">Cozy-Library</div>
-        <div class="brand-role">ADMINISTRATOR</div>
-      </div>
-    </div>
-    <nav class="sidebar-nav">
-      <span class="nav-section-label">UTAMA</span>
-      <a href="dashboard.php" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
-      <span class="nav-section-label">MANAJEMEN</span>
-      <a href="pengguna.php" class="nav-link"><i class="fas fa-users-cog"></i><span>Pengguna</span></a>
-      <a href="anggota.php"  class="nav-link"><i class="fas fa-user-graduate"></i><span>Anggota</span></a>
-      <span class="nav-section-label">KOLEKSI</span>
-      <a href="kategori.php" class="nav-link"><i class="fas fa-tags"></i><span>Kategori</span></a>
-      <a href="buku.php"     class="nav-link"><i class="fas fa-book"></i><span>Buku</span></a>
-      <span class="nav-section-label">TRANSAKSI</span>
-      <a href="permintaan.php" class="nav-link active"><i class="fas fa-bell"></i><span>Permintaan</span></a>
-      <a href="transaksi.php"  class="nav-link"><i class="fas fa-exchange-alt"></i><span>Transaksi</span></a>
-      <a href="denda.php"      class="nav-link"><i class="fas fa-coins"></i><span>Denda</span></a>
-      <a href="laporan.php"    class="nav-link"><i class="fas fa-chart-bar"></i><span>Laporan</span></a>
-      <span class="nav-section-label">AKUN</span>
-      <a href="profil.php"   class="nav-link"><i class="fas fa-user"></i><span>Profil Saya</span></a>
-      <a href="../index.php" class="nav-link"><i class="fas fa-globe"></i><span>Beranda</span></a>
-    </nav>
-    <div class="sidebar-foot">
-      <a href="logout.php" class="nav-link logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
-    </div>
-  </aside>
-
+        <?php include 'includes/nav.php'; ?>
   <!-- MAIN -->
   <div class="main-area">
 
     <!-- TOPBAR -->
-    <header class="topbar">
-      <div>
-        <div class="page-title"><?= htmlspecialchars($page_title) ?></div>
-        <div class="page-breadcrumb"><?= htmlspecialchars($page_sub) ?></div>
-      </div>
-      <div class="topbar-right">
-        <div class="topbar-date"><i class="far fa-calendar-alt"></i> <?= date('d M Y') ?></div>
-        <div class="topbar-user">
-          <div class="topbar-avatar">
-            <?php if ($fotoPath): ?><img src="<?= $fotoPath ?>" alt="Foto"><?php else: ?><?= htmlspecialchars($initials) ?><?php endif; ?>
-          </div>
-          <span class="topbar-username">Halo, <?= htmlspecialchars($userData['nama_pengguna'] ?? getPenggunaName()) ?></span>
-        </div>
-      </div>
-    </header>
-
+            <?php include 'includes/header.php'; ?>
     <!-- CONTENT -->
     <main class="content">
 
@@ -715,5 +604,6 @@ function startPolling() {
 fetchData(currentFilter, '');
 startPolling();
 </script>
+<script src="../assets/js/script.js"></script>
 </body>
 </html>
