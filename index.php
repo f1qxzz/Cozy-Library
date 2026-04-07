@@ -181,6 +181,7 @@ $quote = $quotes[date('z') % count($quotes)];
             <div class="topbar-item">📚 <?= $buku_tersedia ?> buku tersedia dari <?= $total_buku ?> koleksi</div>
             <?php if ($jatuh_tempo > 0 && ($isAdmin || $isPetugas)): ?>
                 <div class="topbar-item topbar-warn">⚠️ <?= $jatuh_tempo ?> buku melewati batas kembali</div>
+                
             <?php endif; ?>
         </div>
         <div class="topbar-right">
@@ -964,7 +965,7 @@ $quote = $quotes[date('z') % count($quotes)];
             <p class="cta-sub">Bergabung sekarang dan nikmati akses ke seluruh koleksi buku di Cozy-Library.<br>Gratis
                 untuk semua siswa terdaftar.</p>
         </div>
-        <div class="cta-btns">
+        <div class="cta-btns">  
             <a href="register.php" class="cta-b1">Daftar Sekarang</a>
             <a href="login.php" class="cta-b2">Masuk ke Akun</a>
         </div>

@@ -1,11 +1,9 @@
 <?php
 require_once 'includes/session.php';
-initSession();
 
-// hancurin semua session
-session_unset();
-session_destroy();
+// Hancurkan semua session menggunakan fungsi logout() dari session.php
+logout();
 
-// balik ke index
+// Balik ke index
 header("Location: index.php");
 exit;

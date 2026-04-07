@@ -77,7 +77,7 @@ $pending_rows = $conn->query(
      ORDER BY t.tgl_pinjam DESC
      LIMIT 20"
 );
-$jml_pending = $pending_rows ? $pending_rows->num_rows : 0;
+$jml_pending = $pending_rows ? $pending_rows->num_rows : 0; 
 // ─────────────────────────────────────────────────────────────────────────────
 
 $rows = $conn->query("SELECT t.*, a.nama_anggota, a.nis, b.judul_buku, b.cover 

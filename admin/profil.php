@@ -15,21 +15,14 @@ $stmt->execute();
 $user = $stmt->get_result()->fetch_assoc();
 $stmt->close();
 
-// Ambil data user untuk header
-$userStmt = $conn->prepare("SELECT foto, nama_pengguna FROM pengguna WHERE id_pengguna = ?");
-$userStmt->bind_param("i", $id);
-$userStmt->execute();
-$userData = $userStmt->get_result()->fetch_assoc();
-$userStmt->close();
-
-// Inisial untuk avatar header
+// Data header diambil dari $user yang sudah ada (tidak perlu query ulang)
 $initialsHeader = '';
-foreach (explode(' ', trim($userData['nama_pengguna'] ?? getPenggunaName())) as $w) {
+foreach (explode(' ', trim($user['nama_pengguna'] ?? getPenggunaName())) as $w) {
     $initialsHeader .= strtoupper(mb_substr($w, 0, 1));
     if (strlen($initialsHeader) >= 2) break;
 }
-$fotoPathHeader = (!empty($userData['foto']) && file_exists('../' . $userData['foto'])) 
-            ? '../' . htmlspecialchars($userData['foto']) 
+$fotoPathHeader = (!empty($user['foto']) && file_exists('../' . $user['foto']))
+            ? '../' . htmlspecialchars($user['foto'])
             : null;
 
 /* ================= UPLOAD FOTO ================= */
