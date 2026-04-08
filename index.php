@@ -160,10 +160,32 @@ $quote = $quotes[date('z') % count($quotes)];
             try { if (localStorage.getItem('cozy_library_dark') === '1') document.documentElement.classList.add('dark-mode-active'); } catch (e) { }
         })();
     </script>
-    <link rel="icon" href="https://i.ibb.co.com/XZjP8Xmh/Gemini-Generated-Image-rurkqhrurkqhrurk.png" type="image/png">
+    <link rel="icon" href="assets/icons/cozy-tp.png" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/index.css">
+    <link rel="stylesheet" href="assets/css/index.css">
+    <style>
+        /* Fix sejajar tombol navbar */
+        body.index-page .nav-right {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+        }
+        body.index-page .nav-right .btn-outline,
+        body.index-page .nav-right .btn-primary {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 38px !important;
+            padding: 0 20px !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+            line-height: 1 !important;
+            vertical-align: middle !important;
+            font-size: .85rem !important;
+        }
+    </style>
 </head>
 
 <body class="index-page">
@@ -191,7 +213,7 @@ $quote = $quotes[date('z') % count($quotes)];
 
     <nav class="nav" id="nav">
         <a href="index.php" class="nav-logo">
-            <div class="nav-icon">📖</div>
+            <div class="nav-icon"><img src="assets/icons/cozy-tp.png" alt="Cozy-Library" style="width:32px;height:32px;object-fit:contain;border-radius:8px;vertical-align:middle;"></div>
             <div class="nav-name">Cozy-<span>Library</span></div>
         </a>
         <div class="nav-links">
@@ -208,9 +230,11 @@ $quote = $quotes[date('z') % count($quotes)];
                 <?php elseif ($isPetugas): ?><a href="petugas/dashboard.php" class="btn-primary">Dashboard Petugas</a>
                 <?php else: ?><a href="anggota/dashboard.php" class="btn-primary">Dashboard Saya</a><?php endif; ?>
             <?php else: ?>
-                <a href="login.php" class="btn-outline">Masuk</a>
-                <a href="register.php" class="btn-primary">Daftar Gratis</a>
-            <?php endif; ?>
+  <div style="display:flex; align-items:center; gap:8px;">
+    <a href="login.php" class="btn-outline">Masuk</a>
+    <a href="register.php" class="btn-primary">Daftar Gratis</a>
+  </div>
+<?php endif; ?>
         </div>
         <button class="hamburger" onclick="document.getElementById('mob').classList.add('open')">☰</button>
     </nav>
@@ -218,7 +242,7 @@ $quote = $quotes[date('z') % count($quotes)];
     <div class="drawer" id="mob">
         <button class="drawer-x" onclick="document.getElementById('mob').classList.remove('open')">✕</button>
         <div class="drawer-logo">
-            <span class="drawer-logo-icon">📚</span>
+            <span class="drawer-logo-icon"><img src="assets/icons/cozy-tp.png" alt="Cozy-Library" style="width:28px;height:28px;object-fit:contain;border-radius:6px;vertical-align:middle;"></span>
             <span class="drawer-logo-text">Cozy-Library</span>
         </div>
         <div class="drawer-divider"></div>
@@ -977,9 +1001,9 @@ $quote = $quotes[date('z') % count($quotes)];
             <div>
                 <div class="foot-logo" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
                     <div class="foot-icon"
-                        style="width:36px; height:36px; border-radius:10px; background:var(--c-grad); color:white; display:flex; align-items:center; justify-content:center;">
-                        📖</div>
-                    <div class="foot-brand" style="font-weight:800; color:white;">Libra<span>Space</span></div>
+                        style="width:36px; height:36px; border-radius:10px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                        <img src="assets/icons/cozy-tp.png" alt="Cozy-Library" style="width:36px;height:36px;object-fit:contain;"></div>
+                    <div class="foot-brand" style="font-weight:800; color:white;">Cozy-<span>Library</span></div>
                 </div>
                 <p class="foot-desc" style="font-size:0.85rem; color:rgba(255,255,255,0.7); line-height:1.6;">Platform
                     platform terpadu Cozy-Library untuk sekolah. Memudahkan pengelolaan koleksi, peminjaman, dan
@@ -1039,9 +1063,6 @@ $quote = $quotes[date('z') % count($quotes)];
             <p class="foot-copy" style="font-size:0.75rem; color:rgba(255,255,255,0.5);">© <?= date('Y') ?> Cozy-Library —
                 Sistem Manajemen Perpustakaan · All rights reserved.</p>
             <div class="credit">
-                <p>Developed by: <strong>@f1qxzz_</strong></p>
-                <p>Inspired by: <strong>@chlszaaa</strong></p>
-                <p>On Instagram</p>
                 <p>© 2026 Cozy-Library Project</p>
             </div>
         </div>

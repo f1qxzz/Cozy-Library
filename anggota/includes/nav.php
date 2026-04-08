@@ -5,7 +5,9 @@ $cp = basename($_SERVER['PHP_SELF']);
 
 <aside class="sidebar sidebar-anggota" id="sidebar">
     <div class="sidebar-brand">
-        <div class="brand-icon brand-icon-anggota">📚</div>
+        <div class="brand-icon brand-icon-anggota">
+            <img src="../assets/icons/cozy-tp.png" alt="Cozy-Library" style="width:36px;height:36px;object-fit:contain;border-radius:8px;">
+        </div>
         <div>
             <div class="brand-name">Cozy-Library</div>
             <div class="brand-role">Anggota</div>

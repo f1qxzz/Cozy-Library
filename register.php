@@ -66,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="assets/icons/cozy-tp.png" type="image/png">
     <title>Daftar Anggota — Cozy-Library</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -78,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
         <div class="register-left">
             <div class="register-left-content">
                 <div class="register-icon">
-                    <i class="fas fa-user-plus"></i>
+                    <img src="assets/icons/cozy-library.png" alt="Cozy-Library" style="width:72px;height:72px;object-fit:contain;border-radius:12px;">
                 </div>
                 <h1 class="register-title-large">
                     Bergabung dengan<br>
@@ -122,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             <div class="register-box">
                 <div class="register-header">
                     <div class="register-header-icon">
-                        <i class="fas fa-user-circle"></i>
+                        <img src="assets/icons/cozy-tp.png" alt="Cozy-Library" style="width:52px;height:52px;object-fit:contain;border-radius:10px;">
                     </div>
                     <h2 class="register-header-title">Buat Akun Baru</h2>
                     <p class="register-header-subtitle">Isi data diri Anda untuk mendaftar sebagai anggota</p>
@@ -228,11 +229,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 <p class="footer-text">
                     © <?= date('Y') ?> Cozy-Library · Daftar gratis untuk semua siswa terdaftar
                 </p>
-                <div class="credit">
-                    <p>Developed by: <strong>@f1qxzz_</strong></p>
-                    <p>Inspired by: <strong>@chlszaaa</strong></p>
-                    <p>© 2026 Cozy-Library Project</p>
-                </div>
             </div>
         </div>
     </div>

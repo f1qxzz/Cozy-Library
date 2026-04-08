@@ -112,6 +112,7 @@ $quote = $quotes[date('z') % count($quotes)];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="assets/icons/cozy-tp.png" type="image/png">
     <title>Masuk — Cozy-Library</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -124,7 +125,7 @@ $quote = $quotes[date('z') % count($quotes)];
         <div class="login-left">
             <div class="login-left-content">
                 <div class="login-icon">
-                    <i class="fas fa-book-open"></i>
+                    <img src="assets/icons/cozy-library.png" alt="Cozy-Library" style="width:72px;height:72px;object-fit:contain;border-radius:12px;">
                 </div>
                 <h1 class="login-title-large">
                     Selamat Datang di<br>
@@ -170,7 +171,7 @@ $quote = $quotes[date('z') % count($quotes)];
             <div class="login-box">
                 <div class="login-header">
                     <div class="login-header-icon">
-                        <i class="fas fa-user-circle"></i>
+                        <img src="assets/icons/cozy-tp.png" alt="Cozy-Library" style="width:52px;height:52px;object-fit:contain;border-radius:10px;">
                     </div>
                     <h2 class="login-header-title">Masuk ke Akun</h2>
                 </div>
@@ -233,11 +234,6 @@ $quote = $quotes[date('z') % count($quotes)];
                 <p class="footer-text">
                     © <?= date('Y') ?> Cozy-Library · Sistem Manajemen Perpustakaan
                 </p>
-                <div class="credit">
-                    <p>Developed by: <strong>@f1qxzz_</strong></p>
-                    <p>Inspired by: <strong>@chlszaaa</strong></p>
-                    <p>© 2026 Cozy-Library Project</p>
-                </div>
             </div>
         </div>
     </div>

@@ -6,7 +6,7 @@ $cp = basename($_SERVER['PHP_SELF']);
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <div class="brand-icon petugas-icon">
-            <i class="fas fa-book-open"></i>
+            <img src="../assets/icons/cozy-tp.png" alt="Cozy-Library" style="width:36px;height:36px;object-fit:contain;border-radius:8px;">
         </div>
         <div>
             <div class="brand-name">Cozy-Library</div>

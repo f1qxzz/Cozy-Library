@@ -190,12 +190,13 @@ body.index-page .nav-right .btn-primary,
 body.index-page .btn-hero,
 body.index-page .btn-primary {
   background:var(--c-grad)!important;
-  color:#fff!important;border:none!important;
+  color:#fff!important;border:1.5px solid transparent!important;
   padding:9px 20px;border-radius:10px;
   font-weight:700;font-size:.85rem;
   box-shadow:0 3px 12px rgba(168,85,247,.35)!important;
   transition:var(--c-tr);display:inline-flex;align-items:center;gap:6px;
   text-decoration:none;cursor:pointer;
+  line-height:1.4;box-sizing:border-box;vertical-align:middle;
 }
 body.index-page .nav-right .btn-primary:hover,
 body.index-page .btn-hero:hover,
@@ -213,6 +214,7 @@ body.index-page .nav-right .btn-outline {
   font-weight:600;font-size:.85rem;
   transition:var(--c-tr);display:inline-flex;align-items:center;gap:6px;
   text-decoration:none;cursor:pointer;
+  line-height:1.4;box-sizing:border-box;vertical-align:middle;
 }
 body.index-page .btn-outline:hover{background:var(--c-purple-pale)!important;border-color:#a855f7!important;}
 body.index-page .btn-hero2{
@@ -1378,4 +1380,23 @@ body.index-page ::-webkit-scrollbar-thumb{background:#c4b5fd;border-radius:10px;
 
 .sidebar {
   background: #ffffff; /* 🔥 biar kontras */
+}
+
+/* ── FIX: Sejajarkan tombol Masuk & Daftar Gratis di navbar ── */
+body.index-page .nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+body.index-page .nav-right .btn-outline,
+body.index-page .nav-right .btn-primary {
+  height: 38px;           /* tinggi sama persis */
+  padding: 0 20px;        /* ganti padding-top/bottom dengan height */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  vertical-align: middle;
+  box-sizing: border-box;
 }
