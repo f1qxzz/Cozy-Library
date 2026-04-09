@@ -37,23 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aksi_cepat'])) {
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Ambil data pengguna untuk foto profil
-$userId = getPenggunaId();
-$userStmt = $conn->prepare("SELECT foto, nama_pengguna FROM pengguna WHERE id_pengguna = ?");
-$userStmt->bind_param("i", $userId);
-$userStmt->execute();
-$userData = $userStmt->get_result()->fetch_assoc();
-$userStmt->close();
+// Ambil data profil untuk welcome box
+$_profile = getPenggunaProfileData($conn);
+$userData = $_profile['userData'];
+$initials = $_profile['initials'];
+$fotoPath = $_profile['fotoPath'];
 
-// Inisial untuk fallback avatar
-$initials = '';
-foreach (explode(' ', trim($userData['nama_pengguna'] ?? getPenggunaName())) as $w) {
-    $initials .= strtoupper(mb_substr($w, 0, 1));
-    if (strlen($initials) >= 2) break;
-}
-$fotoPath = (!empty($userData['foto']) && file_exists('../' . $userData['foto'])) 
-            ? '../' . htmlspecialchars($userData['foto']) 
-            : null;
 
 function cnt($c, $q, $f = 'c') {
     return $c->query($q)->fetch_assoc()[$f] ?? 0;

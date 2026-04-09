@@ -1400,3 +1400,29 @@ body.index-page .nav-right .btn-primary {
   vertical-align: middle;
   box-sizing: border-box;
 }
+
+/* ── Smooth Scroll ── */
+html {
+  scroll-behavior: smooth;
+}
+* {
+  -webkit-overflow-scrolling: touch;
+}
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(86,28,36,0.18);
+  border-radius: 99px;
+  transition: background 0.25s ease;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(86,28,36,0.38);
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

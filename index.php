@@ -164,7 +164,6 @@ $quote = $quotes[date('z') % count($quotes)];
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/index.css">
-    <link rel="stylesheet" href="assets/css/index.css">
     <style>
         /* Fix sejajar tombol navbar */
         body.index-page .nav-right {
@@ -1256,6 +1255,7 @@ $quote = $quotes[date('z') % count($quotes)];
         }, { threshold: .2 });
         document.querySelectorAll('.ch-card,.rat-card').forEach(el => bro.observe(el));
     </script>
+    <script src="assets/js/script.js"></script>
 </body>
 
 </html>

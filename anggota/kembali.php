@@ -124,7 +124,6 @@ $page_sub   = 'Kembalikan buku yang sudah selesai dibaca';
                                     <th>Jatuh Tempo</th>
                                     <th>Status</th>
                                     <th>Sisa Waktu</th>
-                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -186,21 +185,6 @@ $page_sub   = 'Kembalikan buku yang sudah selesai dibaca';
                                         <span class="badge badge-success">
                                             <i class="fas fa-check-circle"></i> <?= $sisa ?> hari
                                         </span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <?php if ($isPending): ?>
-                                        <span class="text-muted" style="font-size:0.85em;">
-                                            <i class="fas fa-info-circle"></i> Belum bisa dikembalikan
-                                        </span>
-                                        <?php else: ?>
-                                        <form method="POST"
-                                            onsubmit="return confirm('Yakin ingin mengembalikan buku &quot;<?= htmlspecialchars(addslashes($r['judul_buku'])) ?>&quot;?')">
-                                            <input type="hidden" name="id_transaksi" value="<?= $r['id_transaksi'] ?>">
-                                            <button type="submit" name="kembalikan" class="btn-success btn-sm">
-                                                <i class="fas fa-undo-alt"></i> Kembalikan
-                                            </button>
-                                        </form>
                                         <?php endif; ?>
                                     </td>
                                 </tr>

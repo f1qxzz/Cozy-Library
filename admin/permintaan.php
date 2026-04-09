@@ -23,21 +23,7 @@ CREATE TABLE IF NOT EXISTS permintaan_pinjam (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ");
 
-// ─── Data user untuk header ───────────────────────────────────────────────────
-$userId = getPenggunaId();
-$uStmt  = $conn->prepare("SELECT foto, nama_pengguna FROM pengguna WHERE id_pengguna = ?");
-$uStmt->bind_param("i", $userId);
-$uStmt->execute();
-$userData = $uStmt->get_result()->fetch_assoc();
-$uStmt->close();
 
-$initials = '';
-foreach (explode(' ', trim($userData['nama_pengguna'] ?? getPenggunaName())) as $w) {
-    $initials .= strtoupper(mb_substr($w, 0, 1));
-    if (strlen($initials) >= 2) break;
-}
-$fotoPath = (!empty($userData['foto']) && file_exists('../' . $userData['foto']))
-            ? '../' . htmlspecialchars($userData['foto']) : null;
 
 // ─── AJAX / API handler ───────────────────────────────────────────────────────
 if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) || isset($_GET['api'])) {

@@ -1,26 +1,13 @@
-<?php /* admin/includes/header.php — v3.0 */
+<?php /* admin/includes/header.php — v4.0 */
 $page_title = $page_title ?? 'Dashboard';
 $page_sub   = $page_sub   ?? 'Admin Panel · Cozy-Library';
 
-require_once dirname(__DIR__, 2) . '/config/database.php';
-$conn   = getConnection();
-$userId = getPenggunaId();
-$stmt   = $conn->prepare("SELECT foto, nama_pengguna FROM pengguna WHERE id_pengguna = ?");
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$userData = $stmt->get_result()->fetch_assoc();
-$stmt->close();
-
-$initials = '';
-$nama = $userData['nama_pengguna'] ?? getPenggunaName();
-foreach (explode(' ', trim($nama)) as $w) {
-    $initials .= strtoupper(mb_substr($w, 0, 1));
-    if (strlen($initials) >= 2) break;
-}
-
-$fotoPath = (!empty($userData['foto']) && file_exists(dirname(__DIR__, 2) . '/' . $userData['foto']))
-            ? '../' . htmlspecialchars($userData['foto'])
-            : null;
+// Gunakan helper dari session.php (sudah di-require di halaman pemanggil)
+// $conn sudah tersedia dari halaman pemanggil
+$_profile  = getPenggunaProfileData($conn);
+$userData  = $_profile['userData'];
+$initials  = $_profile['initials'];
+$fotoPath  = $_profile['fotoPath'];
 ?>
 <!-- Overlay must come BEFORE sidebar in nav.php but we add it here for safety -->
 <header class="topbar no-print">

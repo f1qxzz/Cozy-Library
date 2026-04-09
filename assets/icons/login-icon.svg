@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6D2932"/>
+      <stop offset="100%" stop-color="#3A1016"/>
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E8D8C4" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#E8D8C4" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#3A1016" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="40" cy="40" r="38" fill="url(#bgGrad)"/>
+  <!-- Highlight overlay -->
+  <circle cx="40" cy="40" r="38" fill="url(#glowGrad)"/>
+  <!-- Subtle inner ring -->
+  <circle cx="40" cy="40" r="36" stroke="rgba(255,255,255,0.1)" stroke-width="1" fill="none"/>
+
+  <!-- Open book -->
+  <g filter="url(#softShadow)">
+    <!-- Left page -->
+    <path d="M18 24 Q18 22 20 22 L38 24 L38 52 L20 54 Q18 54 18 52 Z"
+          fill="#F5EFE6" opacity="0.95"/>
+    <!-- Right page -->
+    <path d="M42 24 L60 22 Q62 22 62 24 L62 52 Q62 54 60 54 L42 52 Z"
+          fill="#F5EFE6" opacity="0.85"/>
+    <!-- Spine -->
+    <rect x="38" y="22" width="4" height="32" fill="#E8D8C4" rx="1"/>
+    <!-- Book lines left page -->
+    <line x1="23" y1="30" x2="35" y2="30.5" stroke="#C7B7A3" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+    <line x1="23" y1="35" x2="35" y2="35.5" stroke="#C7B7A3" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+    <line x1="23" y1="40" x2="35" y2="40.5" stroke="#C7B7A3" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+    <line x1="23" y1="45" x2="31" y2="45.4" stroke="#C7B7A3" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+    <!-- Book lines right page -->
+    <line x1="45" y1="30" x2="57" y2="29.5" stroke="#C7B7A3" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+    <line x1="45" y1="35" x2="57" y2="34.5" stroke="#C7B7A3" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+    <line x1="45" y1="40" x2="57" y2="39.5" stroke="#C7B7A3" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+  </g>
+
+  <!-- Key icon (login concept) -->
+  <g transform="translate(43, 42)" filter="url(#softShadow)">
+    <!-- Key head circle -->
+    <circle cx="8" cy="7" r="7" fill="#8E3B46" stroke="#E3D1BB" stroke-width="1.5"/>
+    <circle cx="8" cy="7" r="3.5" fill="none" stroke="#F5EFE6" stroke-width="1.5"/>
+    <!-- Key shaft -->
+    <rect x="13.5" y="6" width="11" height="2.5" rx="1.25" fill="#E3D1BB"/>
+    <!-- Key teeth -->
+    <rect x="20" y="8.5" width="2" height="3" rx="0.8" fill="#E3D1BB"/>
+    <rect x="23.5" y="8.5" width="1.5" height="2" rx="0.6" fill="#E3D1BB"/>
+  </g>
+</svg>

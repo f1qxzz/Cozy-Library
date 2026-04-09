@@ -1,25 +1,12 @@
-<?php /* petugas/includes/header.php — v4.0 */
+<?php /* petugas/includes/header.php — v5.0 */
 $page_title = $page_title ?? 'Dashboard';
 $page_sub   = $page_sub   ?? 'Panel Petugas · Cozy-Library';
 
-$conn   = getConnection();
-$userId = getPenggunaId();
-$stmt   = $conn->prepare("SELECT foto, nama_pengguna FROM pengguna WHERE id_pengguna = ?");
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$userData = $stmt->get_result()->fetch_assoc();
-$stmt->close();
-
-$initials = '';
-$nama = $userData['nama_pengguna'] ?? getPenggunaName();
-foreach (explode(' ', trim($nama)) as $w) {
-    $initials .= strtoupper(mb_substr($w, 0, 1));
-    if (strlen($initials) >= 2) break;
-}
-
-$fotoPath = (!empty($userData['foto']) && file_exists(dirname(__DIR__, 2) . '/' . $userData['foto']))
-            ? '../' . htmlspecialchars($userData['foto'])
-            : null;
+// Gunakan helper dari session.php — $conn tersedia dari halaman pemanggil
+$_profile  = getPenggunaProfileData($conn);
+$userData  = $_profile['userData'];
+$initials  = $_profile['initials'];
+$fotoPath  = $_profile['fotoPath'];
 ?>
 <header class="topbar no-print">
     <div class="topbar-left">
@@ -77,102 +64,47 @@ $fotoPath = (!empty($userData['foto']) && file_exists(dirname(__DIR__, 2) . '/' 
     border-bottom: 1px solid rgba(86,28,36,0.10);
     box-shadow: 0 1px 10px rgba(86,28,36,0.06);
 }
-
 .page-title {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 1.1rem;
     font-weight: 700;
     color: #1e1b4b;
 }
-
-.page-breadcrumb {
-    font-size: 0.75rem;
-    color: #9ca3af;
-}
-
+.page-breadcrumb { font-size: 0.75rem; color: #9ca3af; }
 .modern-date {
-    background: #F5EFE6;
-    color: #561C24;
-    font-size: 0.82rem;
-    font-weight: 700;
-    padding: 6px 14px;
-    border-radius: 999px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    background: #F5EFE6; color: #561C24; font-size: 0.82rem;
+    font-weight: 700; padding: 6px 14px; border-radius: 999px;
+    display: flex; align-items: center; gap: 6px;
 }
-
 .modern-user {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 12px 4px 4px;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 999px;
+    display: flex; align-items: center; gap: 8px;
+    padding: 4px 12px 4px 4px; background: #f9fafb;
+    border: 1px solid #e5e7eb; border-radius: 999px;
 }
-
 .topbar-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 0.8rem;
-    flex-shrink: 0;
+    width: 32px; height: 32px; border-radius: 50%; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.8rem; flex-shrink: 0;
 }
-
-.topbar-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
+.topbar-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .petugas-avatar {
     background: linear-gradient(135deg, #561C24, #6D2932);
-    color: white;
-    box-shadow: 0 2px 8px rgba(86,28,36,0.25);
+    color: white; box-shadow: 0 2px 8px rgba(86,28,36,0.25);
 }
-
-.topbar-username {
-    font-weight: 700;
-    font-size: 0.85rem;
-    color: #374151;
-}
-
+.topbar-username { font-weight: 700; font-size: 0.85rem; color: #374151; }
 .modern-btn-logout {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: #fff1f2;
-    color: #e11d48;
-    padding: 8px 16px;
-    border-radius: 999px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    border: 1.5px solid #fecdd3;
-    white-space: nowrap;
+    display: flex; align-items: center; gap: 6px;
+    background: #fff1f2; color: #e11d48; padding: 8px 16px;
+    border-radius: 999px; font-size: 0.82rem; font-weight: 700;
+    text-decoration: none; transition: all 0.2s ease;
+    border: 1.5px solid #fecdd3; white-space: nowrap;
 }
-
 .modern-btn-logout:hover {
-    background: #ffe4e6;
-    transform: translateY(-1px);
+    background: #ffe4e6; transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(225,29,72,0.18);
 }
-
 .modern-btn-logout svg {
-    width: 15px;
-    height: 15px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    flex-shrink: 0;
+    width: 15px; height: 15px; fill: none; stroke: currentColor;
+    stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0;
 }
 </style>

@@ -51,3 +51,36 @@ function logout() {
     session_unset();
     session_destroy();
 }
+
+// ---- USER PROFILE DATA HELPER ----
+/**
+ * Ambil foto, initials, dan fotoPath user yang sedang login (pengguna/petugas).
+ * Menghindari duplikasi query di setiap halaman admin/petugas.
+ * Butuh $conn yang sudah aktif.
+ */
+function getPenggunaProfileData($conn, string $basePath = '../'): array {
+    $userId = getPenggunaId();
+    $stmt   = $conn->prepare("SELECT foto, nama_pengguna FROM pengguna WHERE id_pengguna = ?");
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $userData = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    $initials = '';
+    $nama = $userData['nama_pengguna'] ?? getPenggunaName();
+    foreach (explode(' ', trim($nama)) as $w) {
+        $initials .= strtoupper(mb_substr($w, 0, 1));
+        if (strlen($initials) >= 2) break;
+    }
+
+    $foto     = $userData['foto'] ?? '';
+    $fotoPath = (!empty($foto) && file_exists(dirname(__DIR__) . '/' . $foto))
+                ? $basePath . htmlspecialchars($foto)
+                : null;
+
+    return [
+        'userData' => $userData,
+        'initials' => $initials,
+        'fotoPath' => $fotoPath,
+    ];
+}

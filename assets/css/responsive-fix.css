@@ -362,3 +362,81 @@
   display: flex;
   flex-direction: column;
 }
+
+/* ============================================================
+   SMOOTH SCROLL — Cozy-Library
+   Berlaku untuk html, sidebar, modal, tabel, dan semua
+   elemen yang memiliki overflow scroll/auto.
+   ============================================================ */
+
+/* 1. Native smooth scroll untuk semua elemen scrollable */
+html,
+.sidebar,
+.sidebar-nav,
+.main-area,
+.content,
+.modal-body,
+.table-wrap,
+.table-responsive,
+.overflow-y-auto,
+[class*="modal"] > *,
+[class*="card"] {
+  scroll-behavior: smooth;
+}
+
+/* 2. Momentum scrolling (iOS / touch devices) */
+html,
+.sidebar,
+.sidebar-nav,
+.main-area,
+.content,
+.modal-body,
+.table-wrap,
+.table-responsive {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 3. Scrollbar kustom — lebih tipis, elegan, dan smooth */
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(86, 28, 36, 0.18);
+  border-radius: 99px;
+  transition: background 0.25s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(86, 28, 36, 0.38);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Sidebar scrollbar lebih tipis lagi */
+.sidebar::-webkit-scrollbar,
+.sidebar-nav::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* 4. Smooth scroll untuk anchor link (#hash) — override jika ada
+   media query untuk user yang prefer-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  html,
+  .sidebar,
+  .sidebar-nav,
+  .main-area,
+  .content,
+  .modal-body,
+  .table-wrap,
+  .table-responsive {
+    scroll-behavior: auto;
+  }
+}

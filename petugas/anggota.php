@@ -7,23 +7,6 @@ $conn = getConnection();
 $msg = '';
 $msgType = '';
 
-// Ambil data user untuk header
-$userId = getPenggunaId();
-$userStmt = $conn->prepare("SELECT foto, nama_pengguna FROM pengguna WHERE id_pengguna = ?");
-$userStmt->bind_param("i", $userId);
-$userStmt->execute();
-$userData = $userStmt->get_result()->fetch_assoc();
-$userStmt->close();
-
-// Inisial untuk avatar
-$initials = '';
-foreach (explode(' ', trim($userData['nama_pengguna'] ?? getPenggunaName())) as $w) {
-    $initials .= strtoupper(mb_substr($w, 0, 1));
-    if (strlen($initials) >= 2) break;
-}
-$fotoPath = (!empty($userData['foto']) && file_exists('../' . $userData['foto'])) 
-            ? '../' . htmlspecialchars($userData['foto']) 
-            : null;
 
 // Hitung statistik
 $totalAktif = $conn->query("SELECT COUNT(*) as total FROM anggota WHERE status='aktif'")->fetch_assoc()['total'];

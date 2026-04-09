@@ -31,10 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     if ($row && (password_verify($password, $row['password']) || $password === $row['password'])) {
         $found = true;
         $_SESSION['pengguna_logged_in'] = true;
-        $_SESSION['pengguna_id']        = $row['id_pengguna'];
-        $_SESSION['pengguna_nama']      = $row['nama_pengguna'];
-        $_SESSION['pengguna_level']     = $row['level'];
-        $_SESSION['pengguna_username']  = $row['username'];
+        $_SESSION['pengguna_id'] = $row['id_pengguna'];
+        $_SESSION['pengguna_nama'] = $row['nama_pengguna'];
+        $_SESSION['pengguna_level'] = $row['level'];
+        $_SESSION['pengguna_username'] = $row['username'];
 
         if ($password === $row['password'] && !password_verify($password, $row['password'])) {
             $newHash = password_hash($password, PASSWORD_DEFAULT);
@@ -62,10 +62,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                 $error = 'Akun Anda tidak aktif. Hubungi petugas.';
             } else {
                 $_SESSION['anggota_logged_in'] = true;
-                $_SESSION['anggota_id']        = $row['id_anggota'];
-                $_SESSION['anggota_nama']      = $row['nama_anggota'];
-                $_SESSION['anggota_nis']       = $row['nis'];
-                $_SESSION['anggota_kelas']     = $row['kelas'];
+                $_SESSION['anggota_id'] = $row['id_anggota'];
+                $_SESSION['anggota_nama'] = $row['nama_anggota'];
+                $_SESSION['anggota_nis'] = $row['nis'];
+                $_SESSION['anggota_kelas'] = $row['kelas'];
 
                 if ($password === $row['password'] && !password_verify($password, $row['password'])) {
                     $newHash = password_hash($password, PASSWORD_DEFAULT);
@@ -109,6 +109,7 @@ $quote = $quotes[date('z') % count($quotes)];
 ?>
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -116,16 +117,20 @@ $quote = $quotes[date('z') % count($quotes)];
     <title>Masuk — Cozy-Library</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/login.css?v=<?= time(); ?>">
 </head>
+
 <body class="page-transition">
     <div class="login-container">
         <div class="login-left">
             <div class="login-left-content">
                 <div class="login-icon">
-                    <img src="assets/icons/cozy-library.png" alt="Cozy-Library" style="width:72px;height:72px;object-fit:contain;border-radius:12px;">
+                    <img src="assets/icons/register-icon.svg" alt="Cozy-Library"
+                        style="width:72px;height:72px;object-fit:contain;border-radius:12px;">
                 </div>
                 <h1 class="login-title-large">
                     Selamat Datang di<br>
@@ -171,23 +176,23 @@ $quote = $quotes[date('z') % count($quotes)];
             <div class="login-box">
                 <div class="login-header">
                     <div class="login-header-icon">
-                        <img src="assets/icons/cozy-tp.png" alt="Cozy-Library" style="width:52px;height:52px;object-fit:contain;border-radius:10px;">
+                        <img src="assets/icons/login-icon.svg" alt="Login" style="width:52px;height:52px;">
                     </div>
                     <h2 class="login-header-title">Masuk ke Akun</h2>
                 </div>
 
                 <?php if ($error): ?>
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <?= htmlspecialchars($error) ?>
-                </div>
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <?= htmlspecialchars($error) ?>
+                    </div>
                 <?php endif; ?>
 
                 <?php if ($reg_success): ?>
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i>
-                    <?= htmlspecialchars($reg_success) ?>
-                </div>
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i>
+                        <?= htmlspecialchars($reg_success) ?>
+                    </div>
                 <?php endif; ?>
 
                 <form method="POST" novalidate>
@@ -239,51 +244,53 @@ $quote = $quotes[date('z') % count($quotes)];
     </div>
 
     <script>
-    function togglePassword() {
-        const passwordInput = document.getElementById('password');
-        const toggleIcon = document.getElementById('toggleIcon');
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            toggleIcon.classList.remove('fa-eye');
-            toggleIcon.classList.add('fa-eye-slash');
-        } else {
-            passwordInput.type = 'password';
-            toggleIcon.classList.remove('fa-eye-slash');
-            toggleIcon.classList.add('fa-eye');
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
         }
-    }
 
-    document.getElementById('loginBtn')?.addEventListener('click', function(e) {
-        const form = this.closest('form');
-        if (form && form.checkValidity()) {
-            this.classList.add('loading');
-            this.innerHTML = '<span>Memproses...</span><i class="fas fa-spinner fa-spin"></i>';
-        }
-    });
-
-    if (window.history.replaceState) {
-        window.history.replaceState(null, null, window.location.href);
-    }
-
-    setTimeout(() => {
-        document.querySelectorAll('.alert').forEach(alert => {
-            alert.style.transition = 'opacity 0.5s ease';
-            alert.style.opacity = '0';
-            setTimeout(() => { alert.style.display = 'none'; }, 500);
-        });
-    }, 5000);
-
-    // Page Exit Transition Link
-    document.querySelectorAll('a:not([target="_blank"])').forEach(link => {
-        link.addEventListener('click', e => {
-            if(link.hostname === window.location.hostname && !link.hash) {
-                e.preventDefault();
-                const href = link.href;
-                document.body.classList.replace('page-transition', 'page-exit');
-                setTimeout(() => window.location.href = href, 350); 
+        document.getElementById('loginBtn')?.addEventListener('click', function (e) {
+            const form = this.closest('form');
+            if (form && form.checkValidity()) {
+                this.classList.add('loading');
+                this.innerHTML = '<span>Memproses...</span><i class="fas fa-spinner fa-spin"></i>';
             }
         });
-    });
+
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => { alert.style.display = 'none'; }, 500);
+            });
+        }, 5000);
+
+        // Page Exit Transition Link
+        document.querySelectorAll('a:not([target="_blank"])').forEach(link => {
+            link.addEventListener('click', e => {
+                if (link.hostname === window.location.hostname && !link.hash) {
+                    e.preventDefault();
+                    const href = link.href;
+                    document.body.classList.replace('page-transition', 'page-exit');
+                    setTimeout(() => window.location.href = href, 350);
+                }
+            });
+        });
     </script>
+    <script src="assets/js/script.js"></script>
 </body>
+
 </html>

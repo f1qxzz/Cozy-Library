@@ -12,17 +12,17 @@ if (isAnggotaLoggedIn()) {
     exit;
 }
 
-$error   = '';
+$error = '';
 $success = '';
-$old     = [];
+$old = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
     $old = [
-        'nis'      => trim($_POST['nis'] ?? ''),
-        'nama'     => trim($_POST['nama_anggota'] ?? ''),
+        'nis' => trim($_POST['nis'] ?? ''),
+        'nama' => trim($_POST['nama_anggota'] ?? ''),
         'username' => trim($_POST['username'] ?? ''),
-        'email'    => trim($_POST['email'] ?? ''),
-        'kelas'    => trim($_POST['kelas'] ?? ''),
+        'email' => trim($_POST['email'] ?? ''),
+        'kelas' => trim($_POST['kelas'] ?? ''),
     ];
     $password = trim($_POST['password'] ?? '');
     $conn = getConnection();
@@ -63,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
 ?>
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -70,23 +71,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
     <title>Daftar Anggota — Cozy-Library</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/register.css">
 </head>
+
 <body class="page-transition">
     <div class="register-container">
         <div class="register-left">
             <div class="register-left-content">
                 <div class="register-icon">
-                    <img src="assets/icons/cozy-library.png" alt="Cozy-Library" style="width:72px;height:72px;object-fit:contain;border-radius:12px;">
+                    <img src="assets/icons/register-icon.svg" alt="Cozy-Library"
+                        style="width:72px;height:72px;object-fit:contain;border-radius:12px;">
                 </div>
                 <h1 class="register-title-large">
                     Bergabung dengan<br>
                     <span>Cozy-Library</span>
                 </h1>
                 <p class="register-description">
-                    Daftar sebagai anggota dan nikmati kemudahan mengakses ribuan koleksi buku dari mana saja, kapan saja.
+                    Daftar sebagai anggota dan nikmati kemudahan mengakses ribuan koleksi buku dari mana saja, kapan
+                    saja.
                 </p>
 
                 <ul class="benefits-list">
@@ -123,17 +129,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             <div class="register-box">
                 <div class="register-header">
                     <div class="register-header-icon">
-                        <img src="assets/icons/cozy-tp.png" alt="Cozy-Library" style="width:52px;height:52px;object-fit:contain;border-radius:10px;">
+                        <img src="assets/icons/register-icon.svg" alt="Register" style="width:52px;height:52px;">
                     </div>
                     <h2 class="register-header-title">Buat Akun Baru</h2>
                     <p class="register-header-subtitle">Isi data diri Anda untuk mendaftar sebagai anggota</p>
                 </div>
 
                 <?php if ($error): ?>
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <?= htmlspecialchars($error) ?>
-                </div>
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <?= htmlspecialchars($error) ?>
+                    </div>
                 <?php endif; ?>
 
                 <form method="POST" novalidate>
@@ -234,80 +240,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
     </div>
 
     <script>
-    function togglePassword() {
-        const passwordInput = document.getElementById('password');
-        const toggleIcon = document.getElementById('toggleIcon');
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
 
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            toggleIcon.classList.remove('fa-eye');
-            toggleIcon.classList.add('fa-eye-slash');
-        } else {
-            passwordInput.type = 'password';
-            toggleIcon.classList.remove('fa-eye-slash');
-            toggleIcon.classList.add('fa-eye');
-        }
-    }
-
-    function checkPasswordStrength(password) {
-        const bars = [
-            document.getElementById('bar1'),
-            document.getElementById('bar2'),
-            document.getElementById('bar3'),
-            document.getElementById('bar4')
-        ];
-        const strengthText = document.getElementById('strengthText');
-
-        // Reset bars
-        bars.forEach(bar => {
-            bar.className = 'strength-bar';
-        });
-
-        if (!password) {
-            strengthText.textContent = '';
-            return;
-        }
-
-        let score = 0;
-
-        // Length check
-        if (password.length >= 6) score++;
-        if (password.length >= 10) score++;
-
-        // Complexity checks
-        if (/[A-Z]/.test(password) && /[0-9]/.test(password)) score++;
-        if (/[^A-Za-z0-9]/.test(password)) score++;
-
-        // Update bars
-        for (let i = 0; i < score; i++) {
-            if (bars[i]) {
-                if (score <= 2) bars[i].classList.add('weak');
-                else if (score === 3) bars[i].classList.add('medium');
-                else bars[i].classList.add('strong');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
             }
         }
 
-        // Update text
-        const strengthLevels = ['Lemah', 'Cukup', 'Baik', 'Kuat'];
-        strengthText.textContent = score > 0 ? `Kekuatan password: ${strengthLevels[score-1]}` : '';
-    }
+        function checkPasswordStrength(password) {
+            const bars = [
+                document.getElementById('bar1'),
+                document.getElementById('bar2'),
+                document.getElementById('bar3'),
+                document.getElementById('bar4')
+            ];
+            const strengthText = document.getElementById('strengthText');
 
-    // Prevent form resubmission
-    if (window.history.replaceState) {
-        window.history.replaceState(null, null, window.location.href);
-    }
+            // Reset bars
+            bars.forEach(bar => {
+                bar.className = 'strength-bar';
+            });
 
-    // Page Exit Transition Link
-    document.querySelectorAll('a:not([target="_blank"])').forEach(link => {
-        link.addEventListener('click', e => {
-            if(link.hostname === window.location.hostname && !link.hash) {
-                e.preventDefault();
-                const href = link.href;
-                document.body.classList.replace('page-transition', 'page-exit');
-                setTimeout(() => window.location.href = href, 350); 
+            if (!password) {
+                strengthText.textContent = '';
+                return;
             }
+
+            let score = 0;
+
+            // Length check
+            if (password.length >= 6) score++;
+            if (password.length >= 10) score++;
+
+            // Complexity checks
+            if (/[A-Z]/.test(password) && /[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+
+            // Update bars
+            for (let i = 0; i < score; i++) {
+                if (bars[i]) {
+                    if (score <= 2) bars[i].classList.add('weak');
+                    else if (score === 3) bars[i].classList.add('medium');
+                    else bars[i].classList.add('strong');
+                }
+            }
+
+            // Update text
+            const strengthLevels = ['Lemah', 'Cukup', 'Baik', 'Kuat'];
+            strengthText.textContent = score > 0 ? `Kekuatan password: ${strengthLevels[score - 1]}` : '';
+        }
+
+        // Prevent form resubmission
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
+
+        // Page Exit Transition Link
+        document.querySelectorAll('a:not([target="_blank"])').forEach(link => {
+            link.addEventListener('click', e => {
+                if (link.hostname === window.location.hostname && !link.hash) {
+                    e.preventDefault();
+                    const href = link.href;
+                    document.body.classList.replace('page-transition', 'page-exit');
+                    setTimeout(() => window.location.href = href, 350);
+                }
+            });
         });
-    });
     </script>
 </body>
+
 </html>
