@@ -161,6 +161,7 @@ $page_sub   = 'Pencatatan Peminjaman & Pengembalian Buku';
     <link rel="stylesheet" href="../assets/css/admin/dashboard.css?v=<?= @filemtime('../assets/css/admin/dashboard.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/admin/transaksi.css?v=<?= @filemtime('../assets/css/admin/transaksi.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
     <style>
     /* Tombol aksi — Setujui & Tolak */
     .btn-action {
@@ -242,6 +243,8 @@ $page_sub   = 'Pencatatan Peminjaman & Pengembalian Buku';
                         </div>
                     </div>
                 </div>
+
+                <?php $print_title = 'Data Transaksi Peminjaman'; $print_total = $transaksi ? $transaksi->num_rows : 0; include '../includes/print_header.php'; ?>
 
                 <!-- Filter & Table -->
                 <div class="card">
@@ -364,6 +367,8 @@ $page_sub   = 'Pencatatan Peminjaman & Pengembalian Buku';
                         </table>
                     </div>
                 </div>
+
+                <?php include '../includes/print_footer.php'; ?>
             </main>
         </div>
     </div>

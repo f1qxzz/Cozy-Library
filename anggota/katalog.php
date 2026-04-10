@@ -65,6 +65,7 @@ $page_sub   = 'Jelajahi koleksi Cozy-Library';
     <link rel="stylesheet" href="../assets/css/anggota/dashboard.css?v=<?= @filemtime('../assets/css/anggota/dashboard.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/anggota/katalog.css?v=<?= @filemtime('../assets/css/anggota/katalog.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
 </head>
 
 <body>

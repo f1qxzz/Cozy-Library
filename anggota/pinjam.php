@@ -97,6 +97,7 @@ $page_sub   = 'Pilih buku yang ingin dipinjam';
     <link rel="stylesheet" href="../assets/css/anggota/dashboard.css?v=<?= @filemtime('../assets/css/anggota/dashboard.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/anggota/pinjam.css?v=<?= @filemtime('../assets/css/anggota/pinjam.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
 </head>
 
 <body>

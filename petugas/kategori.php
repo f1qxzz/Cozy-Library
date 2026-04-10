@@ -30,6 +30,9 @@ if (isset($_POST['edit'])) {
     $s->bind_param("ssi",$nama,$desk,$id);
     $msg = $s->execute() ? 'Kategori diperbarui!' : 'Gagal update!';
     $msgType = 'success'; $s->close();
+    if ($msg === 'Kategori diperbarui!') {
+        unset($_GET['edit']);
+    }
 }
 
 if (isset($_POST['delete'])) {
@@ -78,6 +81,7 @@ $page_sub   = 'Kelola kategori buku Cozy-Library';
     <link rel="stylesheet" href="../assets/css/petugas/petugas.css?v=<?= @filemtime('../assets/css/petugas/petugas.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/petugas/kategori.css?v=<?= @filemtime('../assets/css/petugas/kategori.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
 </head>
 
 <body>

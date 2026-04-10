@@ -161,7 +161,7 @@ body.index-page .nav-icon {
   display:flex;align-items:center;justify-content:center;
   font-size:1rem;box-shadow:0 3px 10px rgba(168,85,247,.35);
 }
-body.index-page .nav-name{font-weight:800;color:var(--c-text)!important;}
+body.index-page .nav-name{font-weight:800;color:var(--c-text)!important;white-space:nowrap;}
 body.index-page .nav-name span{
   background:var(--c-grad-text);-webkit-background-clip:text;
   -webkit-text-fill-color:transparent;background-clip:text;
@@ -179,7 +179,7 @@ body.index-page .nav-links a.active {
   background:var(--c-purple-pale)!important;
 }
 body.index-page .nav-right{display:flex;align-items:center;gap:8px;}
-body.index-page .hero-greet-text{font-size:.85rem;font-weight:600;color:var(--c-text)!important;}
+body.index-page .hero-greet-text{font-size:.85rem;font-weight:600;color:var(--c-text)!important;white-space:nowrap;}
 body.index-page .hamburger{
   display:none;background:none;border:none;
   font-size:1.4rem;cursor:pointer;color:var(--c-text)!important;
@@ -196,7 +196,7 @@ body.index-page .btn-primary {
   box-shadow:0 3px 12px rgba(168,85,247,.35)!important;
   transition:var(--c-tr);display:inline-flex;align-items:center;gap:6px;
   text-decoration:none;cursor:pointer;
-  line-height:1.4;box-sizing:border-box;vertical-align:middle;
+  line-height:1.4;box-sizing:border-box;vertical-align:middle;white-space:nowrap;
 }
 body.index-page .nav-right .btn-primary:hover,
 body.index-page .btn-hero:hover,
@@ -214,7 +214,7 @@ body.index-page .nav-right .btn-outline {
   font-weight:600;font-size:.85rem;
   transition:var(--c-tr);display:inline-flex;align-items:center;gap:6px;
   text-decoration:none;cursor:pointer;
-  line-height:1.4;box-sizing:border-box;vertical-align:middle;
+  line-height:1.4;box-sizing:border-box;vertical-align:middle;white-space:nowrap;
 }
 body.index-page .btn-outline:hover{background:var(--c-purple-pale)!important;border-color:#a855f7!important;}
 body.index-page .btn-hero2{
@@ -1158,8 +1158,9 @@ body.index-page .sd-loading,.sd-empty{padding:16px;text-align:center;font-size:.
   body.index-page .hero-right{flex:unset;width:100%;max-width:480px;align-self:center;}
   body.index-page .footer-grid{grid-template-columns:1fr 1fr;}
 }
-@media (max-width: 640px) {
+@media (max-width: 850px) {
   body.index-page .nav-links{display:none;}
+  body.index-page .nav-right .hero-greet-text,
   body.index-page .nav-right .btn-primary,
   body.index-page .nav-right .btn-outline{display:none;}
   body.index-page .hamburger{display:flex!important;}

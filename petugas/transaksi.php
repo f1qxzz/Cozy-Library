@@ -97,6 +97,7 @@ $cssVer     = @filemtime('../assets/css/petugas_laporan.css') ?: time();
     <link rel="stylesheet" href="../assets/css/petugas/petugas.css?v=<?= @filemtime('../assets/css/petugas/petugas.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/petugas/laporan.css?v=<?= $cssVer ?>">
     <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
 <style>
 /* ── Extra styles for date-filter + UI ── */
 .filter-card {

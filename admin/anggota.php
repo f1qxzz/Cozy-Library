@@ -39,6 +39,9 @@ if (isset($_POST['edit'])) {
         $s->bind_param("sssssi",$nis,$nama,$email,$kelas,$status,$id);
     }
     $msg=$s->execute()?'Data diperbarui!':'Gagal!'; $msgType='success'; $s->close();
+    if ($msg === 'Data diperbarui!') {
+        unset($_GET['edit']);
+    }
 }
 if (isset($_POST['delete'])) {
     $id=(int)$_POST['id_anggota'];
@@ -91,6 +94,7 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
     <link rel="stylesheet" href="../assets/css/admin/dashboard.css?v=<?= @filemtime('../assets/css/admin/dashboard.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/admin/anggota.css?v=<?= @filemtime('../assets/css/admin/anggota.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
 </head>
 
 <body>
@@ -146,6 +150,8 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
                         </div>
                     </div>
                 </div>
+
+                <?php $print_title = 'Data Anggota Perpustakaan'; $print_total = $members ? $members->num_rows : 0; include '../includes/print_header.php'; ?>
 
                 <!-- Filter & Table -->
                 <div class="card">
@@ -227,6 +233,8 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
                         </table>
                     </div>
                 </div>
+
+                <?php include '../includes/print_footer.php'; ?>
             </main>
         </div>
     </div>
@@ -274,7 +282,7 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-edit"
+                    <button type="button" class="btn-ghost"
                         onclick="document.getElementById('addModal').style.display='none'" style="padding: 10px 20px;">
                         <i class="fas fa-times"></i> Batal
                     </button>
@@ -346,7 +354,7 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a href="anggota.php" class="btn-edit" style="padding: 10px 20px;"><i class="fas fa-times"></i>
+                    <a href="anggota.php" class="btn-ghost" style="padding: 10px 20px;"><i class="fas fa-times"></i>
                         Batal</a>
                     <button type="submit" name="edit" class="btn-primary"><i class="fas fa-save"></i> Simpan
                         Perubahan</button>
@@ -378,7 +386,7 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-edit"
+                    <button type="button" class="btn-ghost"
                         onclick="document.getElementById('resetModal').style.display='none'"
                         style="padding: 10px 20px;">
                         <i class="fas fa-times"></i> Batal

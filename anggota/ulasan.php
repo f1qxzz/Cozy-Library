@@ -102,6 +102,7 @@ $page_sub   = 'Bagikan pengalaman membaca Anda';
     <link rel="stylesheet" href="../assets/css/anggota/dashboard.css?v=<?= @filemtime('../assets/css/anggota/dashboard.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/anggota/ulasan.css?v=<?= @filemtime('../assets/css/anggota/ulasan.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
 </head>
 
 <body>

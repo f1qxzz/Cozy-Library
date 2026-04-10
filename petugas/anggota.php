@@ -96,6 +96,7 @@ if (isset($_POST['edit'])) {
 
     $msg = $ok ? 'Data diperbarui!' : 'Gagal memperbarui data';
     $msgType = $ok ? 'success' : 'danger';
+    if ($ok) unset($_GET['edit']);
 
     $s->close();
 }
@@ -219,6 +220,7 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
     <link rel="stylesheet" href="../assets/css/petugas/petugas.css?v=<?= @filemtime('../assets/css/petugas/petugas.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/petugas/anggota.css?v=<?= @filemtime('../assets/css/petugas/anggota.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
 </head>
 
 <body>

@@ -1,0 +1,580 @@
+/* ═══════════════════════════════════════════════════════════════
+   Cozy-Library — print.css
+   Global print stylesheet agar semua halaman rapi saat dicetak.
+   Berlaku untuk: Admin, Petugas, & Anggota.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 0. HIDE ON SCREEN ─────────────────────────────────────────── */
+@media screen {
+    .print-header,
+    .print-footer {
+        display: none !important;
+    }
+}
+
+/* ── 1. PAGE SETUP ───────────────────────────────────────────── */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 0; /* Menghilangkan header/footer bawaan browser URL/Timestamp */
+    }
+
+    body {
+        margin: 1.5cm 1.2cm !important; /* Margin halaman untuk konten */
+    }
+
+    /* ── 2. SEMBUNYIKAN ELEMEN NON-CETAK ─────────────────────── */
+    .sidebar,
+    .sidebar-overlay,
+    .topbar,
+    header,
+    .no-print,
+    .filter-bar,
+    .filter-card,
+    .filter-tabs,
+    .stats-grid,
+    .page-header,
+    .btn-primary,
+    .btn-ghost,
+    .btn-print,
+    .btn-filter,
+    .btn-reset,
+    .btn-logout,
+    .btn-action,
+    .btn-success,
+    .btn-sage,
+    .btn-danger,
+    .btn-sm,
+    .btn-edit,
+    .btn-delete,
+    .btn-reset,
+    .action-btns,
+    .modal-overlay,
+    .modal,
+    .card-header .filter-tabs,
+    .search-wrap,
+    .wb,
+    .wb-actions,
+    .alert,
+    .empty-state-sub,
+    footer,
+    .sidebar-toggle,
+    .recent-link,
+    /* DataTables UI */
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate,
+    .dataTables_wrapper .dataTables_processing,
+    /* SweetAlert / Toast */
+    .swal2-container,
+    .toast-container {
+        display: none !important;
+    }
+
+    /* ── 3. LAYOUT RESET ─────────────────────────────────────── */
+    html, body {
+        background: white !important;
+        color: #111827 !important;
+        font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif !important;
+        font-size: 11pt !important;
+        line-height: 1.5 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .app-wrap {
+        display: block !important;
+        min-height: auto !important;
+    }
+
+    .main-area {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 0 !important;
+        background: white !important;
+        display: block !important;
+    }
+
+    .content {
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+    }
+
+    /* ── 4. PRINT HEADER — Tampil saat print ─────────────────── */
+    .print-header {
+        display: block !important;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 2.5px solid #111827;
+    }
+
+    .print-header-top {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .ph-brand {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #111827;
+        letter-spacing: -0.02em;
+    }
+
+    .ph-address {
+        font-size: 0.78rem;
+        color: #4b5563;
+        margin-top: 3px;
+        line-height: 1.6;
+    }
+
+    .ph-doc {
+        text-align: right;
+    }
+
+    .ph-doc-title {
+        font-size: 1.05rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #111827;
+    }
+
+    .ph-doc-meta {
+        font-size: 0.75rem;
+        color: #4b5563;
+        margin-top: 2px;
+    }
+
+    .ph-summary {
+        display: flex !important;
+        justify-content: space-between;
+        margin-top: 10px;
+        font-size: 0.82rem;
+        color: #111827;
+    }
+
+    /* ── 5. CARDS — Flat, tanpa shadow ────────────────────────── */
+    .card,
+    .report-card,
+    .recent-card,
+    .stat-card {
+        background: white !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .card-header {
+        display: none !important;
+    }
+
+    .report-card-header {
+        display: none !important;
+    }
+
+    /* ── 6. TABEL — Bersih, rapi, dan terbaca ────────────────── */
+    .table-wrap,
+    .table-responsive,
+    div[style*="overflow-x"] {
+        overflow: visible !important;
+    }
+
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin-top: 4px !important;
+        page-break-inside: auto !important;
+    }
+
+    /* Kolom aksi hilang saat print */
+    table th:last-child,
+    table td:last-child {
+        display: table-cell;
+    }
+
+    /* Sembunyikan kolom Aksi jika memang ada */
+    .print-hide-actions table th:last-child,
+    .print-hide-actions table td:last-child {
+        display: none !important;
+    }
+
+    thead {
+        display: table-header-group !important;
+    }
+
+    thead tr {
+        background: #f1f5f9 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    th {
+        background: #f1f5f9 !important;
+        color: #111827 !important;
+        font-size: 0.7rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.04em !important;
+        padding: 8px 10px !important;
+        border-top: 2px solid #111827 !important;
+        border-bottom: 2px solid #111827 !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    td {
+        padding: 8px 10px !important;
+        font-size: 0.78rem !important;
+        color: #374151 !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        border-top: none !important;
+        vertical-align: middle !important;
+        page-break-inside: avoid !important;
+        word-break: break-word !important;
+        white-space: normal !important;
+    }
+
+    tbody tr:last-child td {
+        border-bottom: 2px solid #111827 !important;
+    }
+
+    tbody tr:hover {
+        background: transparent !important;
+    }
+
+    /* Zebra stripes untuk keterbacaan */
+    tbody tr:nth-child(even) {
+        background: #f9fafb !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* ── 7. BADGES — Compact, B/W friendly ───────────────────── */
+    .badge,
+    .badge-status,
+    .status-badge {
+        background: transparent !important;
+        border: 1.2px solid #6b7280 !important;
+        border-radius: 4px !important;
+        padding: 2px 6px !important;
+        font-size: 0.68rem !important;
+        font-weight: 700 !important;
+        white-space: nowrap !important;
+        display: inline-block !important;
+        line-height: 1.4 !important;
+    }
+
+    /* Ikon di dalam badge? Sembunyikan agar hemat ruang */
+    .badge i,
+    .badge-status i,
+    .status-badge i {
+        display: none !important;
+    }
+
+    /* Status warna border — tetap ada hint warna */
+    .badge-aktif,
+    .badge-success,
+    .status-tersedia,
+    .badge-tersedia,
+    .badge-kembali,
+    .badge-lunas,
+    .status-kembali {
+        border-color: #059669 !important;
+        color: #059669 !important;
+    }
+
+    .badge-nonaktif,
+    .badge-muted {
+        border-color: #6b7280 !important;
+        color: #6b7280 !important;
+    }
+
+    .badge-danger,
+    .badge-terlambat,
+    .badge-habis,
+    .badge-belum,
+    .status-terlambat {
+        border-color: #dc2626 !important;
+        color: #dc2626 !important;
+    }
+
+    .badge-dipinjam,
+    .status-dipinjam,
+    .badge.status-pending {
+        border-color: #d97706 !important;
+        color: #d97706 !important;
+    }
+
+    .badge-admin,
+    .badge.status-ditolak {
+        border-color: #5b21b6 !important;
+        color: #5b21b6 !important;
+    }
+
+    .badge-petugas {
+        border-color: #075985 !important;
+        color: #075985 !important;
+    }
+
+    .badge-anggota-r {
+        border-color: #065f46 !important;
+        color: #065f46 !important;
+    }
+
+    /* ── 8. COVER BUKU — thumbnail kecil di print ────────────── */
+    .cover-thumb,
+    .book-cover-cell img {
+        width: 28px !important;
+        height: 38px !important;
+        object-fit: cover !important;
+        border-radius: 2px !important;
+        box-shadow: none !important;
+    }
+
+    /* ── 9. TEKS UTILITY ─────────────────────────────────────── */
+    .text-muted {
+        color: #6b7280 !important;
+    }
+
+    .fw-600 {
+        font-weight: 600 !important;
+        color: #111827 !important;
+    }
+
+    .text-xs,
+    .text-sm {
+        font-size: 0.72rem !important;
+    }
+
+    /* Inline styles override — reset warna cerah */
+    [style*="color:#6366f1"],
+    [style*="color: #6366f1"] {
+        color: #111827 !important;
+    }
+
+    [style*="color:#4f46e5"],
+    [style*="color: #4f46e5"] {
+        color: #111827 !important;
+    }
+
+    /* ── 10. PRINT FOOTER ────────────────────────────────────── */
+    .print-footer {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-top: 28px;
+        page-break-inside: avoid;
+    }
+
+    .pf-note {
+        font-size: 0.72rem;
+        color: #6b7280;
+        line-height: 1.6;
+        max-width: 55%;
+    }
+
+    .pf-signature {
+        text-align: center;
+        width: 200px;
+    }
+
+    .pf-sign-title {
+        font-size: 0.82rem;
+        color: #374151;
+        margin-bottom: 50px;
+    }
+
+    .pf-sign-name {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #111827;
+        border-bottom: 1px solid #111827;
+        padding-bottom: 3px;
+        margin-bottom: 3px;
+    }
+
+    .pf-sign-role {
+        font-size: 0.72rem;
+        color: #4b5563;
+    }
+
+    /* ── 11. PAGE BREAK CONTROL ──────────────────────────────── */
+    h1, h2, h3 {
+        page-break-after: avoid;
+    }
+
+    table, tr {
+        page-break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tfoot {
+        display: table-footer-group;
+    }
+
+    /* ── 12. KATEGORI BADGE di tabel buku ────────────────────── */
+    td span[style*="background:#eef2ff"],
+    td span[style*="background: #eef2ff"] {
+        background: transparent !important;
+        border: 1px solid #6b7280 !important;
+        border-radius: 3px !important;
+        padding: 1px 6px !important;
+        font-size: 0.68rem !important;
+    }
+
+    /* ── 13. LINK — hapus underline, warna hitam ─────────────── */
+    a {
+        color: #111827 !important;
+        text-decoration: none !important;
+    }
+
+    /* ── 14. LANDSCAPE untuk halaman yang memiliki body class ─ */
+    body.print-landscape {
+        page: landscape;
+    }
+
+    @page landscape {
+        size: A4 landscape;
+    }
+
+    /* ── 15. EMPTY STATE — compact saat print ────────────────── */
+    .empty-state {
+        padding: 20px !important;
+    }
+
+    .empty-state-ico {
+        font-size: 1.5rem !important;
+    }
+
+    .empty-state-title {
+        font-size: 0.9rem !important;
+    }
+
+    /* ── 16. REPORT TABLE (laporan.php) — khusus ─────────────── */
+    .report-table {
+        border-collapse: collapse !important;
+        width: 100% !important;
+        margin-top: 6px;
+        table-layout: auto !important;
+    }
+
+    .report-table thead th {
+        background: #f1f5f9 !important;
+        color: #111827 !important;
+        font-size: 0.68rem !important;
+        font-weight: 700 !important;
+        padding: 7px 8px !important;
+        white-space: normal !important;
+        border-top: 2px solid #111827 !important;
+        border-bottom: 2px solid #111827 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        word-break: break-word;
+    }
+
+    .report-table tbody td {
+        border: none !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        padding: 7px 8px !important;
+        font-size: 0.74rem !important;
+        color: #374151 !important;
+        page-break-inside: avoid;
+        white-space: normal !important;
+        word-break: break-word;
+    }
+
+    .report-table tbody tr:last-child td {
+        border-bottom: 2px solid #111827 !important;
+    }
+
+    .report-table tbody tr:hover {
+        background: transparent !important;
+    }
+
+    /* ── 17. KOLOM WIDTH KHUSUS TIAP LAPORAN ─────────────────── */
+    /* DENDA: 10 kolom → landscape */
+    .tbl-denda col.c-no    { width: 4%; }
+    .tbl-denda col.c-nama  { width: 18%; }
+    .tbl-denda col.c-nis   { width: 9%; }
+    .tbl-denda col.c-buku  { width: 20%; }
+    .tbl-denda col.c-hari  { width: 7%; }
+    .tbl-denda col.c-tarif { width: 10%; }
+    .tbl-denda col.c-total { width: 11%; }
+    .tbl-denda col.c-tgld  { width: 9%; }
+    .tbl-denda col.c-tglb  { width: 9%; }
+    .tbl-denda col.c-stat  { width: 10%; }
+
+    /* BUKU: 9 kolom → landscape */
+    .tbl-buku col.c-no    { width: 4%; }
+    .tbl-buku col.c-judul { width: 22%; }
+    .tbl-buku col.c-kat   { width: 11%; }
+    .tbl-buku col.c-peng  { width: 14%; }
+    .tbl-buku col.c-nerb  { width: 14%; }
+    .tbl-buku col.c-thn   { width: 6%; }
+    .tbl-buku col.c-isbn  { width: 14%; }
+    .tbl-buku col.c-stok  { width: 6%; }
+    .tbl-buku col.c-stat  { width: 9%; }
+
+    /* PEMINJAMAN: 8 kolom → portrait */
+    .tbl-pinjam col.c-no   { width: 5%; }
+    .tbl-pinjam col.c-nama { width: 22%; }
+    .tbl-pinjam col.c-nis  { width: 10%; }
+    .tbl-pinjam col.c-buku { width: 28%; }
+    .tbl-pinjam col.c-tglp { width: 10%; }
+    .tbl-pinjam col.c-tglk { width: 10%; }
+    .tbl-pinjam col.c-dnd  { width: 7%; }
+    .tbl-pinjam col.c-stat { width: 12%; }
+
+    /* ── 18. PERIOD BADGE — compact ──────────────────────────── */
+    .period-badge {
+        background: transparent !important;
+        border: 1px solid #6b7280 !important;
+        border-radius: 4px !important;
+        padding: 1px 8px !important;
+        font-size: 0.68rem !important;
+    }
+
+    .period-badge i {
+        display: none !important;
+    }
+
+    /* ── 19. PROGRESS BAR di stat (denda) — sembunyikan ──────── */
+    .stat-progress {
+        display: none !important;
+    }
+
+    /* ── 20. INFO BOX di modal — tidak relevan untuk print ──── */
+    .info-box {
+        display: none !important;
+    }
+
+    /* ── 21. FORM di dalam halaman — sembunyikan ─────────────── */
+    .filter-bar,
+    form.filter-card,
+    .card .filter-bar,
+    form[method="GET"].filter-bar,
+    form[method="GET"].filter-card {
+        display: none !important;
+    }
+
+    /* ── 22. PAGE HEADER TITLE (h1) — print-friendly ─────────── */
+    .page-header-title {
+        display: none !important;
+    }
+
+    .page-header-sub {
+        display: none !important;
+    }
+}

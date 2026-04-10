@@ -24,6 +24,9 @@ if (isset($_POST['edit'])) {
     $s->bind_param("ssi",$nama,$desk,$id);
     $msg=$s->execute()?'Kategori berhasil diperbarui!':'Gagal!'; 
     $msgType='success'; $s->close();
+    if ($msg === 'Kategori berhasil diperbarui!') {
+        unset($_GET['edit']);
+    }
 }
 if (isset($_POST['delete'])) {
     $id=(int)$_POST['id_kategori'];
@@ -66,6 +69,7 @@ $page_sub   = 'Kelola kategori buku Cozy-Library';
     <link rel="stylesheet" href="../assets/css/admin/dashboard.css?v=<?= @filemtime('../assets/css/admin/dashboard.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/admin/kategori.css?v=<?= @filemtime('../assets/css/admin/kategori.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
 </head>
 
 <body>
@@ -199,7 +203,7 @@ $page_sub   = 'Kelola kategori buku Cozy-Library';
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-edit"
+                    <button type="button" class="btn-ghost"
                         onclick="document.getElementById('addModal').style.display='none'" style="padding: 10px 20px;">
                         <i class="fas fa-times"></i> Batal
                     </button>
@@ -238,7 +242,7 @@ $page_sub   = 'Kelola kategori buku Cozy-Library';
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a href="kategori.php" class="btn-edit" style="padding: 10px 20px;"><i class="fas fa-times"></i>
+                    <a href="kategori.php" class="btn-ghost" style="padding: 10px 20px;"><i class="fas fa-times"></i>
                         Batal</a>
                     <button type="submit" name="edit" class="btn-primary"><i class="fas fa-save"></i> Simpan
                         Perubahan</button>

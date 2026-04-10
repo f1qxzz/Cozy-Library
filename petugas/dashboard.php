@@ -96,6 +96,7 @@ $page_sub = 'Panel Petugas · Cozy-Library';
     <link rel="stylesheet" href="../assets/css/petugas/petugas.css?v=<?= @filemtime('../assets/css/petugas/petugas.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/petugas/dashboard.css?v=<?= @filemtime('../assets/css/petugas/dashboard.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
 <style>
         /* Badge pending untuk tabel quick-action dashboard */
         .bd.status-pending {

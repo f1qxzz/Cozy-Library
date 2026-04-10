@@ -131,6 +131,7 @@ $cssVer=@filemtime('../assets/css/admin_buku.css')?:time();
 <link rel="stylesheet" href="../assets/css/admin/dashboard.css?v=<?= @filemtime('../assets/css/admin/dashboard.css') ?: time() ?>">
 <link rel="stylesheet" href="../assets/css/admin/buku.css?v=<?= $cssVer ?>">
 <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
 </head>
 <body>
 <div class="app-wrap">
@@ -153,9 +154,14 @@ $cssVer=@filemtime('../assets/css/admin_buku.css')?:time();
                 <h1 class="page-header-title">Manajemen Buku</h1>
                 <p class="page-header-sub">Kelola koleksi buku Cozy-Library</p>
             </div>
-            <button class="btn-primary" onclick="document.getElementById('addModal').style.display='flex'">
-                <i class="fas fa-plus-circle"></i> Tambah Buku Baru
-            </button>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-ghost" onclick="window.print()">
+                    <i class="fas fa-print"></i> Cetak A4
+                </button>
+                <button class="btn-primary" onclick="document.getElementById('addModal').style.display='flex'">
+                    <i class="fas fa-plus-circle"></i> Tambah Buku Baru
+                </button>
+            </div>
         </div>
 
         <div class="stats-grid">
@@ -172,6 +178,8 @@ $cssVer=@filemtime('../assets/css/admin_buku.css')?:time();
                 <div class="stat-info"><h3>Kategori</h3><div class="stat-number"><?= number_format($totalKategori) ?></div></div>
             </div>
         </div>
+
+        <?php $print_title = 'Data Buku Perpustakaan'; $print_total = $books ? $books->num_rows : 0; include '../includes/print_header.php'; ?>
 
         <div class="card">
             <form method="GET" class="filter-bar">
@@ -233,6 +241,8 @@ $cssVer=@filemtime('../assets/css/admin_buku.css')?:time();
                 </table>
             </div>
         </div>
+
+        <?php include '../includes/print_footer.php'; ?>
         </main>
     </div>
 </div>

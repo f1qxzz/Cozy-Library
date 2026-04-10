@@ -90,6 +90,7 @@ $page_sub   = 'Kelola denda keterlambatan pengembalian';
     <link rel="stylesheet" href="../assets/css/petugas/petugas.css?v=<?= @filemtime('../assets/css/petugas/petugas.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/petugas/denda.css?v=<?= @filemtime('../assets/css/petugas/denda.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
 </head>
 
 <body>

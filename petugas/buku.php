@@ -200,6 +200,7 @@ $page_sub   = 'Kelola koleksi buku Cozy-Library';
     <link rel="stylesheet" href="../assets/css/petugas/petugas.css?v=<?= @filemtime('../assets/css/petugas/petugas.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/petugas/buku.css?v=<?= @filemtime('../assets/css/petugas/buku.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
 </head>
 
 <body>
@@ -224,10 +225,15 @@ $page_sub   = 'Kelola koleksi buku Cozy-Library';
                         <h1 class="page-header-title">Manajemen Buku</h1>
                         <p class="page-header-sub">Kelola koleksi buku Cozy-Library</p>
                     </div>
-                    <button class="btn-primary" onclick="document.getElementById('addModal').style.display='flex'">
-                        <i class="fas fa-plus-circle"></i>
-                        Tambah Buku Baru
-                    </button>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-ghost" onclick="window.print()">
+                            <i class="fas fa-print"></i> Cetak A4
+                        </button>
+                        <button class="btn-primary" onclick="document.getElementById('addModal').style.display='flex'">
+                            <i class="fas fa-plus-circle"></i>
+                            Tambah Buku Baru
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Stats Cards -->

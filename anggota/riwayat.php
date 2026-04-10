@@ -62,6 +62,7 @@ $page_sub   = 'Lihat semua aktivitas peminjaman Anda';
     <link rel="stylesheet" href="../assets/css/anggota/dashboard.css?v=<?= @filemtime('../assets/css/anggota/dashboard.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/anggota/riwayat.css?v=<?= @filemtime('../assets/css/anggota/riwayat.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
 </head>
 
 <body>

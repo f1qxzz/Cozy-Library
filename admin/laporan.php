@@ -185,6 +185,7 @@ $current_label = $jenis_labels[$jenis] ?? 'Laporan';
 <link rel="stylesheet" href="../assets/css/admin/dashboard.css?v=<?= @filemtime('../assets/css/admin/dashboard.css') ?: time() ?>">
 <link rel="stylesheet" href="../assets/css/admin/laporan.css?v=<?= $cssVer ?>">
 <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
 <style>
 /* ── Filter Card ─────────────────────────────────────────────── */
 .filter-card {
@@ -450,28 +451,52 @@ $current_label = $jenis_labels[$jenis] ?? 'Laporan';
         </form>
 
         <!-- ── Print Header ── -->
-        <div class="print-header">
-            <div class="print-header-top">
-                <div>
-                    <div class="ph-brand">Cozy-Library</div>
-                    <div class="ph-address">Jl. Pendidikan No. 1<br>Sistem Manajemen Cozy-Library</div>
-                </div>
-                <div class="ph-doc">
-                    <div class="ph-doc-title">Laporan <?= htmlspecialchars($current_label) ?></div>
-                    <div class="ph-doc-meta">No. Dokumen: <strong><?= $no_laporan ?></strong></div>
-                    <div class="ph-doc-meta">Dicetak: <?= $tgl_cetak ?>, <?= $jam_cetak ?></div>
+        <div class="print-header" style="margin-bottom: 20px; border: none; padding: 0;">
+            <!-- KOP SURAT -->
+            <table style="width: 100%; border-bottom: 3px solid #111827; padding-bottom: 12px; margin-bottom: 15px; border-collapse: collapse;">
+                <tr>
+                    <td style="width: 80px; text-align: center; vertical-align: top;">
+                        <div style="width: 64px; height: 64px; background: #111827; color: #fff; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: -1px;">
+                            CL
+                        </div>
+                    </td>
+                    <td style="text-align: center; vertical-align: middle; padding: 0 10px;">
+                        <div style="font-size: 1.5rem; font-weight: 800; color: #111827; text-transform: uppercase; letter-spacing: 1px;">Sistem Manajemen Perpustakaan</div>
+                        <div style="font-size: 1.2rem; font-weight: 700; color: #374151; margin-top: 2px;">Cozy-Library</div>
+                        <div style="font-size: 0.85rem; color: #4b5563; margin-top: 4px;">Jl. Pendidikan No. 1, Kota Pengetahuan, Kodepos 12345</div>
+                        <div style="font-size: 0.8rem; color: #6b7280;">Email: info@cozy-library.com | Telp: (021) 123-4567</div>
+                    </td>
+                    <td style="width: 80px;"></td>
+                </tr>
+            </table>
+
+            <!-- JUDUL DOKUMEN -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="margin: 0; font-size: 1.2rem; font-weight: 800; color: #111827; text-transform: uppercase;">
+                    Laporan <?= htmlspecialchars($current_label) ?>
+                </h2>
+                <div style="font-size: 0.85rem; color: #4b5563; margin-top: 4px;">
+                    Nomor Dokumen: <strong><?= $no_laporan ?></strong>
                 </div>
             </div>
-            <div class="ph-summary">
+
+            <!-- INFO METADATA -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; font-size: 0.85rem; color: #374151; border-bottom: 1px dashed #d1d5db; padding-bottom: 8px; margin-bottom: 15px;">
                 <div>
-                    <strong>Periode:</strong>
-                    <?php if (in_array($jenis, ['peminjaman','denda']) && ($dari || $sampai)): ?>
-                        <?= $dari ? date('d M Y',strtotime($dari)) : 'Awal' ?> s/d <?= $sampai ? date('d M Y',strtotime($sampai)) : 'Sekarang' ?>
-                    <?php else: ?>
-                        Semua Data
-                    <?php endif; ?>
+                    <div style="margin-bottom: 3px;"><strong>Tanggal Cetak:</strong> <?= $tgl_cetak ?></div>
+                    <div><strong>Waktu Cetak:</strong> <?= $jam_cetak ?></div>
                 </div>
-                <div><strong>Total Data:</strong> <?= $total_data ?> data</div>
+                <div style="text-align: right;">
+                    <div style="margin-bottom: 3px;">
+                        <strong>Periode:</strong>
+                        <?php if (in_array($jenis, ['peminjaman','denda']) && ($dari || $sampai)): ?>
+                            <?= $dari ? date('d M Y',strtotime($dari)) : 'Awal' ?> s/d <?= $sampai ? date('d M Y',strtotime($sampai)) : 'Sekarang' ?>
+                        <?php else: ?>
+                            Semua Data
+                        <?php endif; ?>
+                    </div>
+                    <div><strong>Total Data:</strong> <?= $total_data ?> baris/item</div>
+                </div>
             </div>
         </div>
 

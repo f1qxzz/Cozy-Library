@@ -68,7 +68,8 @@ if (isset($_POST['edit'])) {
     $stmt = $conn->prepare("UPDATE pengguna SET nama_pengguna=?, email=?, level=? WHERE id_pengguna=?");
     $stmt->bind_param("sssi", $n, $e, $lv, $id);
     $msg = $stmt->execute() ? 'Data diperbarui!' : 'Gagal!';
-    $msgType = $stmt->execute() ? 'success' : 'danger';
+    $msgType = $msg === 'Data diperbarui!' ? 'success' : 'danger';
+    if ($msg === 'Data diperbarui!') unset($_GET['edit']);
     $stmt->close();
 }
 
@@ -120,6 +121,7 @@ $page_sub = 'Kelola akun admin dan petugas';
     <link rel="stylesheet" href="../assets/css/admin/dashboard.css?v=<?= @filemtime('../assets/css/admin/dashboard.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/admin/pengguna.css?v=<?= @filemtime('../assets/css/admin/pengguna.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
+<link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
 </head>
 
 <body>
@@ -283,7 +285,7 @@ $page_sub = 'Kelola akun admin dan petugas';
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-edit"
+                    <button type="button" class="btn-ghost"
                         onclick="document.getElementById('addModal').style.display='none'" style="padding: 10px 20px;">
                         <i class="fas fa-times"></i> Batal
                     </button>
@@ -336,7 +338,7 @@ $page_sub = 'Kelola akun admin dan petugas';
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a href="pengguna.php" class="btn-edit" style="padding: 10px 20px;"><i class="fas fa-times"></i>
+                    <a href="pengguna.php" class="btn-ghost" style="padding: 10px 20px;"><i class="fas fa-times"></i>
                         Batal</a>
                     <button type="submit" name="edit" class="btn-primary"><i class="fas fa-save"></i> Simpan
                         Perubahan</button>
@@ -367,7 +369,7 @@ $page_sub = 'Kelola akun admin dan petugas';
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-edit"
+                    <button type="button" class="btn-ghost"
                         onclick="document.getElementById('resetModal').style.display='none'"
                         style="padding: 10px 20px;">
                         <i class="fas fa-times"></i> Batal
