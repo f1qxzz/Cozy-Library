@@ -171,6 +171,7 @@ $quote = $quotes[date('z') % count($quotes)];
             align-items: center !important;
             gap: 8px !important;
         }
+
         body.index-page .nav-right .btn-outline,
         body.index-page .nav-right .btn-primary {
             display: inline-flex !important;
@@ -202,7 +203,7 @@ $quote = $quotes[date('z') % count($quotes)];
             <div class="topbar-item">📚 <?= $buku_tersedia ?> buku tersedia dari <?= $total_buku ?> koleksi</div>
             <?php if ($jatuh_tempo > 0 && ($isAdmin || $isPetugas)): ?>
                 <div class="topbar-item topbar-warn">⚠️ <?= $jatuh_tempo ?> buku melewati batas kembali</div>
-                
+
             <?php endif; ?>
         </div>
         <div class="topbar-right">
@@ -212,7 +213,8 @@ $quote = $quotes[date('z') % count($quotes)];
 
     <nav class="nav" id="nav">
         <a href="index.php" class="nav-logo">
-            <div class="nav-icon"><img src="assets/icons/cozy-tp.png" alt="Cozy-Library" style="width:32px;height:32px;object-fit:contain;border-radius:8px;vertical-align:middle;"></div>
+            <div class="nav-icon"><img src="assets/icons/cozy-tp.png" alt="Cozy-Library"
+                    style="width:32px;height:32px;object-fit:contain;border-radius:8px;vertical-align:middle;"></div>
             <div class="nav-name">Cozy-<span>Library</span></div>
         </a>
         <div class="nav-links">
@@ -229,11 +231,11 @@ $quote = $quotes[date('z') % count($quotes)];
                 <?php elseif ($isPetugas): ?><a href="petugas/dashboard.php" class="btn-primary">Dashboard Petugas</a>
                 <?php else: ?><a href="anggota/dashboard.php" class="btn-primary">Dashboard Saya</a><?php endif; ?>
             <?php else: ?>
-  <div style="display:flex; align-items:center; gap:8px;">
-    <a href="login.php" class="btn-outline">Masuk</a>
-    <a href="register.php" class="btn-primary">Daftar Gratis</a>
-  </div>
-<?php endif; ?>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <a href="login.php" class="btn-outline">Masuk</a>
+                    <a href="register.php" class="btn-primary">Daftar Gratis</a>
+                </div>
+            <?php endif; ?>
         </div>
         <button class="hamburger" onclick="document.getElementById('mob').classList.add('open')">☰</button>
     </nav>
@@ -241,7 +243,8 @@ $quote = $quotes[date('z') % count($quotes)];
     <div class="drawer" id="mob">
         <button class="drawer-x" onclick="document.getElementById('mob').classList.remove('open')">✕</button>
         <div class="drawer-logo">
-            <span class="drawer-logo-icon"><img src="assets/icons/cozy-tp.png" alt="Cozy-Library" style="width:28px;height:28px;object-fit:contain;border-radius:6px;vertical-align:middle;"></span>
+            <span class="drawer-logo-icon"><img src="assets/icons/cozy-tp.png" alt="Cozy-Library"
+                    style="width:28px;height:28px;object-fit:contain;border-radius:6px;vertical-align:middle;"></span>
             <span class="drawer-logo-text">Cozy-Library</span>
         </div>
         <div class="drawer-divider"></div>
@@ -256,7 +259,8 @@ $quote = $quotes[date('z') % count($quotes)];
                 class="btn-primary drawer-btn">⚡ Dashboard Utama</a>
             <a href="logout.php" class="btn-logout">⏻ Keluar</a>
         <?php else: ?>
-            <a href="login.php" class="btn-outline drawer-btn" style="text-align:center;display:flex;align-items:center;justify-content:center;gap:7px;">🔑 Masuk</a>
+            <a href="login.php" class="btn-outline drawer-btn"
+                style="text-align:center;display:flex;align-items:center;justify-content:center;gap:7px;">🔑 Masuk</a>
             <a href="register.php" class="btn-primary drawer-btn">✨ Daftar Gratis</a>
         <?php endif; ?>
     </div>
@@ -285,7 +289,8 @@ $quote = $quotes[date('z') % count($quotes)];
                 <span class="grad">Perluas Wawasanmu</span>
             </h1>
 
-            <p class="hero-desc">Cozy-Library adalah platform terlengkap untuk manajemen perpustakaan. Cari, pinjam, dan kelola buku dengan mudah —
+            <p class="hero-desc">Cozy-Library adalah platform terlengkap untuk manajemen perpustakaan. Cari, pinjam, dan
+                kelola buku dengan mudah —
                 akses 24/7 dari mana saja.</p>
 
             <div class="search-wrap">
@@ -395,7 +400,8 @@ $quote = $quotes[date('z') % count($quotes)];
                     <div>
                         <div class="hw-label">Status Cozy-Library</div>
                         <div class="hw-val" style="color:<?= $buka ? 'var(--c-green)' : 'var(--c-rose)' ?>">
-                            <?= $buka ? 'Sedang Buka 🟢' : 'Tutup 🔴' ?></div>
+                            <?= $buka ? 'Sedang Buka 🟢' : 'Tutup 🔴' ?>
+                        </div>
                         <div class="hw-sub">Jam operasional 07.00–16.00</div>
                     </div>
                 </div>
@@ -443,7 +449,7 @@ $quote = $quotes[date('z') % count($quotes)];
                 <div class="istrip-l">Anggota Aktif</div>
             </div>
         </div>
-            </div>
+    </div>
 
     <?php if (($isAdmin || $isPetugas) && $jatuh_tempo > 0): ?>
         <div class="alert-jt">
@@ -545,7 +551,8 @@ $quote = $quotes[date('z') % count($quotes)];
                                 <div class="book-overlay">
                                     <div class="book-info-minimal">
                                         <h4 class="book-title-mini">
-                                            <?= htmlspecialchars(mb_strimwidth($b['judul_buku'], 0, 45, '...')) ?></h4>
+                                            <?= htmlspecialchars(mb_strimwidth($b['judul_buku'], 0, 45, '...')) ?>
+                                        </h4>
                                         <p class="book-author-mini"><?= htmlspecialchars($b['pengarang']) ?></p>
                                     </div>
                                 </div>
@@ -707,7 +714,8 @@ $quote = $quotes[date('z') % count($quotes)];
                                 <div class="lb-flex-row" style="flex:1; display:flex; align-items:center; gap:10px;">
                                     <div class="lb-av"
                                         style="width:34px;height:34px;border-radius:50%;background:<?= $av_colors[$ri % 5] ?>;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;">
-                                        <?= htmlspecialchars($lbinit) ?></div>
+                                        <?= htmlspecialchars($lbinit) ?>
+                                    </div>
                                     <div>
                                         <div class="lb-name"><?= htmlspecialchars($lb['nama_anggota'] ?? 'User') ?></div>
                                         <div class="lb-kelas"><?= htmlspecialchars($lb['kelas'] ?? '—') ?></div>
@@ -729,7 +737,8 @@ $quote = $quotes[date('z') % count($quotes)];
                 <div class="rat-big" style="display:flex; gap:24px; align-items:center; flex-wrap:wrap;">
                     <div>
                         <div style="font-size:3.5rem; font-weight:800; color:var(--c-purple); line-height:1;">
-                            <?= number_format($avg_rating > 0 ? $avg_rating : 4.5, 1) ?></div>
+                            <?= number_format($avg_rating > 0 ? $avg_rating : 4.5, 1) ?>
+                        </div>
                         <div class="rat-stars" style="color:#f59e0b; font-size:1.2rem; margin-top:4px;">
                             <?php $ar = round($avg_rating > 0 ? $avg_rating : 4.5);
                             for ($s = 1; $s <= 5; $s++)
@@ -820,7 +829,8 @@ $quote = $quotes[date('z') % count($quotes)];
                 <div class="ulasan-card reveal" style="transition-delay:<?= $idx * .07 ?>s">
                     <div class="ulasan-stars">
                         <?php for ($s = 1; $s <= 5; $s++)
-                            echo '<span>' . ($s <= $stars ? '★' : '☆') . '</span>'; ?></div>
+                            echo '<span>' . ($s <= $stars ? '★' : '☆') . '</span>'; ?>
+                    </div>
                     <div class="ulasan-q">
                         <div class="ulasan-text"><?= htmlspecialchars(mb_strimwidth($u['ulasan'] ?? '', 0, 120, '…')) ?>
                         </div>
@@ -830,7 +840,8 @@ $quote = $quotes[date('z') % count($quotes)];
                         <div>
                             <div class="ulasan-name"><?= htmlspecialchars($nm) ?></div>
                             <div class="ulasan-buku">📖
-                                <?= htmlspecialchars(mb_strimwidth($u['judul_buku'] ?? '', 0, 36, '…')) ?></div>
+                                <?= htmlspecialchars(mb_strimwidth($u['judul_buku'] ?? '', 0, 36, '…')) ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -893,11 +904,13 @@ $quote = $quotes[date('z') % count($quotes)];
                         style="background:var(--c-surface); padding:20px; border-radius:var(--c-radius); border:1px solid var(--c-border); display:flex; gap:14px; align-items:flex-start;">
                         <div class="rule-ico"
                             style="width:40px; height:40px; border-radius:12px; background:<?= $r[1] ?>; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">
-                            <?= $r[0] ?></div>
+                            <?= $r[0] ?>
+                        </div>
                         <div>
                             <div class="rule-h"
                                 style="font-weight:700; font-size:.9rem; color:var(--c-text); margin-bottom:4px;">
-                                <?= $r[2] ?></div>
+                                <?= $r[2] ?>
+                            </div>
                             <div class="rule-p" style="font-size:.8rem; color:var(--c-gray); line-height:1.5;"><?= $r[3] ?>
                             </div>
                         </div>
@@ -957,7 +970,8 @@ $quote = $quotes[date('z') % count($quotes)];
                         style="display:flex; align-items:center; gap:16px; background:var(--c-surface); padding:20px; border-radius:var(--c-radius); border:1px solid var(--c-border);">
                         <div class="kitem-ico"
                             style="width:48px; height:48px; border-radius:12px; background:<?= $k[1] ?>; display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0;">
-                            <?= $k[0] ?></div>
+                            <?= $k[0] ?>
+                        </div>
                         <div>
                             <div class="kitem-h" style="font-weight:700; font-size:.9rem; color:var(--c-text);"><?= $k[2] ?>
                             </div>
@@ -988,7 +1002,7 @@ $quote = $quotes[date('z') % count($quotes)];
             <p class="cta-sub">Bergabung sekarang dan nikmati akses ke seluruh koleksi buku di Cozy-Library.<br>Gratis
                 untuk semua siswa terdaftar.</p>
         </div>
-        <div class="cta-btns">  
+        <div class="cta-btns">
             <a href="register.php" class="cta-b1">Daftar Sekarang</a>
             <a href="login.php" class="cta-b2">Masuk ke Akun</a>
         </div>
@@ -1001,7 +1015,9 @@ $quote = $quotes[date('z') % count($quotes)];
                 <div class="foot-logo" style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
                     <div class="foot-icon"
                         style="width:36px; height:36px; border-radius:10px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
-                        <img src="assets/icons/cozy-tp.png" alt="Cozy-Library" style="width:36px;height:36px;object-fit:contain;"></div>
+                        <img src="assets/icons/cozy-tp.png" alt="Cozy-Library"
+                            style="width:36px;height:36px;object-fit:contain;">
+                    </div>
                     <div class="foot-brand" style="font-weight:800; color:white;">Cozy-<span>Library</span></div>
                 </div>
                 <p class="foot-desc" style="font-size:0.85rem; color:rgba(255,255,255,0.7); line-height:1.6;">Platform
@@ -1059,7 +1075,8 @@ $quote = $quotes[date('z') % count($quotes)];
         </div>
         <div class="footer-bottom"
             style="margin-top:40px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-            <p class="foot-copy" style="font-size:0.75rem; color:rgba(255,255,255,0.5);">© <?= date('Y') ?> Cozy-Library —
+            <p class="foot-copy" style="font-size:0.75rem; color:rgba(255,255,255,0.5);">© <?= date('Y') ?> Cozy-Library
+                —
                 Sistem Manajemen Perpustakaan · All rights reserved.</p>
             <div class="credit">
                 <p>© 2026 Cozy-Library Project</p>
