@@ -218,6 +218,11 @@ http://localhost/Cozy-Library/
 php C:\path\to\Cozy-Library\cron\reminder_h1.php
 php C:\path\to\Cozy-Library\cron\overdue_reminder.php
 ```
+Jika perintah `php` tidak dikenali di Windows, gunakan path absolut PHP (contoh Laragon):
+```bash
+C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.exe C:\path\to\Cozy-Library\cron\reminder_h1.php
+C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.exe C:\path\to\Cozy-Library\cron\overdue_reminder.php
+```
 
 *Linux/CPanel (Crontab):*
 ```bash
@@ -230,20 +235,30 @@ php C:\path\to\Cozy-Library\cron\overdue_reminder.php
 
 ---
 
-## 🧪 Hasil Pengujian (QA Report)
+## 🧪 Hasil Pengujian (QA Report Terbaru)
 
-| Kategori Uji | Hasil | Keterangan |
+Pengujian terakhir dilakukan pada **11 April 2026** hingga **14 April 2026**.
+
+| Kategori Uji | Status | Hasil Terbaru |
 |---|---|---|
-| Syntax Validation (PHP -l) | ✅ LULUS | 0 error pada seluruh file PHP |
-| SQL Injection Test | ✅ AMAN | Prepared Statements pada semua query |
-| XSS Prevention | ✅ AMAN | htmlspecialchars() konsisten |
-| Password Security | ✅ AMAN | Bcrypt hashing aktif |
-| Upload File Exploit | ✅ AMAN | MIME-Type validation aktif |
-| Session Hijacking | ✅ AMAN | Role-based session guard |
-| Email Delivery (SMTP) | ✅ SUKSES | 100% masuk Inbox Gmail |
-| Print/Export Laporan | ✅ SUKSES | Auto landscape A4 |
-| Kalkulasi Denda | ✅ AKURAT | Real-time per hari |
-| Manajemen Stok Buku | ✅ AKURAT | Auto -1/+1 sinkron |
+| PHP Syntax Validation | PASS | 50 file PHP diperiksa, 0 parse/syntax error |
+| Database Connectivity | PASS | Koneksi DB sukses (`SELECT 1`), tabel inti terdeteksi normal |
+| Endpoint Sweep | PASS | 34 endpoint PHP (root/admin/petugas/anggota), gagal: 0 |
+| Public Page Smoke Test | PASS | `/`, `/index.php`, `/login.php`, `/register.php`, `/setup.php` -> HTTP 200 |
+| API Search Validation | PASS | `api_search.php` respons JSON valid, validasi minimum query berjalan |
+| Auth Flow Anggota | PASS | register -> login -> dashboard -> logout -> session invalid sukses |
+| Auth Flow Admin | PASS | login admin sukses, role guard ke halaman anggota berjalan |
+| Auth Flow Petugas | PASS | login petugas sukses, role guard ke halaman admin berjalan |
+| Input Validation | PASS | invalid login, email invalid, password < 6, duplicate register tertangani |
+| Static Assets | PASS | CSS/JS/icon utama ter-load HTTP 200 |
+| Stability Test (Light) | PASS | 50 request berulang ke `index.php`: 50 sukses, 0 gagal |
+| Email Overdue Test (SMTP) | PASS | Uji overdue email berhasil terkirim via PHPMailer |
+| Full Overdue Cron Run | PASS | `cron/overdue_reminder.php` memproses 2 data telat, terkirim 2, gagal 0 |
+
+### Catatan QA
+- Log cron terbaru tersedia di `cron/cron.log`.
+- Pada lingkungan Windows tertentu, PHP CLI belum otomatis ada di PATH sehingga disarankan memakai path absolut `php.exe`.
+- Script `npm test` belum dikonfigurasi (masih default `Error: no test specified`).
 
 ---
 
