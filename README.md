@@ -35,6 +35,7 @@ Sistem memiliki 3 hak akses pengguna yang masing-masing memiliki *dashboard* dan
 - Validasi MIME-Type pada upload file (mencegah eksploitasi server)
 - Pengelompokan buku berdasarkan kategori
 - Pencarian buku via API (`api_search.php`)
+- **Detail Buku Berbasis Role**: Tampilan premium *Glassmorphism* dengan fitur yang disesuaikan untuk Admin (CRUD & Riwayat lengkap), Petugas (Aktif Update Stok & Info Peminjam), dan Anggota (Pengajuan Pinjam & Ulasan).
 
 ### 🔄 Sirkulasi Peminjaman & Pengembalian
 - Peminjaman buku dengan kalkulasi otomatis tanggal jatuh tempo
@@ -254,6 +255,7 @@ Pengujian terakhir dilakukan pada **11 April 2026** hingga **14 April 2026**.
 | Stability Test (Light) | PASS | 50 request berulang ke `index.php`: 50 sukses, 0 gagal |
 | Email Overdue Test (SMTP) | PASS | Uji overdue email berhasil terkirim via PHPMailer |
 | Full Overdue Cron Run | PASS | `cron/overdue_reminder.php` memproses 2 data telat, terkirim 2, gagal 0 |
+| Book Detail UI Testing| PASS | View detail dirender dinamis per role tanpa error, UI responsif berjalan normal |
 
 ### Catatan QA
 - Log cron terbaru tersedia di `cron/cron.log`.

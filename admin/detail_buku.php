@@ -195,10 +195,7 @@ $page_sub = 'Informasi lengkap buku dan riwayat peminjaman';
                                         </div>
                                     </div>
                                 </div>
-                                <div class="bookd-meta-item">
-                                    <div class="bookd-meta-label">Lokasi Rak</div>
-                                    <div class="bookd-meta-value"><?= htmlspecialchars($book['lokasi_rak'] ?: '-') ?></div>
-                                </div>
+
                                 <div class="bookd-meta-item">
                                     <div class="bookd-meta-label">Dibuat Pada</div>
                                     <div class="bookd-meta-value"><?= fmtDateTime($book['created_at'] ?? null) ?></div>

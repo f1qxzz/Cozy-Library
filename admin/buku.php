@@ -284,7 +284,7 @@ $cssVer=@filemtime('../assets/css/admin_buku.css')?:time();
         <div class="form-group"><label class="form-label">Tahun Terbit</label><input type="number" name="tahun_terbit" class="form-control" value="<?= date('Y') ?>" min="1900" max="<?= date('Y') ?>"></div>
         <div class="form-group"><label class="form-label">ISBN</label><input type="text" name="isbn" class="form-control" placeholder="978-602-1234-56-7"></div>
         <div class="form-group"><label class="form-label">Stok <span>*</span></label><input type="number" name="stok" class="form-control" min="0" value="1" required></div>
-        <div class="form-group"><label class="form-label">Lokasi Rak</label><input type="text" name="lokasi_rak" class="form-control" placeholder="Contoh: Rak A-03"></div>
+
         <div class="form-group form-full"><label class="form-label">Cover Buku</label>
             <div class="cover-upload-area">
                 <div class="cover-preview-wrap" onclick="document.getElementById('addCoverInput').click()">
@@ -332,7 +332,7 @@ $cssVer=@filemtime('../assets/css/admin_buku.css')?:time();
         <div class="form-group"><label class="form-label">Tahun Terbit</label><input type="number" name="tahun_terbit" class="form-control" value="<?= $editBook['tahun_terbit'] ?>"></div>
         <div class="form-group"><label class="form-label">ISBN</label><input type="text" name="isbn" class="form-control" value="<?= htmlspecialchars($editBook['isbn']) ?>"></div>
         <div class="form-group"><label class="form-label">Stok <span>*</span></label><input type="number" name="stok" class="form-control" min="0" value="<?= $editBook['stok'] ?>" required></div>
-        <div class="form-group"><label class="form-label">Lokasi Rak</label><input type="text" name="lokasi_rak" class="form-control" value="<?= htmlspecialchars($editBook['lokasi_rak'] ?? '') ?>" placeholder="Contoh: Rak A-03"></div>
+
         <div class="form-group"><label class="form-label">Status</label>
             <select name="status" class="form-control">
                 <option value="tersedia" <?= $editBook['status']==='tersedia'?'selected':'' ?>>Tersedia</option>

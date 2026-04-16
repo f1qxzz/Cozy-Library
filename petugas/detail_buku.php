@@ -178,10 +178,7 @@ $page_sub = 'Informasi buku untuk operasional petugas';
                                     <div class="bookd-meta-label">Kategori</div>
                                     <div class="bookd-meta-value"><?= htmlspecialchars($book['nama_kategori'] ?: '-') ?></div>
                                 </div>
-                                <div class="bookd-meta-item">
-                                    <div class="bookd-meta-label">Lokasi Rak</div>
-                                    <div class="bookd-meta-value"><?= htmlspecialchars($book['lokasi_rak'] ?: '-') ?></div>
-                                </div>
+
                             </div>
 
                             <div class="bookd-desc">

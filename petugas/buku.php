@@ -425,10 +425,7 @@ $page_sub   = 'Kelola koleksi buku Cozy-Library';
                             <label class="form-label">Stok <span>*</span></label>
                             <input type="number" name="stok" class="form-control" min="0" value="1" required>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Lokasi Rak</label>
-                            <input type="text" name="lokasi_rak" class="form-control" placeholder="Contoh: Rak B-02">
-                        </div>
+
                         <div class="form-group form-full">
                             <label class="form-label">Cover Buku</label>
                             <div class="cover-upload-area">
@@ -528,11 +525,7 @@ $page_sub   = 'Kelola koleksi buku Cozy-Library';
                             <input type="number" name="stok" class="form-control" min="0"
                                 value="<?= $editBook['stok'] ?>" required>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Lokasi Rak</label>
-                            <input type="text" name="lokasi_rak" class="form-control"
-                                value="<?= htmlspecialchars($editBook['lokasi_rak'] ?? '') ?>" placeholder="Contoh: Rak B-02">
-                        </div>
+
                         <div class="form-group">
                             <label class="form-label">Status</label>
                             <select name="status" class="form-control">
