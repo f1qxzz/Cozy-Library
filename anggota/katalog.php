@@ -116,7 +116,7 @@ $page_sub   = 'Jelajahi koleksi Cozy-Library';
                 <div class="book-grid">
                     <?php $i = 0; while($b = $books->fetch_assoc()): $i++; ?>
                     <div class="book-card">
-                        <div class="book-cover">
+                        <a href="detail_buku.php?id=<?= $b['id_buku'] ?>" class="book-cover" style="text-decoration:none;cursor:pointer;display:block;">
                             <?php if (!empty($b['cover'])): ?>
                             <img src="../<?= htmlspecialchars($b['cover']) ?>"
                                 alt="<?= htmlspecialchars($b['judul_buku']) ?>" class="book-cover-img">
@@ -125,10 +125,10 @@ $page_sub   = 'Jelajahi koleksi Cozy-Library';
                                 <?= $book_emojis[$i % count($book_emojis)] ?>
                             </div>
                             <?php endif; ?>
-                        </div>
+                        </a>
 
                         <div class="book-info">
-                            <div class="book-title"><?= htmlspecialchars($b['judul_buku']) ?></div>
+                            <a href="detail_buku.php?id=<?= $b['id_buku'] ?>" class="book-title" style="text-decoration:none;color:inherit;"><?= htmlspecialchars($b['judul_buku']) ?></a>
                             <div class="book-author"><?= htmlspecialchars($b['pengarang']) ?></div>
                             <?php if ($b['nama_kategori']): ?>
                             <span class="badge badge-muted">
@@ -137,13 +137,17 @@ $page_sub   = 'Jelajahi koleksi Cozy-Library';
                             </span>
                             <?php endif; ?>
                             <div class="book-footer">
+                                <?php $displayStatus = ((int)$b['stok'] > 0) ? 'tersedia' : 'dipinjam'; ?>
                                 <span
-                                    class="badge <?= $b['status']==='tersedia' ? 'status-tersedia' : 'status-terlambat' ?>">
+                                    class="badge <?= $displayStatus==='tersedia' ? 'status-tersedia' : 'status-terlambat' ?>">
                                     <i
-                                        class="fas <?= $b['status']==='tersedia' ? 'fa-check-circle' : 'fa-times-circle' ?>"></i>
-                                    <?= $b['status']==='tersedia' ? 'Tersedia' : 'Habis' ?>
+                                        class="fas <?= $displayStatus==='tersedia' ? 'fa-check-circle' : 'fa-book-reader' ?>"></i>
+                                    <?= $displayStatus==='tersedia' ? 'Tersedia' : 'Dipinjam' ?>
                                 </span>
-                                <?php if ($b['status']==='tersedia'): ?>
+                                <a href="detail_buku.php?id=<?= $b['id_buku'] ?>" class="btn-ghost btn-sm">
+                                    <i class="fas fa-eye"></i> Detail
+                                </a>
+                                <?php if ($displayStatus==='tersedia'): ?>
                                 <a href="pinjam.php?buku=<?= $b['id_buku'] ?>" class="btn-sage btn-sm">
                                     <i class="fas fa-book"></i> Pinjam
                                 </a>

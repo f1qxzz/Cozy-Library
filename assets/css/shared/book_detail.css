@@ -1,0 +1,865 @@
+/* ============================================================
+   Shared Book Detail — Premium Design System
+   Glassmorphism · Micro-animations · Modern Typography
+   ============================================================ */
+
+/* -- Animations -------------------------------------------- */
+@keyframes bookdFadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes bookdSlideRight {
+    from { opacity: 0; transform: translateX(-20px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes bookdPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.5); opacity: .5; }
+}
+@keyframes bookdShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
+}
+@keyframes bookdGlow {
+    0%, 100% { box-shadow: 0 0 8px rgba(34, 197, 94, .25); }
+    50%      { box-shadow: 0 0 18px rgba(34, 197, 94, .45); }
+}
+
+/* -- Wrapper ---------------------------------------------- */
+.bookd-wrap {
+    display: grid;
+    gap: 20px;
+    animation: bookdFadeIn .5s ease-out;
+}
+
+/* -- Top Bar ---------------------------------------------- */
+.bookd-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.bookd-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .88rem;
+    border: 1px solid rgba(148, 163, 184, .3);
+    background: rgba(255, 255, 255, .8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #334155;
+    transition: all .25s ease;
+}
+.bookd-back:hover {
+    background: #fff;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, .08);
+    transform: translateX(-3px);
+}
+.bookd-back i {
+    transition: transform .25s ease;
+}
+.bookd-back:hover i {
+    transform: translateX(-3px);
+}
+
+/* -- Layout ----------------------------------------------- */
+.bookd-layout {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 20px;
+    animation: bookdFadeIn .55s ease-out;
+}
+
+/* -- Card (glass) ----------------------------------------- */
+.bookd-card {
+    background: rgba(255, 255, 255, .82);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 18px;
+    border: 1px solid rgba(148, 163, 184, .18);
+    box-shadow: 0 8px 32px rgba(15, 23, 42, .06),
+                0 2px 8px rgba(15, 23, 42, .04);
+    transition: box-shadow .3s ease, transform .3s ease;
+}
+.bookd-card:hover {
+    box-shadow: 0 14px 42px rgba(15, 23, 42, .1),
+                0 4px 12px rgba(15, 23, 42, .06);
+}
+
+/* -- Cover ------------------------------------------------ */
+.bookd-cover {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+.bookd-cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, rgba(99, 102, 241, .06), rgba(168, 85, 247, .06));
+    border-radius: 18px;
+    z-index: 0;
+}
+.bookd-cover img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 14px;
+    box-shadow: 0 12px 36px rgba(15, 23, 42, .18),
+                0 4px 12px rgba(15, 23, 42, .08);
+    transition: transform .4s ease, box-shadow .4s ease;
+}
+.bookd-cover:hover img {
+    transform: scale(1.03);
+    box-shadow: 0 18px 48px rgba(15, 23, 42, .22),
+                0 6px 16px rgba(15, 23, 42, .1);
+}
+
+.bookd-cover-fallback {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    min-height: 300px;
+    border-radius: 14px;
+    background: linear-gradient(160deg, #f1f5f9, #e2e8f0);
+    color: #94a3b8;
+    font-size: 3rem;
+}
+
+/* -- Main Content ----------------------------------------- */
+.bookd-main {
+    padding: 24px;
+    animation: bookdSlideRight .5s ease-out;
+}
+
+/* -- Title ------------------------------------------------ */
+.bookd-title {
+    margin: 0;
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.3;
+    letter-spacing: -.02em;
+}
+
+.bookd-subline {
+    margin-top: 6px;
+    color: #64748b;
+    font-size: .9rem;
+    font-weight: 500;
+}
+
+/* -- Badges ----------------------------------------------- */
+.bookd-badges {
+    margin-top: 16px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.bookd-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    padding: 7px 13px;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .01em;
+    transition: transform .2s ease;
+}
+.bookd-badge:hover {
+    transform: translateY(-1px);
+}
+
+.bookd-available {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    color: #166534;
+    border: 1px solid rgba(22, 101, 52, .15);
+}
+.bookd-available::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: bookdPulse 2s ease-in-out infinite;
+}
+
+.bookd-borrowed {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #991b1b;
+    border: 1px solid rgba(153, 27, 27, .12);
+}
+.bookd-borrowed::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ef4444;
+    animation: bookdPulse 2s ease-in-out infinite;
+}
+
+.bookd-muted {
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+    color: #334155;
+    border: 1px solid rgba(51, 65, 85, .1);
+}
+
+.bookd-badge-info {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: #1e40af;
+    border: 1px solid rgba(30, 64, 175, .1);
+}
+
+/* -- Meta Grid -------------------------------------------- */
+.bookd-meta-grid {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.bookd-meta-item {
+    padding: 13px 14px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border: 1px solid rgba(226, 232, 240, .8);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+.bookd-meta-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, .06);
+}
+
+.bookd-meta-label {
+    font-size: .74rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.bookd-meta-value {
+    margin-top: 4px;
+    color: #0f172a;
+    font-weight: 700;
+    font-size: .92rem;
+}
+
+/* -- Description ------------------------------------------ */
+.bookd-desc {
+    margin-top: 16px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border: 1px solid rgba(226, 232, 240, .8);
+    color: #334155;
+    line-height: 1.7;
+    white-space: pre-line;
+    font-size: .92rem;
+    position: relative;
+}
+.bookd-desc::before {
+    content: '\201C';
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    font-size: 2.5rem;
+    color: rgba(99, 102, 241, .15);
+    font-family: Georgia, serif;
+    line-height: 1;
+}
+
+/* -- Actions ---------------------------------------------- */
+.bookd-actions {
+    margin-top: 18px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.bookd-btn {
+    border: none;
+    border-radius: 12px;
+    padding: 11px 20px;
+    font-weight: 700;
+    font-size: .86rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all .25s ease;
+    position: relative;
+    overflow: hidden;
+}
+.bookd-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,.15), transparent);
+    opacity: 0;
+    transition: opacity .25s ease;
+}
+.bookd-btn:hover::after {
+    opacity: 1;
+}
+
+.bookd-btn-primary {
+    background: linear-gradient(135deg, #334155, #0f172a);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .25);
+}
+.bookd-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, .3);
+}
+
+.bookd-btn-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, .25);
+}
+.bookd-btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(239, 68, 68, .3);
+}
+
+.bookd-btn-success {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(34, 197, 94, .25);
+}
+.bookd-btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(34, 197, 94, .3);
+    animation: bookdGlow 2s ease-in-out infinite;
+}
+
+.bookd-btn-soft {
+    background: rgba(241, 245, 249, .9);
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    backdrop-filter: blur(8px);
+}
+.bookd-btn-soft:hover {
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .08);
+}
+
+/* -- Section ---------------------------------------------- */
+.bookd-section {
+    padding: 22px 24px;
+}
+.bookd-section-title {
+    margin: 0 0 16px;
+    color: #0f172a;
+    font-size: 1.05rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.bookd-section-title::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #6366f1, #8b5cf6);
+    flex-shrink: 0;
+}
+
+/* -- Statistics ------------------------------------------- */
+.bookd-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.bookd-stat {
+    border-radius: 14px;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border: 1px solid rgba(226, 232, 240, .6);
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+.bookd-stat:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(15, 23, 42, .08);
+}
+.bookd-stat::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    border-radius: 4px 4px 0 0;
+}
+
+.bookd-stat-label {
+    color: #64748b;
+    font-size: .74rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.bookd-stat-value {
+    margin-top: 6px;
+    color: #0f172a;
+    font-size: 1.3rem;
+    font-weight: 800;
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+}
+
+/* -- Table ------------------------------------------------ */
+.bookd-table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+}
+
+.bookd-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.bookd-table th {
+    text-align: left;
+    font-size: .73rem;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 700;
+    border-bottom: 2px solid #e2e8f0;
+    padding: 12px 10px;
+    background: rgba(248, 250, 252, .6);
+}
+
+.bookd-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+    font-size: .86rem;
+    transition: background .2s ease;
+}
+.bookd-table tbody tr:hover td {
+    background: rgba(241, 245, 249, .6);
+}
+
+.bookd-table .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: .74rem;
+    font-weight: 700;
+}
+.bookd-table .status-dipinjam {
+    background: #fef3c7;
+    color: #92400e;
+}
+.bookd-table .status-dikembalikan {
+    background: #dcfce7;
+    color: #166534;
+}
+.bookd-table .status-pending {
+    background: #dbeafe;
+    color: #1e40af;
+}
+.bookd-table .status-ditolak {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* -- Notices ---------------------------------------------- */
+.bookd-notice {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    font-size: .88rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: bookdFadeIn .4s ease-out;
+}
+.bookd-notice i {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.bookd-notice-warning {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #92400e;
+    border: 1px solid rgba(146, 64, 14, .12);
+}
+.bookd-notice-warning.bookd-notice-shake {
+    animation: bookdShake .5s ease-in-out;
+}
+
+.bookd-notice-success {
+    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+    color: #166534;
+    border: 1px solid rgba(22, 101, 52, .12);
+}
+
+.bookd-notice-info {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: #1e40af;
+    border: 1px solid rgba(30, 64, 175, .1);
+}
+
+/* -- Inline Form ------------------------------------------ */
+.bookd-inline-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.bookd-inline-form label {
+    font-weight: 700;
+    font-size: .88rem;
+    color: #334155;
+}
+.bookd-inline-form input[type='number'] {
+    width: 100px;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    padding: 10px 12px;
+    font-size: .9rem;
+    font-weight: 600;
+    text-align: center;
+    transition: border-color .25s ease, box-shadow .25s ease;
+}
+.bookd-inline-form input[type='number']:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, .15);
+}
+
+/* -- Star Rating ------------------------------------------ */
+.bookd-stars {
+    display: inline-flex;
+    gap: 3px;
+    align-items: center;
+}
+.bookd-stars i {
+    font-size: .95rem;
+}
+.bookd-stars .star-filled {
+    color: #f59e0b;
+}
+.bookd-stars .star-half {
+    color: #f59e0b;
+}
+.bookd-stars .star-empty {
+    color: #d1d5db;
+}
+.bookd-rating-text {
+    margin-left: 8px;
+    font-weight: 700;
+    color: #0f172a;
+    font-size: .95rem;
+}
+.bookd-rating-count {
+    color: #64748b;
+    font-size: .82rem;
+    font-weight: 500;
+}
+
+/* -- Reviews ---------------------------------------------- */
+.bookd-reviews {
+    display: grid;
+    gap: 12px;
+}
+
+.bookd-review-item {
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #fafafb, #f1f5f9);
+    border: 1px solid rgba(226, 232, 240, .7);
+    transition: transform .2s ease;
+}
+.bookd-review-item:hover {
+    transform: translateY(-2px);
+}
+
+.bookd-review-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.bookd-review-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(99, 102, 241, .2);
+}
+.bookd-review-avatar-placeholder {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: .8rem;
+}
+
+.bookd-review-name {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: .88rem;
+}
+.bookd-review-date {
+    color: #94a3b8;
+    font-size: .76rem;
+}
+.bookd-review-text {
+    color: #475569;
+    font-size: .87rem;
+    line-height: 1.6;
+}
+
+/* -- Stock Progress --------------------------------------- */
+.bookd-stock-bar {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.bookd-stock-track {
+    flex: 1;
+    height: 8px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    overflow: hidden;
+}
+.bookd-stock-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+    transition: width .6s ease;
+}
+.bookd-stock-fill.low {
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+.bookd-stock-fill.empty {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+.bookd-stock-label {
+    font-weight: 700;
+    font-size: .85rem;
+    color: #334155;
+    min-width: 70px;
+    text-align: right;
+}
+
+/* -- Borrower Info Card (Petugas) ------------------------- */
+.bookd-borrower-card {
+    margin-top: 16px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    border: 1px solid rgba(99, 102, 241, .15);
+    background: linear-gradient(135deg, rgba(238, 242, 255, .7), rgba(224, 231, 255, .5));
+    backdrop-filter: blur(8px);
+}
+.bookd-borrower-title {
+    font-weight: 700;
+    font-size: .82rem;
+    color: #4338ca;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-bottom: 10px;
+}
+.bookd-borrower-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+.bookd-borrower-field {
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .7);
+}
+.bookd-borrower-field-label {
+    font-size: .72rem;
+    color: #6366f1;
+    font-weight: 600;
+}
+.bookd-borrower-field-value {
+    margin-top: 2px;
+    font-weight: 700;
+    color: #1e293b;
+    font-size: .88rem;
+}
+.bookd-borrower-empty {
+    text-align: center;
+    padding: 12px;
+    color: #64748b;
+    font-size: .88rem;
+}
+
+/* -- Tab-like Section Switcher ---------------------------- */
+.bookd-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 18px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0;
+}
+.bookd-tab {
+    padding: 10px 18px;
+    font-weight: 700;
+    font-size: .85rem;
+    color: #64748b;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all .25s ease;
+    border-radius: 8px 8px 0 0;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+.bookd-tab:hover {
+    color: #334155;
+    background: rgba(241, 245, 249, .5);
+}
+.bookd-tab.active {
+    color: #6366f1;
+    border-bottom-color: #6366f1;
+    background: rgba(99, 102, 241, .06);
+}
+
+.bookd-tab-content {
+    display: none;
+    animation: bookdFadeIn .3s ease;
+}
+.bookd-tab-content.active {
+    display: block;
+}
+
+/* -- Empty State ------------------------------------------ */
+.bookd-empty {
+    text-align: center;
+    padding: 32px 16px;
+    color: #94a3b8;
+}
+.bookd-empty i {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    opacity: .5;
+}
+.bookd-empty p {
+    font-size: .88rem;
+    margin: 4px 0 0;
+}
+
+/* -- Quick Action Cards ----------------------------------- */
+.bookd-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 16px;
+}
+.bookd-quick-action {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border: 1px solid rgba(226, 232, 240, .6);
+    text-decoration: none;
+    color: #334155;
+    font-weight: 700;
+    font-size: .86rem;
+    transition: all .25s ease;
+}
+.bookd-quick-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(15, 23, 42, .08);
+    background: #fff;
+}
+.bookd-quick-action i {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    font-size: .9rem;
+}
+
+/* -- Responsive ------------------------------------------- */
+@media (max-width: 920px) {
+    .bookd-layout {
+        grid-template-columns: 1fr;
+    }
+    .bookd-cover img {
+        max-height: 320px;
+    }
+    .bookd-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .bookd-quick-actions {
+        grid-template-columns: 1fr;
+    }
+    .bookd-borrower-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .bookd-meta-grid {
+        grid-template-columns: 1fr;
+    }
+    .bookd-stats {
+        grid-template-columns: 1fr;
+    }
+    .bookd-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    .bookd-title {
+        font-size: 1.3rem;
+    }
+    .bookd-tabs {
+        overflow-x: auto;
+    }
+    .bookd-tab {
+        padding: 8px 14px;
+        font-size: .8rem;
+        white-space: nowrap;
+    }
+}

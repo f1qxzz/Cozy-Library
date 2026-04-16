@@ -2,15 +2,17 @@
 require_once '../config/database.php';
 require_once '../includes/session.php';
 require_once '../includes/upload_helper.php';
+require_once '../includes/book_detail_helper.php';
 requirePetugas();
 
 $conn = getConnection();
+$hasRackColumn = hasBookRackColumn($conn);
 $msg = ''; $msgType = '';
 
 
 // Hitung statistik
 $totalBuku = $conn->query("SELECT COUNT(*) as total FROM buku")->fetch_assoc()['total'];
-$totalTersedia = $conn->query("SELECT COUNT(*) as total FROM buku WHERE status='tersedia'")->fetch_assoc()['total'];
+$totalTersedia = $conn->query("SELECT COUNT(*) as total FROM buku WHERE stok > 0")->fetch_assoc()['total'];
 $totalKategori = $conn->query("SELECT COUNT(*) as total FROM kategori")->fetch_assoc()['total'];
 
 // ============================================================
@@ -25,6 +27,7 @@ if (isset($_POST['add'])) {
     $isbn   = trim($_POST['isbn']);
     $desk   = trim($_POST['deskripsi']);
     $stok   = (int)$_POST['stok'];
+    $lokasiRak = trim($_POST['lokasi_rak'] ?? '');
     $status = $stok > 0 ? 'tersedia' : 'tidak';
 
     $adaFileAdd = isset($_FILES['cover']) && $_FILES['cover']['error'] !== UPLOAD_ERR_NO_FILE;
@@ -42,8 +45,13 @@ if (isset($_POST['add'])) {
     }
 
     if (!$uploadGagal) {
-        $s = $conn->prepare("INSERT INTO buku (judul_buku,id_kategori,pengarang,penerbit,tahun_terbit,isbn,deskripsi,stok,status,cover) VALUES (?,?,?,?,?,?,?,?,?,?)");
-        $s->bind_param("sissississ", $judul, $id_kat, $peng, $nerbit, $tahun, $isbn, $desk, $stok, $status, $coverPath);
+        if ($hasRackColumn) {
+            $s = $conn->prepare("INSERT INTO buku (judul_buku,id_kategori,pengarang,penerbit,tahun_terbit,isbn,deskripsi,stok,lokasi_rak,status,cover) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+            $s->bind_param("sissississs", $judul, $id_kat, $peng, $nerbit, $tahun, $isbn, $desk, $stok, $lokasiRak, $status, $coverPath);
+        } else {
+            $s = $conn->prepare("INSERT INTO buku (judul_buku,id_kategori,pengarang,penerbit,tahun_terbit,isbn,deskripsi,stok,status,cover) VALUES (?,?,?,?,?,?,?,?,?,?)");
+            $s->bind_param("sissississ", $judul, $id_kat, $peng, $nerbit, $tahun, $isbn, $desk, $stok, $status, $coverPath);
+        }
         if ($s->execute()) { 
             $s->close(); 
             header('Location: buku.php?notif=tambah_ok'); 
@@ -70,6 +78,7 @@ if (isset($_POST['edit'])) {
     $isbn   = trim($_POST['isbn']);
     $desk   = trim($_POST['deskripsi']);
     $stok   = (int)$_POST['stok'];
+    $lokasiRak = trim($_POST['lokasi_rak'] ?? '');
     $status = $_POST['status'];
 
     $stmtOld = $conn->prepare("SELECT cover FROM buku WHERE id_buku=?");
@@ -90,11 +99,19 @@ if (isset($_POST['edit'])) {
     }
 
     if (!$uploadGagal) {
-        $s = $conn->prepare(
-            "UPDATE buku SET judul_buku=?,id_kategori=?,pengarang=?,penerbit=?,
-             tahun_terbit=?,isbn=?,deskripsi=?,stok=?,status=?,cover=? WHERE id_buku=?"
-        );
-        $s->bind_param("sissississi", $judul, $id_kat, $peng, $nerbit, $tahun, $isbn, $desk, $stok, $status, $newCover, $id);
+        if ($hasRackColumn) {
+            $s = $conn->prepare(
+                "UPDATE buku SET judul_buku=?,id_kategori=?,pengarang=?,penerbit=?,
+                 tahun_terbit=?,isbn=?,deskripsi=?,stok=?,lokasi_rak=?,status=?,cover=? WHERE id_buku=?"
+            );
+            $s->bind_param("sissississsi", $judul, $id_kat, $peng, $nerbit, $tahun, $isbn, $desk, $stok, $lokasiRak, $status, $newCover, $id);
+        } else {
+            $s = $conn->prepare(
+                "UPDATE buku SET judul_buku=?,id_kategori=?,pengarang=?,penerbit=?,
+                 tahun_terbit=?,isbn=?,deskripsi=?,stok=?,status=?,cover=? WHERE id_buku=?"
+            );
+            $s->bind_param("sissississi", $judul, $id_kat, $peng, $nerbit, $tahun, $isbn, $desk, $stok, $status, $newCover, $id);
+        }
 
         try {
             $s->execute();
@@ -124,30 +141,8 @@ if (isset($_POST['edit'])) {
 //  HAPUS BUKU
 // ============================================================
 if (isset($_POST['delete'])) {
-    $id = (int)$_POST['id_buku'];
-    $cekAktif = $conn->prepare("SELECT COUNT(*) FROM transaksi WHERE id_buku=? AND status_transaksi='Peminjaman'");
-    $cekAktif->bind_param("i", $id); $cekAktif->execute(); $cekAktif->bind_result($jumlahAktif); $cekAktif->fetch(); $cekAktif->close();
-    if ($jumlahAktif > 0) { 
-        $msg = 'Buku sedang dipinjam, tidak bisa dihapus!'; 
-        $msgType = 'warning'; 
-    } else {
-        $stmtCov = $conn->prepare("SELECT cover FROM buku WHERE id_buku=?");
-        $stmtCov->bind_param("i", $id); $stmtCov->execute(); $stmtCov->bind_result($coverToDel); $stmtCov->fetch(); $stmtCov->close();
-        $s = $conn->prepare("DELETE FROM buku WHERE id_buku=?");
-        $s->bind_param("i", $id);
-        if ($s->execute()) {
-            $s->close();
-            if (!empty($coverToDel) && strpos($coverToDel, 'default') === false) {
-                deleteBookCover($coverToDel);
-            }
-            header('Location: buku.php?notif=hapus_ok'); 
-            exit;
-        } else { 
-            $msg = 'Gagal menghapus buku!'; 
-            $msgType = 'danger'; 
-        }
-        $s->close();
-    }
+    $msg = 'Akses ditolak. Petugas tidak memiliki hak untuk menghapus buku.';
+    $msgType = 'warning';
 }
 
 if (empty($msg) && isset($_GET['notif'])) {
@@ -165,7 +160,21 @@ $cats = $conn->query("SELECT * FROM kategori ORDER BY nama_kategori");
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $search = $conn->real_escape_string($search);
 $filter_kat = isset($_GET['kat']) ? (int)$_GET['kat'] : 0;
-$q = "SELECT b.*, k.nama_kategori FROM buku b LEFT JOIN kategori k ON b.id_kategori=k.id_kategori WHERE 1=1";
+$q = "SELECT b.*, k.nama_kategori, a.nama_anggota AS peminjam_aktif
+      FROM buku b
+      LEFT JOIN kategori k ON b.id_kategori = k.id_kategori
+      LEFT JOIN (
+          SELECT t1.id_buku, t1.id_anggota
+          FROM transaksi t1
+          INNER JOIN (
+              SELECT id_buku, MAX(id_transaksi) AS max_id
+              FROM transaksi
+              WHERE status_transaksi IN ('Peminjaman', 'Dipinjam')
+              GROUP BY id_buku
+          ) tx ON tx.max_id = t1.id_transaksi
+      ) ta ON ta.id_buku = b.id_buku
+      LEFT JOIN anggota a ON a.id_anggota = ta.id_anggota
+      WHERE 1=1";
 if ($search) $q .= " AND (b.judul_buku LIKE '%$search%' OR b.pengarang LIKE '%$search%')";
 if ($filter_kat) $q .= " AND b.id_kategori=$filter_kat";
 $q .= " ORDER BY b.id_buku DESC";
@@ -296,6 +305,7 @@ $page_sub   = 'Kelola koleksi buku Cozy-Library';
                                     <th>Tahun</th>
                                     <th>Stok</th>
                                     <th>Status</th>
+                                    <th>Peminjam Aktif</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -325,33 +335,31 @@ $page_sub   = 'Kelola koleksi buku Cozy-Library';
                                     <td><?= $b['tahun_terbit'] ?></td>
                                     <td class="fw-600"><?= $b['stok'] ?></td>
                                     <td>
+                                        <?php $displayStatus = ((int)$b['stok'] > 0) ? 'tersedia' : 'dipinjam'; ?>
                                         <span
-                                            class="badge <?= $b['status']==='tersedia' ? 'status-tersedia' : 'status-terlambat' ?>">
+                                            class="badge <?= $displayStatus==='tersedia' ? 'status-tersedia' : 'status-terlambat' ?>">
                                             <i
-                                                class="fas <?= $b['status']==='tersedia' ? 'fa-check-circle' : 'fa-times-circle' ?>"></i>
-                                            <?= $b['status']==='tersedia' ? 'Tersedia' : 'Habis' ?>
+                                                class="fas <?= $displayStatus==='tersedia' ? 'fa-check-circle' : 'fa-book-reader' ?>"></i>
+                                            <?= $displayStatus==='tersedia' ? 'Tersedia' : 'Dipinjam' ?>
                                         </span>
                                     </td>
+                                    <td><?= htmlspecialchars($b['peminjam_aktif'] ?? '-') ?></td>
                                     <td>
                                         <div class="action-btns">
+                                            <a href="detail_buku.php?id=<?= $b['id_buku'] ?>" class="btn-action"
+                                                title="Detail">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
                                             <a href="?edit=<?= $b['id_buku'] ?>" class="btn-action btn-edit"
                                                 title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <form method="POST" onsubmit="return confirm('Hapus buku ini?')"
-                                                style="display:inline">
-                                                <input type="hidden" name="id_buku" value="<?= $b['id_buku'] ?>">
-                                                <button type="submit" name="delete" class="btn-action btn-danger"
-                                                    title="Hapus">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
                                         </div>
                                     </td>
                                 </tr>
                                 <?php endwhile; else: ?>
                                 <tr>
-                                    <td colspan="9">
+                                    <td colspan="10">
                                         <div class="empty-state">
                                             <div class="empty-state-ico">📚</div>
                                             <div class="empty-state-title">Belum ada buku</div>
@@ -416,6 +424,10 @@ $page_sub   = 'Kelola koleksi buku Cozy-Library';
                         <div class="form-group">
                             <label class="form-label">Stok <span>*</span></label>
                             <input type="number" name="stok" class="form-control" min="0" value="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Lokasi Rak</label>
+                            <input type="text" name="lokasi_rak" class="form-control" placeholder="Contoh: Rak B-02">
                         </div>
                         <div class="form-group form-full">
                             <label class="form-label">Cover Buku</label>
@@ -515,6 +527,11 @@ $page_sub   = 'Kelola koleksi buku Cozy-Library';
                             <label class="form-label">Stok <span>*</span></label>
                             <input type="number" name="stok" class="form-control" min="0"
                                 value="<?= $editBook['stok'] ?>" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Lokasi Rak</label>
+                            <input type="text" name="lokasi_rak" class="form-control"
+                                value="<?= htmlspecialchars($editBook['lokasi_rak'] ?? '') ?>" placeholder="Contoh: Rak B-02">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Status</label>

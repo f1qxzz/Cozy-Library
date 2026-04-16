@@ -2,9 +2,11 @@
 require_once '../config/database.php';
 require_once '../includes/session.php';
 require_once '../includes/upload_helper.php';
+require_once '../includes/book_detail_helper.php';
 requireAdmin();
 
 $conn = getConnection();
+$hasRackColumn = hasBookRackColumn($conn);
 $msg = ''; $msgType = '';
 
 
@@ -21,7 +23,8 @@ if (isset($_POST['add'])) {
     $isbn   = trim($_POST['isbn']);
     $desk   = trim($_POST['deskripsi']);
     $stok   = (int)$_POST['stok'];
-    $status = $stok > 0 ? 'tersedia' : 'habis';
+    $lokasiRak = trim($_POST['lokasi_rak'] ?? '');
+    $status = $stok > 0 ? 'tersedia' : 'tidak';
 
     $adaFileAdd = isset($_FILES['cover']) && $_FILES['cover']['error'] !== UPLOAD_ERR_NO_FILE;
     $coverPath = null; $uploadGagal = false;
@@ -32,8 +35,13 @@ if (isset($_POST['add'])) {
         else { $coverPath = $coverResult['path']; }
     }
     if (!$uploadGagal) {
-        $s = $conn->prepare("INSERT INTO buku (judul_buku,id_kategori,pengarang,penerbit,tahun_terbit,isbn,deskripsi,stok,status,cover) VALUES (?,?,?,?,?,?,?,?,?,?)");
-        $s->bind_param("sissississ", $judul,$id_kat,$peng,$nerbit,$tahun,$isbn,$desk,$stok,$status,$coverPath);
+        if ($hasRackColumn) {
+            $s = $conn->prepare("INSERT INTO buku (judul_buku,id_kategori,pengarang,penerbit,tahun_terbit,isbn,deskripsi,stok,lokasi_rak,status,cover) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+            $s->bind_param("sissississs", $judul,$id_kat,$peng,$nerbit,$tahun,$isbn,$desk,$stok,$lokasiRak,$status,$coverPath);
+        } else {
+            $s = $conn->prepare("INSERT INTO buku (judul_buku,id_kategori,pengarang,penerbit,tahun_terbit,isbn,deskripsi,stok,status,cover) VALUES (?,?,?,?,?,?,?,?,?,?)");
+            $s->bind_param("sissississ", $judul,$id_kat,$peng,$nerbit,$tahun,$isbn,$desk,$stok,$status,$coverPath);
+        }
         if ($s->execute()) { $s->close(); header('Location: buku.php?notif=tambah_ok'); exit; }
         else { if ($coverPath) deleteBookCover($coverPath); $msg='Gagal menyimpan buku: '.$conn->error; $msgType='danger'; }
         $s->close();
@@ -46,6 +54,7 @@ if (isset($_POST['edit'])) {
     $peng=trim($_POST['pengarang']); $nerbit=trim($_POST['penerbit']);
     $tahun=(int)$_POST['tahun_terbit']; $isbn=trim($_POST['isbn']);
     $desk=trim($_POST['deskripsi']); $stok=(int)$_POST['stok']; $status=$_POST['status'];
+    $lokasiRak=trim($_POST['lokasi_rak'] ?? '');
 
     $stmtOld=$conn->prepare("SELECT cover FROM buku WHERE id_buku=?");
     $stmtOld->bind_param("i",$id); $stmtOld->execute(); $stmtOld->bind_result($oldCover); $stmtOld->fetch(); $stmtOld->close();
@@ -59,8 +68,13 @@ if (isset($_POST['edit'])) {
         else { $newCover=$coverResult['path']; }
     }
     if (!$uploadGagal) {
-        $s=$conn->prepare("UPDATE buku SET judul_buku=?,id_kategori=?,pengarang=?,penerbit=?,tahun_terbit=?,isbn=?,deskripsi=?,stok=?,status=?,cover=? WHERE id_buku=?");
-        $s->bind_param("sissississi",$judul,$id_kat,$peng,$nerbit,$tahun,$isbn,$desk,$stok,$status,$newCover,$id);
+        if ($hasRackColumn) {
+            $s=$conn->prepare("UPDATE buku SET judul_buku=?,id_kategori=?,pengarang=?,penerbit=?,tahun_terbit=?,isbn=?,deskripsi=?,stok=?,lokasi_rak=?,status=?,cover=? WHERE id_buku=?");
+            $s->bind_param("sissississsi",$judul,$id_kat,$peng,$nerbit,$tahun,$isbn,$desk,$stok,$lokasiRak,$status,$newCover,$id);
+        } else {
+            $s=$conn->prepare("UPDATE buku SET judul_buku=?,id_kategori=?,pengarang=?,penerbit=?,tahun_terbit=?,isbn=?,deskripsi=?,stok=?,status=?,cover=? WHERE id_buku=?");
+            $s->bind_param("sissississi",$judul,$id_kat,$peng,$nerbit,$tahun,$isbn,$desk,$stok,$status,$newCover,$id);
+        }
         try {
             $s->execute(); $s->close();
             if ($adaFileBaru&&$newCover!==$oldCover&&!empty($oldCover)&&strpos($oldCover,'default')===false) deleteBookCover($oldCover);
@@ -219,13 +233,15 @@ $cssVer=@filemtime('../assets/css/admin_buku.css')?:time();
                         <td><?= $b['tahun_terbit'] ?></td>
                         <td class="fw-600"><?= number_format($b['stok']) ?></td>
                         <td>
-                            <span class="badge <?= $b['status']==='tersedia'?'status-tersedia':'status-terlambat' ?>">
-                                <i class="fas <?= $b['status']==='tersedia'?'fa-check-circle':'fa-times-circle' ?>"></i>
-                                <?= $b['status']==='tersedia'?'Tersedia':'Habis' ?>
+                            <?php $displayStatus = ((int)$b['stok'] > 0) ? 'tersedia' : 'dipinjam'; ?>
+                            <span class="badge <?= $displayStatus==='tersedia'?'status-tersedia':'status-terlambat' ?>">
+                                <i class="fas <?= $displayStatus==='tersedia'?'fa-check-circle':'fa-book-reader' ?>"></i>
+                                <?= $displayStatus==='tersedia'?'Tersedia':'Dipinjam' ?>
                             </span>
                         </td>
                         <td>
                             <div class="action-btns">
+                                <a href="detail_buku.php?id=<?= $b['id_buku'] ?>" class="btn-action" title="Detail"><i class="fas fa-eye"></i></a>
                                 <a href="?edit=<?= $b['id_buku'] ?>" class="btn-action btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
                                 <form method="POST" onsubmit="return confirm('Hapus buku ini?')" style="display:inline">
                                     <input type="hidden" name="id_buku" value="<?= $b['id_buku'] ?>">
@@ -268,6 +284,7 @@ $cssVer=@filemtime('../assets/css/admin_buku.css')?:time();
         <div class="form-group"><label class="form-label">Tahun Terbit</label><input type="number" name="tahun_terbit" class="form-control" value="<?= date('Y') ?>" min="1900" max="<?= date('Y') ?>"></div>
         <div class="form-group"><label class="form-label">ISBN</label><input type="text" name="isbn" class="form-control" placeholder="978-602-1234-56-7"></div>
         <div class="form-group"><label class="form-label">Stok <span>*</span></label><input type="number" name="stok" class="form-control" min="0" value="1" required></div>
+        <div class="form-group"><label class="form-label">Lokasi Rak</label><input type="text" name="lokasi_rak" class="form-control" placeholder="Contoh: Rak A-03"></div>
         <div class="form-group form-full"><label class="form-label">Cover Buku</label>
             <div class="cover-upload-area">
                 <div class="cover-preview-wrap" onclick="document.getElementById('addCoverInput').click()">
@@ -315,10 +332,11 @@ $cssVer=@filemtime('../assets/css/admin_buku.css')?:time();
         <div class="form-group"><label class="form-label">Tahun Terbit</label><input type="number" name="tahun_terbit" class="form-control" value="<?= $editBook['tahun_terbit'] ?>"></div>
         <div class="form-group"><label class="form-label">ISBN</label><input type="text" name="isbn" class="form-control" value="<?= htmlspecialchars($editBook['isbn']) ?>"></div>
         <div class="form-group"><label class="form-label">Stok <span>*</span></label><input type="number" name="stok" class="form-control" min="0" value="<?= $editBook['stok'] ?>" required></div>
+        <div class="form-group"><label class="form-label">Lokasi Rak</label><input type="text" name="lokasi_rak" class="form-control" value="<?= htmlspecialchars($editBook['lokasi_rak'] ?? '') ?>" placeholder="Contoh: Rak A-03"></div>
         <div class="form-group"><label class="form-label">Status</label>
             <select name="status" class="form-control">
                 <option value="tersedia" <?= $editBook['status']==='tersedia'?'selected':'' ?>>Tersedia</option>
-                <option value="habis" <?= $editBook['status']==='habis'?'selected':'' ?>>Habis</option>
+                <option value="tidak" <?= $editBook['status']==='tidak'?'selected':'' ?>>Tidak Tersedia</option>
             </select>
         </div>
         <div class="form-group form-full"><label class="form-label">Cover Buku</label>

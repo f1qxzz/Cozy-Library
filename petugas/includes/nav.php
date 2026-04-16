@@ -29,7 +29,7 @@ $cp = basename($_SERVER['PHP_SELF']);
         <a href="kategori.php" class="nav-link <?= $cp==='kategori.php'?'active':'' ?>">
             <i class="fas fa-tags"></i><span>Kategori</span>
         </a>
-        <a href="buku.php" class="nav-link <?= $cp==='buku.php'?'active':'' ?>">
+        <a href="buku.php" class="nav-link <?= in_array($cp, ['buku.php','detail_buku.php'], true)?'active':'' ?>">
             <i class="fas fa-book"></i><span>Buku</span>
         </a>
 
@@ -59,3 +59,4 @@ $cp = basename($_SERVER['PHP_SELF']);
         </a>
     </div>
 </aside>
+
