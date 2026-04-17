@@ -1,11 +1,12 @@
 <?php
+/**
+ * Admin – Kelola Anggota
+ */
 require_once '../config/database.php';
 require_once '../includes/session.php';
 requirePetugas();
-
 $conn = getConnection();
-$msg = '';
-$msgType = '';
+$msg = ''; $msgType = '';
 
 
 // Hitung statistik
@@ -13,191 +14,75 @@ $totalAktif = $conn->query("SELECT COUNT(*) as total FROM anggota WHERE status='
 $totalNonaktif = $conn->query("SELECT COUNT(*) as total FROM anggota WHERE status='nonaktif'")->fetch_assoc()['total'];
 $totalAnggota = $conn->query("SELECT COUNT(*) as total FROM anggota")->fetch_assoc()['total'];
 
-/* =========================
-   TAMBAH ANGGOTA
-========================= */
 if (isset($_POST['add'])) {
-
-    $nis   = $_POST['nis'];
-    $nama  = $_POST['nama_anggota'];
-    $uname = $_POST['username'];
-    $pw    = $_POST['password'];
-    $email = $_POST['email'];
-    $kelas = $_POST['kelas'];
-
-    $chk = $conn->prepare("SELECT id_anggota FROM anggota WHERE username=? OR nis=?");
-    $chk->bind_param("ss",$uname,$nis);
-    $chk->execute();
-    $chk->store_result();
-
-    if($chk->num_rows > 0){
-
-        $msg = 'NIS atau Username sudah digunakan!';
-        $msgType = 'warning';
-
-    } else {
-
-        $s = $conn->prepare("
-            INSERT INTO anggota
-            (nis,nama_anggota,username,password,email,kelas)
-            VALUES (?,?,?,?,?,?)
-        ");
-
+    $nis=$_POST['nis']; $nama=$_POST['nama_anggota']; $uname=$_POST['username'];
+    $pw=$_POST['password']; $email=$_POST['email']; $kelas=$_POST['kelas'];
+    $chk=$conn->query("SELECT id_anggota FROM anggota WHERE username='$uname' OR nis='$nis'");
+    if($chk->num_rows>0){ $msg='NIS atau Username sudah digunakan!'; $msgType='warning'; }
+    else {
+        $s=$conn->prepare("INSERT INTO anggota(nis,nama_anggota,username,password,email,kelas) VALUES(?,?,?,?,?,?)");
         $s->bind_param("ssssss",$nis,$nama,$uname,$pw,$email,$kelas);
-
         $ok = $s->execute();
-
-        $msg = $ok ? 'Anggota berhasil ditambahkan!' : 'Gagal menambahkan anggota';
-        $msgType = $ok ? 'success' : 'danger';
-
+        $msg=$ok?'Anggota berhasil ditambahkan!':'Gagal: '.$conn->error;
+        $msgType=$ok?'success':'danger';
         $s->close();
     }
-
-    $chk->close();
 }
-
-
-/* =========================
-   EDIT ANGGOTA
-========================= */
 if (isset($_POST['edit'])) {
-
-    $id    = (int)$_POST['id_anggota'];
-    $nis   = $_POST['nis'];
-    $nama  = $_POST['nama_anggota'];
-    $email = $_POST['email'];
-    $kelas = $_POST['kelas'];
-    $status= $_POST['status'];
-
-    if(!empty($_POST['password'])){
-
-        $pw = $_POST['password'];
-
-        $s = $conn->prepare("
-            UPDATE anggota
-            SET nis=?,nama_anggota=?,email=?,kelas=?,status=?,password=?
-            WHERE id_anggota=?
-        ");
-
+    $id=(int)$_POST['id_anggota'];
+    $nis=$_POST['nis']; $nama=$_POST['nama_anggota']; $email=$_POST['email'];
+    $kelas=$_POST['kelas']; $status=$_POST['status'];
+    if (!empty($_POST['password'])) {
+        $pw=$_POST['password'];
+        $s=$conn->prepare("UPDATE anggota SET nis=?,nama_anggota=?,email=?,kelas=?,status=?,password=? WHERE id_anggota=?");
         $s->bind_param("ssssssi",$nis,$nama,$email,$kelas,$status,$pw,$id);
-
     } else {
-
-        $s = $conn->prepare("
-            UPDATE anggota
-            SET nis=?,nama_anggota=?,email=?,kelas=?,status=?
-            WHERE id_anggota=?
-        ");
-
+        $s=$conn->prepare("UPDATE anggota SET nis=?,nama_anggota=?,email=?,kelas=?,status=? WHERE id_anggota=?");
         $s->bind_param("sssssi",$nis,$nama,$email,$kelas,$status,$id);
     }
-
     $ok = $s->execute();
-
-    $msg = $ok ? 'Data diperbarui!' : 'Gagal memperbarui data';
-    $msgType = $ok ? 'success' : 'danger';
-    if ($ok) unset($_GET['edit']);
-
+    $msg=$ok?'Data diperbarui!':'Gagal!';
+    $msgType=$ok?'success':'danger';
     $s->close();
+    if ($msg === 'Data diperbarui!') {
+        unset($_GET['edit']);
+    }
 }
-
-
-/* =========================
-   HAPUS ANGGOTA
-========================= */
 if (isset($_POST['delete'])) {
-
-    $id = (int)$_POST['id_anggota'];
-
-    $chk = $conn->query("
-        SELECT COUNT(*) c
-        FROM transaksi
-        WHERE id_anggota=$id
-        AND status_transaksi='Peminjaman'
-    ")->fetch_assoc()['c'];
-
-    if($chk > 0){
-
-        $msg = 'Anggota masih memiliki peminjaman aktif!';
-        $msgType = 'warning';
-
-    } else {
-
-        $s = $conn->prepare("DELETE FROM anggota WHERE id_anggota=?");
+    $id=(int)$_POST['id_anggota'];
+    $chk=$conn->query("SELECT COUNT(*) c FROM transaksi WHERE id_anggota=$id AND status_transaksi='Peminjaman'")->fetch_assoc()['c'];
+    if($chk>0){ $msg='Anggota masih memiliki peminjaman aktif!'; $msgType='warning'; }
+    else {
+        $s=$conn->prepare("DELETE FROM anggota WHERE id_anggota=?");
         $s->bind_param("i",$id);
-
         $ok = $s->execute();
-
-        $msg = $ok ? 'Anggota dihapus!' : 'Gagal menghapus anggota';
-        $msgType = $ok ? 'success' : 'danger';
-
+        $msg=$ok?'Anggota dihapus!':'Gagal!';
+        $msgType=$ok?'success':'danger';
         $s->close();
     }
 }
-
-
-/* =========================
-   RESET PASSWORD
-========================= */
 if (isset($_POST['reset_pw'])) {
-
-    $id = (int)$_POST['id_anggota'];
-    $pw = trim($_POST['new_password']);
-
-    $s = $conn->prepare("
-        UPDATE anggota
-        SET password=?
-        WHERE id_anggota=?
-    ");
-
+    $id=(int)$_POST['id_anggota']; $pw=trim($_POST['new_password']);
+    $s=$conn->prepare("UPDATE anggota SET password=? WHERE id_anggota=?");
     $s->bind_param("si",$pw,$id);
-
     $ok = $s->execute();
-
-    $msg = $ok ? 'Password berhasil direset!' : 'Reset gagal';
-    $msgType = $ok ? 'success' : 'danger';
-
+    $msg=$ok?'Password direset!':'Gagal!';
+    $msgType=$ok?'success':'danger';
     $s->close();
 }
 
+$search=isset($_GET["search"])?trim($_GET["search"]):"";
+$q="SELECT * FROM anggota";
+if($search){$es=$conn->real_escape_string($search);$q.=" WHERE nama_anggota LIKE '%$es%' OR nis LIKE '%$es%' OR kelas LIKE '%$es%'";}
+$q.=" ORDER BY id_anggota DESC";
+$members=$conn->query($q);
 
-/* =========================
-   SEARCH
-========================= */
-$search = $_GET['search'] ?? '';
-
-$q = "SELECT * FROM anggota";
-
-if($search){
-
-    $es = $conn->real_escape_string($search);
-
-    $q .= "
-        WHERE nama_anggota LIKE '%$es%'
-        OR nis LIKE '%$es%'
-        OR kelas LIKE '%$es%'
-    ";
-}
-
-$q .= " ORDER BY id_anggota DESC";
-
-$members = $conn->query($q);
-
-
-/* =========================
-   EDIT MODE
-========================= */
-$editMember = null;
-
+$editMember=null;
 if(isset($_GET['edit'])){
-
-    $id = (int)$_GET['edit'];
-
-    $s = $conn->prepare("SELECT * FROM anggota WHERE id_anggota=?");
-    $s->bind_param("i",$id);
-    $s->execute();
-
-    $editMember = $s->get_result()->fetch_assoc();
+    $id=(int)$_GET['edit'];
+    $s=$conn->prepare("SELECT * FROM anggota WHERE id_anggota=?");
+    $s->bind_param("i",$id); $s->execute();
+    $editMember=$s->get_result()->fetch_assoc();
 }
 
 $page_title = 'Manajemen Anggota';
@@ -229,7 +114,8 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
 
         <div class="main-area">
             <?php include 'includes/header.php'; ?>
-
+            
+            <!-- CONTENT -->
             <main class="content">
                 <?php if ($msg): ?>
                 <div class="alert alert-<?= $msgType ?>">
@@ -254,21 +140,21 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
                 <!-- Stats Cards -->
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-icon blue"><i class="fas fa-users"></i></div>
                         <div class="stat-info">
                             <h3>Total Anggota</h3>
                             <div class="stat-number"><?= $totalAnggota ?></div>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+                        <div class="stat-icon green"><i class="fas fa-user-check"></i></div>
                         <div class="stat-info">
                             <h3>Aktif</h3>
                             <div class="stat-number"><?= $totalAktif ?></div>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-user-clock"></i></div>
+                        <div class="stat-icon amber"><i class="fas fa-user-clock"></i></div>
                         <div class="stat-info">
                             <h3>Nonaktif</h3>
                             <div class="stat-number"><?= $totalNonaktif ?></div>
@@ -276,15 +162,16 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
                     </div>
                 </div>
 
+                <?php $print_title = 'Data Anggota Perpustakaan'; $print_total = $members ? $members->num_rows : 0; include '../includes/print_header.php'; ?>
+
                 <!-- Filter & Table -->
                 <div class="card">
                     <form method="GET" class="filter-bar">
                         <div class="search-wrap">
-                            <i class="fas fa-search"></i>
                             <input type="text" name="search" placeholder="Cari berdasarkan nama, NIS, atau kelas..."
                                 value="<?= htmlspecialchars($search) ?>">
                         </div>
-                        <button type="submit" class="btn-ghost btn-sm"><i class="fas fa-filter"></i> Cari</button>
+                        <button type="submit" class="btn-ghost btn-sm"><i class="fas fa-search"></i> Cari</button>
                         <?php if ($search): ?>
                         <a href="anggota.php" class="btn-ghost btn-sm"><i class="fas fa-times"></i> Reset</a>
                         <?php endif; ?>
@@ -313,7 +200,7 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
                                     <td><?= htmlspecialchars($r['email'] ?? '—') ?></td>
                                     <td>
                                         <span
-                                            class="badge <?= $r['status'] === 'aktif' ? 'status-aktif' : 'status-nonaktif' ?>">
+                                            class="badge <?= $r['status'] === 'aktif' ? 'badge-aktif' : 'badge-nonaktif' ?>">
                                             <i
                                                 class="fas <?= $r['status'] === 'aktif' ? 'fa-circle' : 'fa-circle' ?>"></i>
                                             <?= ucfirst($r['status']) ?>
@@ -333,7 +220,7 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
                                                 onsubmit="return confirm('Yakin ingin menghapus anggota ini?')"
                                                 style="display:inline">
                                                 <input type="hidden" name="id_anggota" value="<?= $r['id_anggota'] ?>">
-                                                <button type="submit" name="delete" class="btn-action btn-danger"
+                                                <button type="submit" name="delete" class="btn-action btn-delete"
                                                     title="Hapus">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
@@ -357,6 +244,8 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
                         </table>
                     </div>
                 </div>
+
+                <?php include '../includes/print_footer.php'; ?>
             </main>
         </div>
     </div>
@@ -365,7 +254,8 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
     <div id="addModal" class="modal-overlay" onclick="if(event.target===this)this.style.display='none'">
         <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title"><i class="fas fa-user-plus"></i> Tambah Anggota Baru</h3>
+                <h3 class="modal-title"><i class="fas fa-user-plus"
+                        style="color: var(--primary-500); margin-right: 8px;"></i>Tambah Anggota Baru</h3>
                 <button class="modal-close" onclick="document.getElementById('addModal').style.display='none'"><i
                         class="fas fa-times"></i></button>
             </div>
@@ -373,37 +263,38 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
                 <div class="modal-body">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label class="form-label">NIS <span>*</span></label>
+                            <label class="form-label">NIS <span style="color: var(--danger-500);">*</span></label>
                             <input type="text" name="nis" class="form-control" required placeholder="Contoh: 2023001">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Kelas <span>*</span></label>
-                            <input type="text" name="kelas" class="form-control" required placeholder="Contoh: X IPA 1">
+                            <label class="form-label">Kelas <span style="color: var(--danger-500);">*</span></label>
+                            <input type="text" name="kelas" class="form-control" required placeholder="Contoh: XII RPL">
                         </div>
                         <div class="form-group form-full">
-                            <label class="form-label">Nama Lengkap <span>*</span></label>
+                            <label class="form-label">Nama Lengkap <span
+                                    style="color: var(--danger-500);">*</span></label>
                             <input type="text" name="nama_anggota" class="form-control" required
                                 placeholder="Masukkan nama lengkap">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Username <span>*</span></label>
+                            <label class="form-label">Username <span style="color: var(--danger-500);">*</span></label>
                             <input type="text" name="username" class="form-control" required
                                 placeholder="Buat username">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Password <span>*</span></label>
+                            <label class="form-label">Password <span style="color: var(--danger-500);">*</span></label>
                             <input type="password" name="password" class="form-control" required
                                 placeholder="Min. 6 karakter">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-control" placeholder="contoh@email.com">
+                            <input type="email" name="email" class="form-control" placeholder="email@sekolah.com">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-ghost"
-                        onclick="document.getElementById('addModal').style.display='none'">
+                        onclick="document.getElementById('addModal').style.display='none'" style="padding: 10px 20px;">
                         <i class="fas fa-times"></i> Batal
                     </button>
                     <button type="submit" name="add" class="btn-primary">
@@ -419,7 +310,8 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
     <div id="editModal" class="modal-overlay" onclick="if(event.target===this)window.location.href='anggota.php'">
         <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title"><i class="fas fa-user-edit"></i> Edit Anggota</h3>
+                <h3 class="modal-title"><i class="fas fa-user-edit"
+                        style="color: var(--info-500); margin-right: 8px;"></i>Edit Anggota</h3>
                 <a href="anggota.php" class="modal-close"><i class="fas fa-times"></i></a>
             </div>
             <form method="POST">
@@ -427,19 +319,26 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
                 <div class="modal-body">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label class="form-label">NIS <span>*</span></label>
+                            <label class="form-label">NIS <span style="color: var(--danger-500);">*</span></label>
                             <input type="text" name="nis" class="form-control"
                                 value="<?= htmlspecialchars($editMember['nis']) ?>" required>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Kelas <span>*</span></label>
+                            <label class="form-label">Kelas <span style="color: var(--danger-500);">*</span></label>
                             <input type="text" name="kelas" class="form-control"
                                 value="<?= htmlspecialchars($editMember['kelas']) ?>" required>
                         </div>
                         <div class="form-group form-full">
-                            <label class="form-label">Nama Lengkap <span>*</span></label>
+                            <label class="form-label">Nama Lengkap <span
+                                    style="color: var(--danger-500);">*</span></label>
                             <input type="text" name="nama_anggota" class="form-control"
                                 value="<?= htmlspecialchars($editMember['nama_anggota']) ?>" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control"
+                                value="<?= htmlspecialchars($editMember['username']) ?>" readonly
+                                style="background: var(--neutral-100);">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Email</label>
@@ -460,12 +359,14 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
                             <label class="form-label">Password Baru</label>
                             <input type="password" name="password" class="form-control"
                                 placeholder="Kosongkan jika tidak ingin mengubah">
-                            <small>Isi hanya jika ingin mengganti password</small>
+                            <small style="color: var(--neutral-500); font-size: 0.7rem;">Isi hanya jika ingin mengganti
+                                password</small>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a href="anggota.php" class="btn-ghost"><i class="fas fa-times"></i> Batal</a>
+                    <a href="anggota.php" class="btn-ghost" style="padding: 10px 20px;"><i class="fas fa-times"></i>
+                        Batal</a>
                     <button type="submit" name="edit" class="btn-primary"><i class="fas fa-save"></i> Simpan
                         Perubahan</button>
                 </div>
@@ -481,7 +382,8 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
     <div id="resetModal" class="modal-overlay" onclick="if(event.target===this)this.style.display='none'">
         <div class="modal" style="max-width: 400px;">
             <div class="modal-header">
-                <h3 class="modal-title"><i class="fas fa-key"></i> Reset Password</h3>
+                <h3 class="modal-title"><i class="fas fa-key"
+                        style="color: var(--warning-500); margin-right: 8px;"></i>Reset Password</h3>
                 <button class="modal-close" onclick="document.getElementById('resetModal').style.display='none'"><i
                         class="fas fa-times"></i></button>
             </div>
@@ -489,17 +391,19 @@ $page_sub   = 'Kelola data anggota Cozy-Library';
                 <input type="hidden" name="id_anggota" id="resetId">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label class="form-label">Password Baru <span>*</span></label>
+                        <label class="form-label">Password Baru <span style="color: var(--danger-500);">*</span></label>
                         <input type="password" name="new_password" class="form-control" required
                             placeholder="Minimal 6 karakter">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-ghost"
-                        onclick="document.getElementById('resetModal').style.display='none'">
+                        onclick="document.getElementById('resetModal').style.display='none'"
+                        style="padding: 10px 20px;">
                         <i class="fas fa-times"></i> Batal
                     </button>
-                    <button type="submit" name="reset_pw" class="btn-primary">
+                    <button type="submit" name="reset_pw" class="btn-primary"
+                        style="background: linear-gradient(135deg, var(--warning-500), var(--warning-600));">
                         <i class="fas fa-key"></i> Reset Password
                     </button>
                 </div>

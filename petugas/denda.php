@@ -12,12 +12,6 @@ $conn = getConnection();
 $msg = ''; $msgType = '';
 
 
-// Hitung statistik
-$total_denda = $conn->query("SELECT COALESCE(SUM(total_denda), 0) as total FROM denda")->fetch_assoc()['total'];
-$total_belum = $conn->query("SELECT COALESCE(SUM(total_denda), 0) as total FROM denda WHERE status_bayar='belum'")->fetch_assoc()['total'];
-$total_sudah = $conn->query("SELECT COALESCE(SUM(total_denda), 0) as total FROM denda WHERE status_bayar='sudah'")->fetch_assoc()['total'];
-$jumlah_belum = $conn->query("SELECT COUNT(*) as jml FROM denda WHERE status_bayar='belum'")->fetch_assoc()['jml'];
-
 // Proses pembayaran denda
 if (isset($_POST['bayar'])) {
     $id = (int)$_POST['id_denda'];
@@ -70,6 +64,12 @@ if (!empty($search)) {
 $q .= " ORDER BY d.created_at DESC";
 $dendas = $conn->query($q);
 
+// Statistik
+$total_denda = $conn->query("SELECT COALESCE(SUM(total_denda), 0) as total FROM denda")->fetch_assoc()['total'];
+$total_belum = $conn->query("SELECT COALESCE(SUM(total_denda), 0) as total FROM denda WHERE status_bayar = 'belum'")->fetch_assoc()['total'];
+$total_sudah = $conn->query("SELECT COALESCE(SUM(total_denda), 0) as total FROM denda WHERE status_bayar = 'sudah'")->fetch_assoc()['total'];
+$jumlah_belum = $conn->query("SELECT COUNT(*) as jml FROM denda WHERE status_bayar = 'belum'")->fetch_assoc()['jml'];
+
 $page_title = 'Monitoring Denda';
 $page_sub   = 'Kelola denda keterlambatan pengembalian';
 ?>
@@ -94,12 +94,13 @@ $page_sub   = 'Kelola denda keterlambatan pengembalian';
 </head>
 
 <body>
-    <div class="app-wrap">
+<div class="app-wrap">
         <?php include 'includes/nav.php'; ?>
 
         <div class="main-area">
             <?php include 'includes/header.php'; ?>
 
+            <!-- CONTENT -->
             <main class="content">
                 <?php if ($msg): ?>
                 <div class="alert alert-<?= $msgType ?>">
@@ -157,10 +158,13 @@ $page_sub   = 'Kelola denda keterlambatan pengembalian';
                     </div>
                 </div>
 
+                <?php $print_title = 'Data Denda Perpustakaan'; $print_total = $dendas ? $dendas->num_rows : 0; include '../includes/print_header.php'; ?>
+
                 <!-- Filter & Table -->
                 <div class="card">
                     <div class="card-header">
-                        <h2><i class="fas fa-list"></i> Daftar Denda</h2>
+                        <h2><i class="fas fa-list" style="margin-right: 8px; color: var(--primary-600);"></i> Daftar
+                            Denda</h2>
                         <div class="filter-tabs">
                             <a href="?f=semua" class="filter-tab <?= $filter === 'semua' ? 'active' : '' ?>">
                                 <i class="fas fa-list-ul"></i> Semua
@@ -176,7 +180,6 @@ $page_sub   = 'Kelola denda keterlambatan pengembalian';
 
                     <form method="GET" class="filter-bar">
                         <div class="search-wrap">
-                            <i class="fas fa-search"></i>
                             <input type="text" name="search" placeholder="Cari anggota atau judul buku..."
                                 value="<?= htmlspecialchars($search) ?>">
                         </div>
@@ -247,7 +250,7 @@ $page_sub   = 'Kelola denda keterlambatan pengembalian';
                                         <div class="empty-state">
                                             <div class="empty-state-ico">💰</div>
                                             <div class="empty-state-title">Tidak ada data denda</div>
-                                            <p class="empty-state-sub">Belum ada denda yang tercatat dalam sistem</p>
+                                            <p class="text-muted text-sm">Belum ada denda yang tercatat dalam sistem</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -256,6 +259,8 @@ $page_sub   = 'Kelola denda keterlambatan pengembalian';
                         </table>
                     </div>
                 </div>
+
+                <?php include '../includes/print_footer.php'; ?>
             </main>
         </div>
     </div>

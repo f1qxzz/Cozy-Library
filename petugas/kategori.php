@@ -2,10 +2,8 @@
 require_once '../config/database.php';
 require_once '../includes/session.php';
 requirePetugas();
-
 $conn = getConnection();
-$msg = '';
-$msgType = '';
+$msg = ''; $msgType = '';
 
 
 // Hitung statistik
@@ -13,52 +11,47 @@ $totalKategori = $conn->query("SELECT COUNT(*) as total FROM kategori")->fetch_a
 $totalBuku = $conn->query("SELECT COUNT(*) as total FROM buku")->fetch_assoc()['total'];
 
 if (isset($_POST['add'])) {
-    $nama = trim($_POST['nama_kategori']);
-    $desk = trim($_POST['deskripsi']);
+    $nama = trim($_POST['nama_kategori']); $desk = trim($_POST['deskripsi']);
     $s = $conn->prepare("INSERT INTO kategori(nama_kategori,deskripsi) VALUES(?,?)");
     $s->bind_param("ss",$nama,$desk);
-    $msg = $s->execute() ? 'Kategori ditambahkan!' : 'Gagal menambahkan kategori!';
-    $msgType = ($msg === 'Kategori ditambahkan!') ? 'success' : 'danger';
+    $ok = $s->execute();
+    $msg = $ok ? 'Kategori berhasil ditambahkan!' : 'Gagal!'; 
+    $msgType = $ok ? 'success' : 'danger'; 
     $s->close();
 }
-
 if (isset($_POST['edit'])) {
-    $id = (int)$_POST['id_kategori'];
-    $nama = trim($_POST['nama_kategori']);
-    $desk = trim($_POST['deskripsi']);
-    $s = $conn->prepare("UPDATE kategori SET nama_kategori=?,deskripsi=? WHERE id_kategori=?");
+    $id=(int)$_POST['id_kategori']; $nama=trim($_POST['nama_kategori']); $desk=trim($_POST['deskripsi']);
+    $s=$conn->prepare("UPDATE kategori SET nama_kategori=?,deskripsi=? WHERE id_kategori=?");
     $s->bind_param("ssi",$nama,$desk,$id);
-    $msg = $s->execute() ? 'Kategori diperbarui!' : 'Gagal update!';
-    $msgType = 'success'; $s->close();
-    if ($msg === 'Kategori diperbarui!') {
+    $ok = $s->execute();
+    $msg=$ok?'Kategori berhasil diperbarui!':'Gagal!'; 
+    $msgType=$ok?'success':'danger';
+    $s->close();
+    if ($msg === 'Kategori berhasil diperbarui!') {
         unset($_GET['edit']);
     }
 }
-
 if (isset($_POST['delete'])) {
-    $id = (int)$_POST['id_kategori'];
-    $chk = $conn->query("SELECT COUNT(*) as c FROM buku WHERE id_kategori=$id")->fetch_assoc()['c'];
-    if ($chk > 0) {
-        $msg = 'Kategori masih dipakai buku!'; $msgType = 'warning';
-    } else {
-        $s = $conn->prepare("DELETE FROM kategori WHERE id_kategori=?");
+    $id=(int)$_POST['id_kategori'];
+    $chk=$conn->query("SELECT COUNT(*) c FROM buku WHERE id_kategori=$id")->fetch_assoc()['c'];
+    if($chk>0){ $msg='Kategori masih digunakan oleh buku!'; $msgType='warning'; }
+    else {
+        $s=$conn->prepare("DELETE FROM kategori WHERE id_kategori=?");
         $s->bind_param("i",$id);
-        $msg = $s->execute() ? 'Kategori dihapus!' : 'Gagal hapus!';
-        $msgType = 'success'; $s->close();
+        $ok = $s->execute();
+        $msg=$ok?'Kategori berhasil dihapus!':'Gagal!'; 
+        $msgType=$ok?'success':'danger';
+        $s->close();
     }
 }
 
-$categories = $conn->query("
-    SELECT k.*, (SELECT COUNT(*) FROM buku WHERE id_kategori=k.id_kategori) as jml
-    FROM kategori k ORDER BY nama_kategori
-");
-
+$categories = $conn->query("SELECT k.*,(SELECT COUNT(*) FROM buku WHERE id_kategori=k.id_kategori) jml FROM kategori k ORDER BY nama_kategori");
 $editCat = null;
 if(isset($_GET['edit'])){
-    $id = (int)$_GET['edit'];
-    $s = $conn->prepare("SELECT * FROM kategori WHERE id_kategori=?");
+    $id=(int)$_GET['edit'];
+    $s=$conn->prepare("SELECT * FROM kategori WHERE id_kategori=?");
     $s->bind_param("i",$id); $s->execute();
-    $editCat = $s->get_result()->fetch_assoc();
+    $editCat=$s->get_result()->fetch_assoc();
 }
 
 $page_title = 'Manajemen Kategori';
@@ -85,12 +78,12 @@ $page_sub   = 'Kelola kategori buku Cozy-Library';
 </head>
 
 <body>
-    <div class="app-wrap">
+   <div class="app-wrap">
         <?php include 'includes/nav.php'; ?>
 
         <div class="main-area">
             <?php include 'includes/header.php'; ?>
-
+            <!-- CONTENT -->
             <main class="content">
                 <?php if ($msg): ?>
                 <div class="alert alert-<?= $msgType ?>">
@@ -115,14 +108,14 @@ $page_sub   = 'Kelola kategori buku Cozy-Library';
                 <!-- Stats Cards -->
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-tags"></i></div>
+                        <div class="stat-icon blue"><i class="fas fa-tags"></i></div>
                         <div class="stat-info">
                             <h3>Total Kategori</h3>
                             <div class="stat-number"><?= $totalKategori ?></div>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-book"></i></div>
+                        <div class="stat-icon green"><i class="fas fa-book"></i></div>
                         <div class="stat-info">
                             <h3>Total Buku</h3>
                             <div class="stat-number"><?= $totalBuku ?></div>
@@ -161,7 +154,7 @@ $page_sub   = 'Kelola kategori buku Cozy-Library';
                                                 style="display:inline">
                                                 <input type="hidden" name="id_kategori"
                                                     value="<?= $r['id_kategori'] ?>">
-                                                <button type="submit" name="delete" class="btn-action btn-danger"
+                                                <button type="submit" name="delete" class="btn-action btn-delete"
                                                     title="Hapus">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
@@ -193,19 +186,21 @@ $page_sub   = 'Kelola kategori buku Cozy-Library';
     <div id="addModal" class="modal-overlay" onclick="if(event.target===this)this.style.display='none'">
         <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title"><i class="fas fa-tag"></i> Tambah Kategori Baru</h3>
+                <h3 class="modal-title"><i class="fas fa-tag"
+                        style="color: var(--primary-500); margin-right: 8px;"></i>Tambah Kategori Baru</h3>
                 <button class="modal-close" onclick="document.getElementById('addModal').style.display='none'"><i
                         class="fas fa-times"></i></button>
             </div>
             <form method="POST">
                 <div class="modal-body">
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">Nama Kategori <span>*</span></label>
+                        <div class="form-group form-full">
+                            <label class="form-label">Nama Kategori <span
+                                    style="color: var(--danger-500);">*</span></label>
                             <input type="text" name="nama_kategori" class="form-control" required
                                 placeholder="Contoh: Fiksi, Sains, Sejarah...">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group form-full">
                             <label class="form-label">Deskripsi</label>
                             <textarea name="deskripsi" class="form-control" rows="3"
                                 placeholder="Deskripsi singkat tentang kategori ini..."></textarea>
@@ -214,7 +209,7 @@ $page_sub   = 'Kelola kategori buku Cozy-Library';
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-ghost"
-                        onclick="document.getElementById('addModal').style.display='none'">
+                        onclick="document.getElementById('addModal').style.display='none'" style="padding: 10px 20px;">
                         <i class="fas fa-times"></i> Batal
                     </button>
                     <button type="submit" name="add" class="btn-primary">
@@ -230,19 +225,21 @@ $page_sub   = 'Kelola kategori buku Cozy-Library';
     <div id="editModal" class="modal-overlay" onclick="if(event.target===this)window.location.href='kategori.php'">
         <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title"><i class="fas fa-edit"></i> Edit Kategori</h3>
+                <h3 class="modal-title"><i class="fas fa-edit"
+                        style="color: var(--info-500); margin-right: 8px;"></i>Edit Kategori</h3>
                 <a href="kategori.php" class="modal-close"><i class="fas fa-times"></i></a>
             </div>
             <form method="POST">
                 <input type="hidden" name="id_kategori" value="<?= $editCat['id_kategori'] ?>">
                 <div class="modal-body">
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label class="form-label">Nama Kategori <span>*</span></label>
+                        <div class="form-group form-full">
+                            <label class="form-label">Nama Kategori <span
+                                    style="color: var(--danger-500);">*</span></label>
                             <input type="text" name="nama_kategori" class="form-control"
                                 value="<?= htmlspecialchars($editCat['nama_kategori']) ?>" required>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group form-full">
                             <label class="form-label">Deskripsi</label>
                             <textarea name="deskripsi" class="form-control"
                                 rows="3"><?= htmlspecialchars($editCat['deskripsi'] ?? '') ?></textarea>
@@ -250,7 +247,8 @@ $page_sub   = 'Kelola kategori buku Cozy-Library';
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a href="kategori.php" class="btn-ghost"><i class="fas fa-times"></i> Batal</a>
+                    <a href="kategori.php" class="btn-ghost" style="padding: 10px 20px;"><i class="fas fa-times"></i>
+                        Batal</a>
                     <button type="submit" name="edit" class="btn-primary"><i class="fas fa-save"></i> Simpan
                         Perubahan</button>
                 </div>
