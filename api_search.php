@@ -1,5 +1,10 @@
 <?php
-require_once 'config/database.php';
+/*
+ * Alur logic PHP:
+ * 1) Menerima parameter pencarian dari request.
+ * 2) Menjalankan query terfilter secara aman.
+ * 3) Mengembalikan hasil dalam format API (JSON).
+ */require_once 'config/database.php';
 header('Content-Type: application/json');
 $q = trim($_GET['q'] ?? '');
 if (strlen($q) < 2) { echo json_encode([]); exit; }

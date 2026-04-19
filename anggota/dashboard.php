@@ -1,5 +1,11 @@
 <?php
-require_once '../config/database.php';
+/*
+ * Alur logic PHP:
+ * 1) Memuat dependency utama (database, session, dan helper).
+ * 2) Validasi hak akses sebelum memproses data sensitif.
+ * 3) Proses input GET/POST, jalankan query, lalu siapkan data view.
+ * 4) Render output halaman sesuai role dan konteks fitur.
+ */require_once '../config/database.php';
 require_once '../includes/session.php';
 requireAnggota();
 $conn = getConnection();
@@ -29,7 +35,7 @@ function cnt($c, $q, $f = 'c') {
     return $r ? ($r->fetch_assoc()[$f] ?? 0) : 0;
 }
 
-$ak  = cnt($conn, "SELECT COUNT(*) c FROM transaksi WHERE id_anggota=$id AND status_transaksi IN ('Pending','Dipinjam')");
+$ak  = cnt($conn, "SELECT COUNT(*) c FROM transaksi WHERE id_anggota=$id AND status_transaksi IN ('Pending','Peminjaman','Dipinjam')");
 $tt  = cnt($conn, "SELECT COUNT(*) c FROM transaksi WHERE id_anggota=$id");
 $dn  = cnt($conn, "SELECT COALESCE(SUM(d.total_denda),0) s FROM denda d JOIN transaksi t ON d.id_transaksi=t.id_transaksi WHERE t.id_anggota=$id AND d.status_bayar='belum'", 's');
 $ul  = cnt($conn, "SELECT COUNT(*) c FROM ulasan_buku WHERE id_anggota=$id");
@@ -38,7 +44,7 @@ $rows = $conn->query(
     "SELECT t.*, b.judul_buku, b.pengarang, b.cover, b.id_buku
      FROM transaksi t
      JOIN buku b ON t.id_buku = b.id_buku
-     WHERE t.id_anggota = $id AND t.status_transaksi IN ('Pending','Dipinjam')
+     WHERE t.id_anggota = $id AND t.status_transaksi IN ('Pending','Peminjaman','Dipinjam')
      ORDER BY t.tgl_pinjam DESC"
 );
 

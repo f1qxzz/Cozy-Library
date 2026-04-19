@@ -1,5 +1,11 @@
 <?php
-require_once '../config/database.php';
+/*
+ * Alur logic PHP:
+ * 1) Memuat dependency utama (database, session, dan helper).
+ * 2) Validasi hak akses sebelum memproses data sensitif.
+ * 3) Proses input GET/POST, jalankan query, lalu siapkan data view.
+ * 4) Render output halaman sesuai role dan konteks fitur.
+ */require_once '../config/database.php';
 require_once '../includes/session.php';
 requireAnggota();
 
@@ -131,7 +137,7 @@ $page_sub   = 'Lihat semua aktivitas peminjaman Anda';
                             </thead>
                             <tbody>
                                 <?php if ($trans && $trans->num_rows > 0): $no = 1; while($r = $trans->fetch_assoc()): 
-                                    $late = strtotime($r['tgl_kembali_rencana']) < time() && $r['status_transaksi'] === 'Dipinjam';
+                                    $late = strtotime($r['tgl_kembali_rencana']) < time() && in_array($r['status_transaksi'], ['Peminjaman', 'Dipinjam'], true);
                                 ?>
                                 <tr>
                                     <td class="book-cover-cell">
@@ -158,7 +164,7 @@ $page_sub   = 'Lihat semua aktivitas peminjaman Anda';
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <?php if ($r['status_transaksi'] === 'Dikembalikan'): ?>
+                                        <?php if (in_array($r['status_transaksi'], ['Pengembalian', 'Dikembalikan'], true)): ?>
                                         <span class="badge badge-success">
                                             <i class="fas fa-check-circle"></i> Dikembalikan
                                         </span>

@@ -1,5 +1,11 @@
 <?php
-require_once '../config/database.php';
+/*
+ * Alur logic PHP:
+ * 1) Memuat dependency utama (database, session, dan helper).
+ * 2) Validasi hak akses sebelum memproses data sensitif.
+ * 3) Proses input GET/POST, jalankan query, lalu siapkan data view.
+ * 4) Render output halaman sesuai role dan konteks fitur.
+ */require_once '../config/database.php';
 require_once '../includes/session.php';
 requireAdmin();
 $conn = getConnection();
@@ -14,16 +20,19 @@ if (isset($_POST['add'])) {
     $nama = trim($_POST['nama_kategori']); $desk = trim($_POST['deskripsi']);
     $s = $conn->prepare("INSERT INTO kategori(nama_kategori,deskripsi) VALUES(?,?)");
     $s->bind_param("ss",$nama,$desk);
-    $msg = $s->execute()?'Kategori berhasil ditambahkan!':'Gagal!'; 
-    $msgType = $s->execute()?'success':'danger'; 
+    $ok = $s->execute();
+    $msg = $ok ? 'Kategori berhasil ditambahkan!' : 'Gagal!'; 
+    $msgType = $ok ? 'success' : 'danger'; 
     $s->close();
 }
 if (isset($_POST['edit'])) {
     $id=(int)$_POST['id_kategori']; $nama=trim($_POST['nama_kategori']); $desk=trim($_POST['deskripsi']);
     $s=$conn->prepare("UPDATE kategori SET nama_kategori=?,deskripsi=? WHERE id_kategori=?");
     $s->bind_param("ssi",$nama,$desk,$id);
-    $msg=$s->execute()?'Kategori berhasil diperbarui!':'Gagal!'; 
-    $msgType='success'; $s->close();
+    $ok = $s->execute();
+    $msg = $ok ? 'Kategori berhasil diperbarui!' : 'Gagal!'; 
+    $msgType = $ok ? 'success' : 'danger';
+    $s->close();
     if ($msg === 'Kategori berhasil diperbarui!') {
         unset($_GET['edit']);
     }
@@ -35,8 +44,10 @@ if (isset($_POST['delete'])) {
     else {
         $s=$conn->prepare("DELETE FROM kategori WHERE id_kategori=?");
         $s->bind_param("i",$id);
-        $msg=$s->execute()?'Kategori berhasil dihapus!':'Gagal!'; 
-        $msgType='success'; $s->close();
+        $ok = $s->execute();
+        $msg = $ok ? 'Kategori berhasil dihapus!' : 'Gagal!'; 
+        $msgType = $ok ? 'success' : 'danger';
+        $s->close();
     }
 }
 

@@ -1,6 +1,13 @@
 <?php
-require_once '../config/database.php';
+/*
+ * Alur logic PHP:
+ * 1) Memuat dependency utama (database, session, dan helper).
+ * 2) Validasi hak akses sebelum memproses data sensitif.
+ * 3) Proses input GET/POST, jalankan query, lalu siapkan data view.
+ * 4) Render output halaman sesuai role dan konteks fitur.
+ */require_once '../config/database.php';
 require_once '../includes/session.php';
+require_once '../includes/denda_helper.php';
 requirePetugas();
 $conn = getConnection();
 $msg = ''; $msgType = '';
@@ -10,43 +17,58 @@ $msg = ''; $msgType = '';
 $totalPinjam    = $conn->query("SELECT COUNT(*) as total FROM transaksi WHERE status_transaksi IN ('Peminjaman','Dipinjam')")->fetch_assoc()['total'];
 $totalKembali   = $conn->query("SELECT COUNT(*) as total FROM transaksi WHERE status_transaksi IN ('Pengembalian','Dikembalikan')")->fetch_assoc()['total'];
 $totalTerlambat = $conn->query("SELECT COUNT(*) as total FROM transaksi WHERE status_transaksi IN ('Peminjaman','Dipinjam') AND tgl_kembali_rencana < NOW()")->fetch_assoc()['total'];
-$totalPending   = $conn->query("SELECT COUNT(*) as total FROM transaksi WHERE status_transaksi IN ('Pending','Peminjaman')")->fetch_assoc()['total'];
+$totalPending   = $conn->query("SELECT COUNT(*) as total FROM transaksi WHERE status_transaksi='Pending'")->fetch_assoc()['total'];
 
-// ── Aksi: Setujui → ubah ke Dipinjam ────────────────────────────────────────
+
+// Aksi: Setujui -> ubah ke Dipinjam + kurangi stok + simpan petugas
 if (isset($_POST['setujui'])) {
     $id_t = (int)$_POST['id_transaksi'];
-    $chk  = $conn->prepare("SELECT id_transaksi, id_buku, status_transaksi FROM transaksi WHERE id_transaksi = ?");
+    $userId = (int) (getPenggunaId() ?? 0);
+    $chk  = $conn->prepare("SELECT t.id_transaksi, t.id_buku, t.status_transaksi, b.stok
+                            FROM transaksi t
+                            JOIN buku b ON b.id_buku = t.id_buku
+                            WHERE t.id_transaksi = ? LIMIT 1");
     $chk->bind_param("i", $id_t); $chk->execute();
     $chkRow = $chk->get_result()->fetch_assoc(); $chk->close();
 
-    if ($chkRow && in_array($chkRow['status_transaksi'], ['Pending', 'Peminjaman'])) {
-        $upd = $conn->prepare("UPDATE transaksi SET status_transaksi='Dipinjam' WHERE id_transaksi = ?");
-        $upd->bind_param("i", $id_t); $upd->execute(); $upd->close();
-        $msg = 'Peminjaman berhasil disetujui. Status: Dipinjam.'; $msgType = 'success';
+    if ($chkRow && $chkRow['status_transaksi'] === 'Pending') {
+        if ((int)$chkRow['stok'] < 1) {
+            $msg = 'Stok buku habis, tidak bisa disetujui.'; $msgType = 'warning';
+        } else {
+            $upd = $conn->prepare("UPDATE transaksi SET status_transaksi='Dipinjam', id_petugas=? WHERE id_transaksi = ?");
+            $upd->bind_param("ii", $userId, $id_t); $upd->execute();
+            $applied = $upd->affected_rows > 0;
+            $upd->close();
+
+            if ($applied) {
+                $conn->query("UPDATE buku SET stok=stok-1, status=IF(stok-1>0,'tersedia','tidak') WHERE id_buku=" . (int)$chkRow['id_buku']);
+            }
+
+            $msg = 'Peminjaman berhasil disetujui. Status: Dipinjam.'; $msgType = 'success';
+        }
     } else {
         $msg = 'Transaksi tidak valid atau sudah diproses.'; $msgType = 'danger';
     }
 }
 
-// ── Aksi: Tolak → ubah ke Ditolak + kembalikan stok ─────────────────────────
+// Aksi: Tolak -> ubah ke Ditolak + simpan petugas
 if (isset($_POST['tolak'])) {
     $id_t = (int)$_POST['id_transaksi'];
+    $userId = (int) (getPenggunaId() ?? 0);
     $chk  = $conn->prepare("SELECT id_transaksi, id_buku, status_transaksi FROM transaksi WHERE id_transaksi = ?");
     $chk->bind_param("i", $id_t); $chk->execute();
     $chkRow = $chk->get_result()->fetch_assoc(); $chk->close();
 
-    if ($chkRow && in_array($chkRow['status_transaksi'], ['Pending', 'Peminjaman'])) {
-        $upd = $conn->prepare("UPDATE transaksi SET status_transaksi='Ditolak' WHERE id_transaksi = ?");
-        $upd->bind_param("i", $id_t); $upd->execute(); $upd->close();
-        // Kembalikan stok buku
-        $conn->query("UPDATE buku SET stok=stok+1, status='tersedia' WHERE id_buku=" . (int)$chkRow['id_buku']);
+    if ($chkRow && $chkRow['status_transaksi'] === 'Pending') {
+        $upd = $conn->prepare("UPDATE transaksi SET status_transaksi='Ditolak', id_petugas=? WHERE id_transaksi = ?");
+        $upd->bind_param("ii", $userId, $id_t); $upd->execute(); $upd->close();
         $msg = 'Peminjaman berhasil ditolak.'; $msgType = 'warning';
     } else {
         $msg = 'Transaksi tidak valid atau sudah diproses.'; $msgType = 'danger';
     }
 }
 
-// ── Aksi: Kembalikan → Dikembalikan + hitung denda ───────────────────────────
+// Aksi: Kembalikan -> Dikembalikan + hitung denda
 if (isset($_POST['kembalikan'])) {
     $id_t        = (int)$_POST['id_transaksi'];
     $tgl_kembali = $_POST['tgl_kembali'] ?? date('Y-m-d');
@@ -58,7 +80,7 @@ if (isset($_POST['kembalikan'])) {
         $s->bind_param("si", $tgl_kembali, $id_t); $s->execute(); $s->close();
         $conn->query("UPDATE buku SET stok=stok+1, status='tersedia' WHERE id_buku=" . (int)$t['id_buku']);
         if ($denda_total > 0) {
-            $conn->query("INSERT INTO denda(id_transaksi,jumlah_hari,total_denda,status_bayar) VALUES($id_t,".ceil($days).",$denda_total,'belum')");
+            upsertDendaForTransaksi($conn, $id_t, $t['tgl_kembali_rencana'], $tgl_kembali);
             $msg = "Buku dikembalikan. Denda: Rp ".number_format($denda_total,0,',','.'); $msgType = 'warning';
         } else {
             $msg = 'Buku berhasil dikembalikan. Tidak ada denda.'; $msgType = 'success';
@@ -95,11 +117,11 @@ if (isset($_POST['return'])) {
     $t = $conn->query("SELECT * FROM transaksi WHERE id_transaksi=$id_t")->fetch_assoc();
     $days = max(0, (strtotime($tgl_kembali)-strtotime($t['tgl_kembali_rencana']))/(60*60*24));
     $denda_total = ceil($days) * 1000;
-    $s = $conn->prepare("UPDATE transaksi SET status_transaksi='Pengembalian',tgl_kembali_aktual=? WHERE id_transaksi=?");
+    $s = $conn->prepare("UPDATE transaksi SET status_transaksi='Dikembalikan',tgl_kembali_aktual=? WHERE id_transaksi=?");
     $s->bind_param("si",$tgl_kembali,$id_t); $s->execute(); $s->close();
     $conn->query("UPDATE buku SET stok=stok+1, status='tersedia' WHERE id_buku={$t['id_buku']}");
     if ($denda_total > 0) {
-        $conn->query("INSERT INTO denda(id_transaksi,jumlah_hari,total_denda,status_bayar) VALUES($id_t,".ceil($days).",$denda_total,'belum')");
+        upsertDendaForTransaksi($conn, $id_t, $t['tgl_kembali_rencana'], $tgl_kembali);
         $msg="Buku dikembalikan. Denda: Rp ".number_format($denda_total,0,',','.'); $msgType='warning';
     } else {
         $msg='Buku berhasil dikembalikan. Tidak ada denda.'; $msgType='success';
@@ -150,7 +172,7 @@ $page_sub   = 'Pencatatan Peminjaman & Pengembalian Buku';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="../assets/icons/cozy-tp.png" type="image/png">
-    <title>Transaksi — Petugas Cozy-Library</title>
+    <title>Transaksi - Petugas Cozy-Library</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -162,7 +184,7 @@ $page_sub   = 'Pencatatan Peminjaman & Pengembalian Buku';
     <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
 <link rel="stylesheet" href="../assets/css/print.css?v=<?= @filemtime('../assets/css/print.css') ?: time() ?>">
     <style>
-    /* Tombol aksi — Setujui & Tolak */
+    /* Tombol aksi - Setujui & Tolak */
     .btn-action {
         display: inline-flex; align-items: center; gap: 4px;
         padding: 5px 11px; border-radius: 6px;
@@ -285,18 +307,23 @@ $page_sub   = 'Pencatatan Peminjaman & Pengembalian Buku';
                                     $late = in_array($st, ['Peminjaman','Dipinjam']) && strtotime($r['tgl_kembali_rencana']) < time();
 
                                     if (in_array($st, ['Pengembalian','Dikembalikan'])) {
-                                        $statusClass = 'status-kembali';   $statusText = '✓ Kembali';
+                                        $statusClass = 'status-kembali';
+                                        $statusText  = 'Kembali';
                                     } elseif ($st === 'Pending') {
-                                        $statusClass = 'status-pending';   $statusText = '⏳ Pending';
+                                        $statusClass = 'status-pending';
+                                        $statusText  = 'Pending';
                                     } elseif ($st === 'Ditolak') {
-                                        $statusClass = 'status-ditolak';   $statusText = '✕ Ditolak';
+                                        $statusClass = 'status-ditolak';
+                                        $statusText  = 'Ditolak';
                                     } elseif ($st === 'Dipinjam') {
                                         $statusClass = $late ? 'status-terlambat' : 'status-dipinjam';
-                                        $statusText  = $late ? '⚠ Terlambat' : '⇄ Dipinjam';
+                                        $statusText  = $late ? 'Terlambat' : 'Dipinjam';
                                     } elseif ($late) {
-                                        $statusClass = 'status-terlambat'; $statusText = '⚠ Terlambat';
+                                        $statusClass = 'status-terlambat';
+                                        $statusText  = 'Terlambat';
                                     } else {
-                                        $statusClass = 'status-dipinjam';  $statusText = '⇄ Dipinjam';
+                                        $statusClass = 'status-dipinjam';
+                                        $statusText  = 'Dipinjam';
                                     }
 
                                    // DIPERBAIKI: Tombol persetujuan HANYA muncul jika statusnya Pending
@@ -313,7 +340,7 @@ $page_sub   = 'Pencatatan Peminjaman & Pengembalian Buku';
                                     <td><?= htmlspecialchars($r['judul_buku']) ?></td>
                                     <td><?= date('d/m/Y', strtotime($r['tgl_pinjam'])) ?></td>
                                     <td><?= date('d/m/Y', strtotime($r['tgl_kembali_rencana'])) ?></td>
-                                    <td><?= $r['tgl_kembali_aktual'] ? date('d/m/Y', strtotime($r['tgl_kembali_aktual'])) : '—' ?></td>
+                                    <td><?= $r['tgl_kembali_aktual'] ? date('d/m/Y', strtotime($r['tgl_kembali_aktual'])) : 'Belum kembali' ?></td>
                                     <td><span class="badge <?= $statusClass ?>"><?= $statusText ?></span></td>
                                     <td>
                                         <?php if ($butuhKonfirmasi): ?>
@@ -344,9 +371,9 @@ $page_sub   = 'Pencatatan Peminjaman & Pengembalian Buku';
                                         <?php elseif (in_array($st, ['Pengembalian','Dikembalikan'])): ?>
                                             <span class="text-muted text-xs"><i class="fas fa-check-circle"></i> Selesai</span>
                                         <?php elseif ($st === 'Ditolak'): ?>
-                                            <span class="text-muted text-xs"><i class="fas fa-ban"></i> —</span>
+                                            <span class="text-muted text-xs"><i class="fas fa-ban"></i> Ditolak</span>
                                         <?php else: ?>
-                                            <span class="text-muted text-xs">—</span>
+                                            <span class="text-muted text-xs">-</span>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
@@ -354,7 +381,7 @@ $page_sub   = 'Pencatatan Peminjaman & Pengembalian Buku';
                                 <tr>
                                     <td colspan="8">
                                         <div class="empty-state">
-                                            <div class="empty-state-ico">📋</div>
+                                            <div class="empty-state-ico"><i class="fas fa-clipboard-list"></i></div>
                                             <div class="empty-state-title">Belum ada transaksi</div>
                                             <p class="empty-state-sub">Klik tombol "Catat Peminjaman" untuk memulai
                                                 transaksi</p>
@@ -486,7 +513,7 @@ $page_sub   = 'Pencatatan Peminjaman & Pengembalian Buku';
     </div>
 
     <script>
-    /* ── Modal Kembalikan ───────────────────────────────────────── */
+    /* Modal Kembalikan */
     function openKembalikanModal(id, anggota, buku, jatuhTempo) {
         document.getElementById('kembalikan_id').value      = id;
         document.getElementById('kembalikan_anggota').textContent = anggota;
@@ -505,7 +532,7 @@ $page_sub   = 'Pencatatan Peminjaman & Pengembalian Buku';
         document.getElementById('kembalikanModal').style.display = 'none';
     }
 
-    /* ── Tutup semua modal dengan ESC ───────────────────────────── */
+    /* Tutup semua modal dengan ESC */
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             document.getElementById('addModal').style.display      = 'none';
@@ -513,7 +540,7 @@ $page_sub   = 'Pencatatan Peminjaman & Pengembalian Buku';
         }
     });
 
-    /* ── Prevent form resubmission ──────────────────────────────── */
+    /* Prevent form resubmission */
     if (window.history.replaceState) {
         window.history.replaceState(null, null, window.location.href);
     }

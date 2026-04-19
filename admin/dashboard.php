@@ -1,5 +1,11 @@
 <?php
-require_once '../config/database.php';
+/*
+ * Alur logic PHP:
+ * 1) Memuat dependency utama (database, session, dan helper).
+ * 2) Validasi hak akses sebelum memproses data sensitif.
+ * 3) Proses input GET/POST, jalankan query, lalu siapkan data view.
+ * 4) Render output halaman sesuai role dan konteks fitur.
+ */require_once '../config/database.php';
 require_once '../includes/session.php';
 requireAdmin();
 $conn = getConnection();
@@ -8,8 +14,15 @@ $conn = getConnection();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aksi_cepat'])) {
     $aksi = $_POST['aksi_cepat'];            // 'setujui' | 'tolak'
     $id_t = (int)($_POST['id_transaksi'] ?? 0);
+    $userId = (int) (getPenggunaId() ?? 0);
     if ($id_t > 0 && in_array($aksi, ['setujui', 'tolak'])) {
-        $chk = $conn->prepare("SELECT status_transaksi, id_buku FROM transaksi WHERE id_transaksi = ?");
+        $chk = $conn->prepare("
+            SELECT t.status_transaksi, t.id_buku, b.stok
+            FROM transaksi t
+            JOIN buku b ON b.id_buku = t.id_buku
+            WHERE t.id_transaksi = ?
+            LIMIT 1
+        ");
         $chk->bind_param("i", $id_t);
         $chk->execute();
         $chkRow = $chk->get_result()->fetch_assoc();
@@ -17,21 +30,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aksi_cepat'])) {
 
         if ($chkRow && $chkRow['status_transaksi'] === 'Pending') {
             if ($aksi === 'setujui') {
-                // DIPERBAIKI: Status disamakan menjadi 'Dipinjam'
-                $upd = $conn->prepare("UPDATE transaksi SET status_transaksi='Dipinjam' WHERE id_transaksi = ?");
-                $upd->bind_param("i", $id_t);
-                $upd->execute();
-                $upd->close();
+                if ((int) $chkRow['stok'] > 0) {
+                    $upd = $conn->prepare("UPDATE transaksi SET status_transaksi='Dipinjam', id_petugas=? WHERE id_transaksi = ?");
+                    $upd->bind_param("ii", $userId, $id_t);
+                    $upd->execute();
+                    $applied = $upd->affected_rows > 0;
+                    $upd->close();
+
+                    if ($applied) {
+                        $conn->query("UPDATE buku SET stok=stok-1, status=IF(stok-1>0,'tersedia','tidak') WHERE id_buku=" . (int) $chkRow['id_buku']);
+                    }
+                }
             } else {
-                $upd = $conn->prepare("UPDATE transaksi SET status_transaksi='Ditolak' WHERE id_transaksi = ?");
-                $upd->bind_param("i", $id_t);
+                $upd = $conn->prepare("UPDATE transaksi SET status_transaksi='Ditolak', id_petugas=? WHERE id_transaksi = ?");
+                $upd->bind_param("ii", $userId, $id_t);
                 $upd->execute();
                 $upd->close();
-                // Kembalikan stok buku jika ditolak
-                $rs = $conn->prepare("UPDATE buku SET stok=stok+1, status='tersedia' WHERE id_buku = ?");
-                $rs->bind_param("i", $chkRow['id_buku']);
-                $rs->execute();
-                $rs->close();
             }
         }
     }

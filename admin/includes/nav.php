@@ -1,5 +1,10 @@
 <?php /* admin/includes/nav.php — v3.0 */
-$cp = basename($_SERVER['PHP_SELF']);
+/*
+ * Alur logic PHP:
+ * 1) Menyusun komponen layout bersama (header/nav/print) agar konsisten.
+ * 2) Membaca variabel konteks halaman dari file pemanggil.
+ * 3) Merender bagian tampilan bersama tanpa duplikasi kode.
+ */$cp = basename($_SERVER['PHP_SELF']);
 ?>
 <!-- LEFT sidebar overlay -->
 <div class="sidebar-overlay" id="sidebarOverlay"></div>

@@ -1,18 +1,26 @@
 <?php
-require_once 'includes/session.php';
+/*
+ * Alur logic PHP:
+ * 1) Memuat dependency utama (database, session, dan helper).
+ * 2) Validasi hak akses sebelum memproses data sensitif.
+ * 3) Proses input GET/POST, jalankan query, lalu siapkan data view.
+ * 4) Render output halaman sesuai role dan konteks fitur.
+ */require_once 'includes/session.php';
 require_once 'config/database.php';
 initSession();
 
 $isAdmin = $isPetugas = $isAnggota = $loggedIn = false;
 $username = '';
 
-if (isset($_SESSION['pengguna_logged_in'])) {
+if (isPenggunaLoggedIn() && hasValidPenggunaLevel()) {
     $loggedIn = true;
     $username = $_SESSION['pengguna_username'] ?? '';
-    if ($_SESSION['pengguna_level'] === 'admin')
+    if (getPenggunaLevel() === 'admin')
         $isAdmin = true;
-    elseif ($_SESSION['pengguna_level'] === 'petugas')
+    elseif (getPenggunaLevel() === 'petugas')
         $isPetugas = true;
+} elseif (isPenggunaLoggedIn()) {
+    logout();
 }
 if (isset($_SESSION['anggota_logged_in'])) {
     $loggedIn = true;
@@ -59,8 +67,8 @@ function get_cover($path)
 $total_buku = get_val($conn, "SELECT COUNT(*) c FROM buku");
 $total_anggota = get_val($conn, "SELECT COUNT(*) c FROM anggota");
 $buku_tersedia = get_val($conn, "SELECT COUNT(*) c FROM buku WHERE status='tersedia'");
-$total_pinjam = get_val($conn, "SELECT COUNT(*) c FROM transaksi WHERE status_transaksi='Peminjaman'");
-$total_kembali = get_val($conn, "SELECT COUNT(*) c FROM transaksi WHERE status_transaksi='Pengembalian'");
+$total_pinjam = get_val($conn, "SELECT COUNT(*) c FROM transaksi WHERE status_transaksi IN ('Peminjaman','Dipinjam')");
+$total_kembali = get_val($conn, "SELECT COUNT(*) c FROM transaksi WHERE status_transaksi IN ('Pengembalian','Dikembalikan')");
 
 // ── BUKU TERBARU ──
 $res_baru = safe_query($conn, "SELECT b.*, k.nama_kategori FROM buku b LEFT JOIN kategori k ON b.id_kategori=k.id_kategori ORDER BY b.id_buku DESC LIMIT 10");
@@ -110,7 +118,7 @@ if ($isAnggota && isset($_SESSION['anggota_id'])) {
     $aid = (int) $_SESSION['anggota_id'];
     $sql_anggota = "SELECT a.*, 
                    (SELECT COUNT(*) FROM transaksi WHERE id_anggota=$aid) as total_pinjam, 
-                   (SELECT COUNT(*) FROM transaksi WHERE id_anggota=$aid AND status_transaksi='Peminjaman') as aktif_pinjam, 
+           (SELECT COUNT(*) FROM transaksi WHERE id_anggota=$aid AND status_transaksi IN ('Peminjaman','Dipinjam')) as aktif_pinjam,
                    COALESCE((SELECT SUM(d.total_denda) FROM denda d JOIN transaksi t ON d.id_transaksi=t.id_transaksi WHERE t.id_anggota=$aid AND d.status_bayar='belum'),0) as denda 
                    FROM anggota a WHERE a.id_anggota=$aid";
     $r_anggota = safe_query($conn, $sql_anggota);
@@ -122,7 +130,7 @@ if ($isAnggota && isset($_SESSION['anggota_id'])) {
 // ── STATS EXTRA ──
 $avg_rating = get_val($conn, "SELECT AVG(rating) avg FROM ulasan_buku", 'avg');
 $total_ulasan = get_val($conn, "SELECT COUNT(*) c FROM ulasan_buku");
-$jatuh_tempo = get_val($conn, "SELECT COUNT(*) c FROM transaksi WHERE status_transaksi='Peminjaman' AND DATE(tgl_kembali_rencana)<=CURDATE()");
+$jatuh_tempo = get_val($conn, "SELECT COUNT(*) c FROM transaksi WHERE status_transaksi IN ('Peminjaman','Dipinjam') AND DATE(tgl_kembali_rencana)<=CURDATE()");
 $pinjam_bulan_ini = get_val($conn, "SELECT COUNT(*) c FROM transaksi WHERE MONTH(tgl_pinjam)=MONTH(NOW()) AND YEAR(tgl_pinjam)=YEAR(NOW())");
 
 // ── JAM BUKA ──

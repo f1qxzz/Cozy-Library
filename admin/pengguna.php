@@ -1,11 +1,22 @@
 <?php
-require_once '../config/database.php';
+/*
+ * Alur logic PHP:
+ * 1) Memuat dependency utama (database, session, dan helper).
+ * 2) Validasi hak akses sebelum memproses data sensitif.
+ * 3) Proses input GET/POST, jalankan query, lalu siapkan data view.
+ * 4) Render output halaman sesuai role dan konteks fitur.
+ */require_once '../config/database.php';
 require_once '../includes/session.php';
 requireAdmin();
 
 $conn = getConnection();
 $msg = '';
 $msgType = '';
+$validLevels = getValidPenggunaLevels($conn);
+$levelLabels = [
+    'admin' => 'Admin',
+    'petugas' => 'Petugas',
+];
 
 
 // Hitung statistik
@@ -20,7 +31,7 @@ if (isset($_POST['add'])) {
     $e = trim($_POST['email']);
     
     // FIX: Paksa level menjadi petugas agar admin tidak bisa membuat admin baru
-    $lv = 'petugas'; 
+    $lv = normalizePenggunaLevel('petugas', $conn) ?? 'petugas';
     $p = password_hash($_POST['password'], PASSWORD_DEFAULT);
     
     $stmt = $conn->prepare("SELECT id_pengguna FROM pengguna WHERE username=?");
@@ -53,8 +64,9 @@ if (isset($_POST['delete'])) {
     } else {
         $stmt = $conn->prepare("DELETE FROM pengguna WHERE id_pengguna=?");
         $stmt->bind_param("i", $id);
-        $msg = $stmt->execute() ? 'Pengguna dihapus!' : 'Gagal!';
-        $msgType = $stmt->execute() ? 'success' : 'danger';
+        $ok = $stmt->execute();
+        $msg = $ok ? 'Pengguna dihapus!' : 'Gagal!';
+        $msgType = $ok ? 'success' : 'danger';
         $stmt->close();
     }
 }
@@ -63,14 +75,34 @@ if (isset($_POST['edit'])) {
     $id = (int)$_POST['id_pengguna'];
     $n = trim($_POST['nama_pengguna']);
     $e = trim($_POST['email']);
-    $lv = $_POST['level'];
-    
-    $stmt = $conn->prepare("UPDATE pengguna SET nama_pengguna=?, email=?, level=? WHERE id_pengguna=?");
-    $stmt->bind_param("sssi", $n, $e, $lv, $id);
-    $msg = $stmt->execute() ? 'Data diperbarui!' : 'Gagal!';
-    $msgType = $msg === 'Data diperbarui!' ? 'success' : 'danger';
-    if ($msg === 'Data diperbarui!') unset($_GET['edit']);
-    $stmt->close();
+    $lv = normalizePenggunaLevel($_POST['level'] ?? '', $conn);
+
+    if ($lv === null) {
+        $msg = 'Level pengguna tidak valid.';
+        $msgType = 'warning';
+    } else {
+        $stmt = $conn->prepare("UPDATE pengguna SET nama_pengguna=?, email=?, level=? WHERE id_pengguna=?");
+        $stmt->bind_param("sssi", $n, $e, $lv, $id);
+        $ok = $stmt->execute();
+        $msg = $ok ? 'Data diperbarui!' : 'Gagal!';
+        $msgType = $ok ? 'success' : 'danger';
+        $stmt->close();
+
+        if ($ok) {
+            unset($_GET['edit']);
+
+            if ($id === (int) getPenggunaId()) {
+                $_SESSION['pengguna_nama'] = $n;
+                $_SESSION['pengguna_level'] = $lv;
+
+                if ($lv === 'petugas') {
+                    closeConnection($conn);
+                    header('Location: ../petugas/dashboard.php');
+                    exit;
+                }
+            }
+        }
+    }
 }
 
 if (isset($_POST['reset_pw'])) {
@@ -79,8 +111,9 @@ if (isset($_POST['reset_pw'])) {
     
     $stmt = $conn->prepare("UPDATE pengguna SET password=? WHERE id_pengguna=?");
     $stmt->bind_param("si", $pw, $id);
-    $msg = $stmt->execute() ? 'Password berhasil direset!' : 'Gagal!';
-    $msgType = $stmt->execute() ? 'success' : 'danger';
+    $ok = $stmt->execute();
+    $msg = $ok ? 'Password berhasil direset!' : 'Gagal!';
+    $msgType = $ok ? 'success' : 'danger';
     $stmt->close();
 }
 
@@ -99,6 +132,9 @@ if (isset($_GET['edit'])) {
     $s->execute();
     $editUser = $s->get_result()->fetch_assoc();
     $s->close();
+    if ($editUser) {
+        $editUser['level'] = normalizePenggunaLevel($editUser['level'], $conn) ?? $editUser['level'];
+    }
 }
 
 $page_title = 'Manajemen Pengguna';

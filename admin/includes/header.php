@@ -1,5 +1,10 @@
 <?php /* admin/includes/header.php — v4.0 */
-$page_title = $page_title ?? 'Dashboard';
+/*
+ * Alur logic PHP:
+ * 1) Menyusun komponen layout bersama (header/nav/print) agar konsisten.
+ * 2) Membaca variabel konteks halaman dari file pemanggil.
+ * 3) Merender bagian tampilan bersama tanpa duplikasi kode.
+ */$page_title = $page_title ?? 'Dashboard';
 $page_sub = $page_sub ?? 'Admin Panel · Cozy-Library';
 
 // Gunakan helper dari session.php (sudah di-require di halaman pemanggil)

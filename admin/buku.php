@@ -1,5 +1,11 @@
 <?php
-require_once '../config/database.php';
+/*
+ * Alur logic PHP:
+ * 1) Memuat dependency utama (database, session, dan helper).
+ * 2) Validasi hak akses sebelum memproses data sensitif.
+ * 3) Proses input GET/POST, jalankan query, lalu siapkan data view.
+ * 4) Render output halaman sesuai role dan konteks fitur.
+ */require_once '../config/database.php';
 require_once '../includes/session.php';
 require_once '../includes/upload_helper.php';
 require_once '../includes/book_detail_helper.php';
@@ -88,7 +94,7 @@ if (isset($_POST['edit'])) {
 
 if (isset($_POST['delete'])) {
     $id=(int)$_POST['id_buku'];
-    $cekAktif=$conn->prepare("SELECT COUNT(*) FROM transaksi WHERE id_buku=? AND status_transaksi='Peminjaman'");
+    $cekAktif=$conn->prepare("SELECT COUNT(*) FROM transaksi WHERE id_buku=? AND status_transaksi IN ('Peminjaman','Dipinjam')");
     $cekAktif->bind_param("i",$id); $cekAktif->execute(); $cekAktif->bind_result($jumlahAktif); $cekAktif->fetch(); $cekAktif->close();
     if ($jumlahAktif>0) { $msg='Buku sedang dipinjam, tidak bisa dihapus!'; $msgType='warning'; }
     else {

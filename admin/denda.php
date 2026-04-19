@@ -1,12 +1,14 @@
 <?php
-require_once '../config/database.php';
+/*
+ * Alur logic PHP:
+ * 1) Memuat dependency utama (database, session, dan helper).
+ * 2) Validasi hak akses sebelum memproses data sensitif.
+ * 3) Proses input GET/POST, jalankan query, lalu siapkan data view.
+ * 4) Render output halaman sesuai role dan konteks fitur.
+ */require_once '../config/database.php';
 require_once '../includes/session.php';
+require_once '../includes/denda_helper.php';
 requireAdmin();
-
-// Definisikan konstanta DENDA_PER_HARI jika belum didefinisikan
-if (!defined('DENDA_PER_HARI')) {
-    define('DENDA_PER_HARI', 1000); // Rp 1.000 per hari
-}
 
 $conn = getConnection();
 $msg = ''; $msgType = '';
@@ -27,25 +29,17 @@ if (isset($_POST['bayar'])) {
     $s->close();
 }
 
-// Hitung dan buat denda otomatis untuk yang terlambat
-$overdue = $conn->query("SELECT t.id_transaksi, t.tgl_kembali_rencana FROM transaksi t
-    LEFT JOIN denda d ON t.id_transaksi = d.id_transaksi
-    WHERE t.status_transaksi = 'Peminjaman' AND t.tgl_kembali_rencana < NOW() AND d.id_denda IS NULL");
-while ($od = $overdue->fetch_assoc()) {
-    $hari = max(1, floor((time() - strtotime($od['tgl_kembali_rencana'])) / 86400));
-    $total = $hari * DENDA_PER_HARI;
-    $conn->query("INSERT INTO denda(id_transaksi, jumlah_hari, tarif_per_hari, total_denda) 
-                   VALUES({$od['id_transaksi']}, $hari, " . DENDA_PER_HARI . ", $total)");
-}
+syncDendaWithTransaksi($conn);
 
 $filter = isset($_GET['f']) ? $_GET['f'] : 'semua';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$canonicalDenda = getCanonicalDendaSubquery();
 
 $q = "SELECT d.*, 
              t.tgl_pinjam, t.tgl_kembali_rencana,
              a.id_anggota, a.nama_anggota, a.nis, a.kelas,
              b.judul_buku, b.isbn, b.cover
-      FROM denda d
+      FROM {$canonicalDenda} d
       JOIN transaksi t ON d.id_transaksi = t.id_transaksi
       JOIN anggota a ON t.id_anggota = a.id_anggota
       JOIN buku b ON t.id_buku = b.id_buku
@@ -65,10 +59,21 @@ $q .= " ORDER BY d.created_at DESC";
 $dendas = $conn->query($q);
 
 // Statistik
-$total_denda = $conn->query("SELECT COALESCE(SUM(total_denda), 0) as total FROM denda")->fetch_assoc()['total'];
-$total_belum = $conn->query("SELECT COALESCE(SUM(total_denda), 0) as total FROM denda WHERE status_bayar = 'belum'")->fetch_assoc()['total'];
-$total_sudah = $conn->query("SELECT COALESCE(SUM(total_denda), 0) as total FROM denda WHERE status_bayar = 'sudah'")->fetch_assoc()['total'];
-$jumlah_belum = $conn->query("SELECT COUNT(*) as jml FROM denda WHERE status_bayar = 'belum'")->fetch_assoc()['jml'];
+$stats = $conn->query("
+    SELECT
+        COUNT(*) AS jumlah_denda,
+        COALESCE(SUM(d.total_denda), 0) AS total_denda,
+        COALESCE(SUM(CASE WHEN d.status_bayar = 'belum' THEN d.total_denda ELSE 0 END), 0) AS total_belum,
+        COALESCE(SUM(CASE WHEN d.status_bayar = 'sudah' THEN d.total_denda ELSE 0 END), 0) AS total_sudah,
+        SUM(CASE WHEN d.status_bayar = 'belum' THEN 1 ELSE 0 END) AS jumlah_belum
+    FROM {$canonicalDenda} d
+")->fetch_assoc();
+
+$total_denda = (int) ($stats['total_denda'] ?? 0);
+$total_belum = (int) ($stats['total_belum'] ?? 0);
+$total_sudah = (int) ($stats['total_sudah'] ?? 0);
+$jumlah_belum = (int) ($stats['jumlah_belum'] ?? 0);
+$jumlah_denda = (int) ($stats['jumlah_denda'] ?? 0);
 
 $page_title = 'Monitoring Denda';
 $page_sub   = 'Kelola denda keterlambatan pengembalian';
@@ -153,7 +158,7 @@ $page_sub   = 'Kelola denda keterlambatan pengembalian';
                             <div class="stat-icon jumlah"><i class="fas fa-exclamation-triangle"></i></div>
                         </div>
                         <div class="stat-label">Jumlah Denda</div>
-                        <div class="stat-value"><?= $dendas->num_rows ?></div>
+                        <div class="stat-value"><?= $jumlah_denda ?></div>
                         <div class="stat-sub">Total transaksi denda</div>
                     </div>
                 </div>

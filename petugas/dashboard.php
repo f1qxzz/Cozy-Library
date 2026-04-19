@@ -1,5 +1,11 @@
 <?php
-require_once '../config/database.php';
+/*
+ * Alur logic PHP:
+ * 1) Memuat dependency utama (database, session, dan helper).
+ * 2) Validasi hak akses sebelum memproses data sensitif.
+ * 3) Proses input GET/POST, jalankan query, lalu siapkan data view.
+ * 4) Render output halaman sesuai role dan konteks fitur.
+ */require_once '../config/database.php';
 require_once '../includes/session.php';
 requirePetugas();
 $conn = getConnection();
@@ -8,27 +14,39 @@ $conn = getConnection();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aksi_cepat'])) {
     $aksi    = $_POST['aksi_cepat'];           // 'setujui' | 'tolak'
     $id_t    = (int)($_POST['id_transaksi'] ?? 0);
+    $userId  = (int) (getPenggunaId() ?? 0);
     if ($id_t > 0) {
         // Verifikasi transaksi masih Pending agar tidak bisa diproses ulang
-        $chk = $conn->prepare("SELECT status_transaksi FROM transaksi WHERE id_transaksi = ?");
+        $chk = $conn->prepare("
+            SELECT t.status_transaksi, t.id_buku, b.stok
+            FROM transaksi t
+            JOIN buku b ON b.id_buku = t.id_buku
+            WHERE t.id_transaksi = ?
+            LIMIT 1
+        ");
         $chk->bind_param("i", $id_t);
         $chk->execute();
         $row = $chk->get_result()->fetch_assoc();
         $chk->close();
         if ($row && $row['status_transaksi'] === 'Pending') {
             if ($aksi === 'setujui') {
-                $upd = $conn->prepare("UPDATE transaksi SET status_transaksi='Peminjaman' WHERE id_transaksi = ?");
-            } else {
-                $upd = $conn->prepare("UPDATE transaksi SET status_transaksi='Ditolak' WHERE id_transaksi = ?");
-                // Kembalikan stok buku jika ditolak
-                $t_row = $conn->query("SELECT id_buku FROM transaksi WHERE id_transaksi=$id_t")->fetch_assoc();
-                if ($t_row) {
-                    $conn->query("UPDATE buku SET stok=stok+1, status='tersedia' WHERE id_buku={$t_row['id_buku']}");
+                if ((int) $row['stok'] > 0) {
+                    $upd = $conn->prepare("UPDATE transaksi SET status_transaksi='Dipinjam', id_petugas=? WHERE id_transaksi = ?");
+                    $upd->bind_param("ii", $userId, $id_t);
+                    $upd->execute();
+                    $applied = $upd->affected_rows > 0;
+                    $upd->close();
+
+                    if ($applied) {
+                        $conn->query("UPDATE buku SET stok=stok-1, status=IF(stok-1>0,'tersedia','tidak') WHERE id_buku=" . (int) $row['id_buku']);
+                    }
                 }
+            } else {
+                $upd = $conn->prepare("UPDATE transaksi SET status_transaksi='Ditolak', id_petugas=? WHERE id_transaksi = ?");
+                $upd->bind_param("ii", $userId, $id_t);
+                $upd->execute();
+                $upd->close();
             }
-            $upd->bind_param("i", $id_t);
-            $upd->execute();
-            $upd->close();
         }
     }
     // PRG – hindari resubmit saat refresh
@@ -51,10 +69,10 @@ function cnt($c, $q, $f = 'c') {
 $tb = cnt($conn, "SELECT COUNT(*) c FROM buku");
 $ts = cnt($conn, "SELECT COUNT(*) c FROM buku WHERE status='tersedia'");
 $ta = cnt($conn, "SELECT COUNT(*) c FROM anggota");
-$ap = cnt($conn, "SELECT COUNT(*) c FROM transaksi WHERE status_transaksi='Peminjaman'");
-$tl = cnt($conn, "SELECT COUNT(*) c FROM transaksi WHERE status_transaksi='Peminjaman' AND tgl_kembali_rencana < NOW()");
+$ap = cnt($conn, "SELECT COUNT(*) c FROM transaksi WHERE status_transaksi IN ('Peminjaman','Dipinjam')");
+$tl = cnt($conn, "SELECT COUNT(*) c FROM transaksi WHERE status_transaksi IN ('Peminjaman','Dipinjam') AND tgl_kembali_rencana < NOW()");
 $td = cnt($conn, "SELECT COALESCE(SUM(total_denda),0) s FROM denda WHERE status_bayar='belum'", 's');
-$kh = cnt($conn, "SELECT COUNT(*) c FROM transaksi WHERE status_transaksi='Pengembalian' AND DATE(tgl_kembali_aktual) = CURDATE()");
+$kh = cnt($conn, "SELECT COUNT(*) c FROM transaksi WHERE status_transaksi IN ('Pengembalian','Dikembalikan') AND DATE(tgl_kembali_aktual) = CURDATE()");
 
 // ── Permintaan Pending untuk quick-action table ──────────────────────────────
 $pending_rows = $conn->query(
@@ -73,7 +91,7 @@ $rows = $conn->query("SELECT t.*, a.nama_anggota, a.nis, b.judul_buku, b.cover
                       FROM transaksi t 
                       JOIN anggota a ON t.id_anggota = a.id_anggota 
                       JOIN buku b ON t.id_buku = b.id_buku 
-                      WHERE t.status_transaksi = 'Peminjaman' 
+                      WHERE t.status_transaksi IN ('Peminjaman','Dipinjam') 
                       ORDER BY t.tgl_pinjam DESC LIMIT 8");
 
 $page_title = 'Dashboard';

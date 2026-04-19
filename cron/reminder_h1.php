@@ -1,5 +1,10 @@
 <?php
-/**
+/*
+ * Alur logic PHP:
+ * 1) Menjalankan job terjadwal sesuai kebutuhan notifikasi sistem.
+ * 2) Mengambil data target dari database berdasarkan kondisi waktu/status.
+ * 3) Menyusun dan mengirim pengingat, lalu mencatat hasil proses.
+ *//**
  * CRON JOB: PENGINGAT H-1 (H-1 Reminder) via PHPMailer / Native Mail
  * Skrip ini dipanggil secara asinkron dari Crontab / Task Scheduler
  * untuk mendeteksi peminjaman yang akan jatuh tempo pada H+1.

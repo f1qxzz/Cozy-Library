@@ -1,7 +1,14 @@
 <?php
-/**
+/*
+ * Alur logic PHP:
+ * 1) Inisialisasi session dan utilitas autentikasi.
+ * 2) Menyediakan guard role (admin/petugas/anggota) untuk proteksi halaman.
+ * 3) Menyediakan helper akses data user yang sedang login.
+ *//**
  * Session Helper
  */
+
+require_once __DIR__ . '/../config/database.php';
 
 function initSession() {
     if (session_status() === PHP_SESSION_NONE) session_start();
@@ -12,17 +19,24 @@ function isPenggunaLoggedIn() {
     initSession();
     return isset($_SESSION['pengguna_logged_in']) && $_SESSION['pengguna_logged_in'] === true;
 }
+function hasValidPenggunaLevel() {
+    initSession();
+    return isPenggunaLoggedIn() && isValidPenggunaLevel($_SESSION['pengguna_level'] ?? null);
+}
 function isAdmin() {
     initSession();
-    return isPenggunaLoggedIn() && ($_SESSION['pengguna_level'] === 'admin');
+    return hasValidPenggunaLevel() && (normalizePenggunaLevel($_SESSION['pengguna_level']) === 'admin');
 }
 function isPetugas() {
     initSession();
-    return isPenggunaLoggedIn() && ($_SESSION['pengguna_level'] === 'petugas');
+    return hasValidPenggunaLevel() && (normalizePenggunaLevel($_SESSION['pengguna_level']) === 'petugas');
 }
 function getPenggunaId()    { initSession(); return $_SESSION['pengguna_id']    ?? null; }
 function getPenggunaName()  { initSession(); return $_SESSION['pengguna_nama']  ?? ''; }
-function getPenggunaLevel() { initSession(); return $_SESSION['pengguna_level'] ?? ''; }
+function getPenggunaLevel() {
+    initSession();
+    return normalizePenggunaLevel($_SESSION['pengguna_level'] ?? null) ?? '';
+}
 
 // ---- ANGGOTA ----
 function isAnggotaLoggedIn() {
@@ -39,7 +53,7 @@ function requireAdmin() {
 }
 function requirePetugas() {
     initSession();
-    if (!isPenggunaLoggedIn()) { header('Location: ../login.php'); exit; }
+    if (!isPetugas()) { header('Location: ../login.php'); exit; }
 }
 function requireAnggota() {
     initSession();

@@ -1,5 +1,11 @@
 <?php
-require_once '../config/database.php';
+/*
+ * Alur logic PHP:
+ * 1) Memuat dependency utama (database, session, dan helper).
+ * 2) Validasi hak akses sebelum memproses data sensitif.
+ * 3) Proses input GET/POST, jalankan query, lalu siapkan data view.
+ * 4) Render output halaman sesuai role dan konteks fitur.
+ */require_once '../config/database.php';
 require_once '../includes/session.php';
 requireAdmin();
 
@@ -24,7 +30,7 @@ $total_buku = $conn->query("SELECT COUNT(*) c FROM buku")->fetch_assoc()['c'];
 $buku_tersedia = $conn->query("SELECT COUNT(*) c FROM buku WHERE status='tersedia'")->fetch_assoc()['c'];
 $total_anggota = $conn->query("SELECT COUNT(*) c FROM anggota")->fetch_assoc()['c'];
 $total_pinjam = $conn->query("SELECT COUNT(*) c FROM transaksi")->fetch_assoc()['c'];
-$aktif_pinjam = $conn->query("SELECT COUNT(*) c FROM transaksi WHERE status_transaksi='Peminjaman'")->fetch_assoc()['c'];
+$aktif_pinjam = $conn->query("SELECT COUNT(*) c FROM transaksi WHERE status_transaksi IN ('Peminjaman','Dipinjam')")->fetch_assoc()['c'];
 $total_denda = $conn->query("SELECT COALESCE(SUM(total_denda),0) s FROM denda")->fetch_assoc()['s'];
 $denda_belum = $conn->query("SELECT COALESCE(SUM(total_denda),0) s FROM denda WHERE status_bayar='belum'")->fetch_assoc()['s'];
 
@@ -1208,8 +1214,8 @@ $current_label = $jenis_labels[$jenis] ?? 'Laporan';
                                     <?php if ($rows_cache):
                                         $no = 1;
                                         foreach ($rows_cache as $r):
-                                            $late = $r['status_transaksi'] === 'Peminjaman' && strtotime($r['tgl_kembali_rencana']) < time();
-                                            if ($r['status_transaksi'] === 'Pengembalian') {
+                                            $late = in_array($r['status_transaksi'], ['Peminjaman', 'Dipinjam'], true) && strtotime($r['tgl_kembali_rencana']) < time();
+                                            if (in_array($r['status_transaksi'], ['Pengembalian', 'Dikembalikan'], true)) {
                                                 $bc = 'badge-kembali';
                                                 $bl = '<i class="fas fa-check-circle"></i> Pengembalian';
                                             } elseif ($late) {

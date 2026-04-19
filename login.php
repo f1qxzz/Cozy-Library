@@ -1,12 +1,22 @@
 <?php
-require_once 'config/database.php';
+/*
+ * Alur logic PHP:
+ * 1) Validasi input form autentikasi/registrasi.
+ * 2) Mengecek data pengguna ke database dan aturan keamanan.
+ * 3) Menetapkan session pengguna lalu redirect ke role terkait.
+ */require_once 'config/database.php';
 require_once 'includes/session.php';
 initSession();
 
 // Redirect jika sudah login
 if (isPenggunaLoggedIn()) {
-    header('Location: ' . (isAdmin() ? 'admin/dashboard.php' : 'petugas/dashboard.php'));
-    exit;
+    $dashboardPath = getPenggunaDashboardPath(getPenggunaLevel());
+    if ($dashboardPath !== null) {
+        header('Location: ' . $dashboardPath);
+        exit;
+    }
+
+    logout();
 }
 if (isAnggotaLoggedIn()) {
     header('Location: anggota/dashboard.php');
@@ -29,24 +39,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     $row = $stmt->get_result()->fetch_assoc();
 
     if ($row && (password_verify($password, $row['password']) || $password === $row['password'])) {
-        $found = true;
-        $_SESSION['pengguna_logged_in'] = true;
-        $_SESSION['pengguna_id'] = $row['id_pengguna'];
-        $_SESSION['pengguna_nama'] = $row['nama_pengguna'];
-        $_SESSION['pengguna_level'] = $row['level'];
-        $_SESSION['pengguna_username'] = $row['username'];
+        $normalizedLevel = normalizePenggunaLevel($row['level'], $conn);
+        if ($normalizedLevel === null) {
+            $found = true;
+            $error = 'Role pengguna tidak valid. Hubungi administrator.';
+        } else {
+            $found = true;
+            $_SESSION['pengguna_logged_in'] = true;
+            $_SESSION['pengguna_id'] = $row['id_pengguna'];
+            $_SESSION['pengguna_nama'] = $row['nama_pengguna'];
+            $_SESSION['pengguna_level'] = $normalizedLevel;
+            $_SESSION['pengguna_username'] = $row['username'];
 
-        if ($password === $row['password'] && !password_verify($password, $row['password'])) {
-            $newHash = password_hash($password, PASSWORD_DEFAULT);
-            $updateStmt = $conn->prepare("UPDATE pengguna SET password = ? WHERE id_pengguna = ?");
-            $updateStmt->bind_param("si", $newHash, $row['id_pengguna']);
-            $updateStmt->execute();
-            $updateStmt->close();
+            if ($password === $row['password'] && !password_verify($password, $row['password'])) {
+                $newHash = password_hash($password, PASSWORD_DEFAULT);
+                $updateStmt = $conn->prepare("UPDATE pengguna SET password = ? WHERE id_pengguna = ?");
+                $updateStmt->bind_param("si", $newHash, $row['id_pengguna']);
+                $updateStmt->execute();
+                $updateStmt->close();
+            }
+
+            $dashboardPath = getPenggunaDashboardPath($normalizedLevel, $conn);
+            closeConnection($conn);
+            header('Location: ' . $dashboardPath);
+            exit;
         }
-
-        closeConnection($conn);
-        header('Location: ' . ($row['level'] === 'admin' ? 'admin/dashboard.php' : 'petugas/dashboard.php'));
-        exit;
     }
 
     // 2. Cek tabel anggota
@@ -82,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         }
     }
 
-    if (!$found) {
+    if (!$found && !$error) {
         $error = 'Username atau password salah!';
     }
     closeConnection($conn);

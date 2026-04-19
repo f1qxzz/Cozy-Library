@@ -1,5 +1,11 @@
 <?php
-/**
+/*
+ * Alur logic PHP:
+ * 1) Memuat dependency utama (database, session, dan helper).
+ * 2) Validasi hak akses sebelum memproses data sensitif.
+ * 3) Proses input GET/POST, jalankan query, lalu siapkan data view.
+ * 4) Render output halaman sesuai role dan konteks fitur.
+ *//**
  * Admin – Kelola Anggota
  */
 require_once '../config/database.php';
@@ -50,7 +56,7 @@ if (isset($_POST['edit'])) {
 }
 if (isset($_POST['delete'])) {
     $id=(int)$_POST['id_anggota'];
-    $chk=$conn->query("SELECT COUNT(*) c FROM transaksi WHERE id_anggota=$id AND status_transaksi='Peminjaman'")->fetch_assoc()['c'];
+    $chk=$conn->query("SELECT COUNT(*) c FROM transaksi WHERE id_anggota=$id AND status_transaksi IN ('Peminjaman','Dipinjam')")->fetch_assoc()['c'];
     if($chk>0){ $msg='Anggota masih memiliki peminjaman aktif!'; $msgType='warning'; }
     else {
         $s=$conn->prepare("DELETE FROM anggota WHERE id_anggota=?");

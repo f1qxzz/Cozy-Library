@@ -1,5 +1,11 @@
 <?php
-/**
+/*
+ * Alur logic PHP:
+ * 1) Memuat dependency utama (database, session, dan helper).
+ * 2) Validasi hak akses sebelum memproses data sensitif.
+ * 3) Proses input GET/POST, jalankan query, lalu siapkan data view.
+ * 4) Render output halaman sesuai role dan konteks fitur.
+ *//**
  * Admin – Kelola Anggota
  */
 require_once '../config/database.php';
@@ -22,8 +28,10 @@ if (isset($_POST['add'])) {
     else {
         $s=$conn->prepare("INSERT INTO anggota(nis,nama_anggota,username,password,email,kelas) VALUES(?,?,?,?,?,?)");
         $s->bind_param("ssssss",$nis,$nama,$uname,$pw,$email,$kelas);
-        $msg=$s->execute()?'Anggota berhasil ditambahkan!':'Gagal: '.$conn->error;
-        $msgType=$s->execute()?'success':'danger'; $s->close();
+        $ok = $s->execute();
+        $msg = $ok ? 'Anggota berhasil ditambahkan!' : 'Gagal: '.$conn->error;
+        $msgType = $ok ? 'success' : 'danger';
+        $s->close();
     }
 }
 if (isset($_POST['edit'])) {
@@ -38,26 +46,35 @@ if (isset($_POST['edit'])) {
         $s=$conn->prepare("UPDATE anggota SET nis=?,nama_anggota=?,email=?,kelas=?,status=? WHERE id_anggota=?");
         $s->bind_param("sssssi",$nis,$nama,$email,$kelas,$status,$id);
     }
-    $msg=$s->execute()?'Data diperbarui!':'Gagal!'; $msgType='success'; $s->close();
+    $ok = $s->execute();
+    $msg = $ok ? 'Data diperbarui!' : 'Gagal!';
+    $msgType = $ok ? 'success' : 'danger';
+    $s->close();
     if ($msg === 'Data diperbarui!') {
         unset($_GET['edit']);
     }
 }
 if (isset($_POST['delete'])) {
     $id=(int)$_POST['id_anggota'];
-    $chk=$conn->query("SELECT COUNT(*) c FROM transaksi WHERE id_anggota=$id AND status_transaksi='Peminjaman'")->fetch_assoc()['c'];
+    $chk=$conn->query("SELECT COUNT(*) c FROM transaksi WHERE id_anggota=$id AND status_transaksi IN ('Peminjaman','Dipinjam')")->fetch_assoc()['c'];
     if($chk>0){ $msg='Anggota masih memiliki peminjaman aktif!'; $msgType='warning'; }
     else {
         $s=$conn->prepare("DELETE FROM anggota WHERE id_anggota=?");
         $s->bind_param("i",$id);
-        $msg=$s->execute()?'Anggota dihapus!':'Gagal!'; $msgType='success'; $s->close();
+        $ok = $s->execute();
+        $msg = $ok ? 'Anggota dihapus!' : 'Gagal!';
+        $msgType = $ok ? 'success' : 'danger';
+        $s->close();
     }
 }
 if (isset($_POST['reset_pw'])) {
     $id=(int)$_POST['id_anggota']; $pw=trim($_POST['new_password']);
     $s=$conn->prepare("UPDATE anggota SET password=? WHERE id_anggota=?");
     $s->bind_param("si",$pw,$id);
-    $msg=$s->execute()?'Password direset!':'Gagal!'; $msgType='success'; $s->close();
+    $ok = $s->execute();
+    $msg = $ok ? 'Password direset!' : 'Gagal!';
+    $msgType = $ok ? 'success' : 'danger';
+    $s->close();
 }
 
 $search=isset($_GET["search"])?trim($_GET["search"]):"";

@@ -1,5 +1,10 @@
 <?php
-/**
+/*
+ * Alur logic PHP:
+ * 1) Menjalankan job terjadwal sesuai kebutuhan notifikasi sistem.
+ * 2) Mengambil data target dari database berdasarkan kondisi waktu/status.
+ * 3) Menyusun dan mengirim pengingat, lalu mencatat hasil proses.
+ *//**
  * CRON JOB: TAGIHAN KETERLAMBATAN (Overdue Reminder)
  * Skrip profesional untuk menagih denda peminjaman yang telah lewat batas waktu (Telat).
  * Dibangun dengan sistem "Smart Error Handling" dan "Pro Billing Design".

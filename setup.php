@@ -70,7 +70,12 @@
     <div class="box">
         <h1><i class="fas fa-book" style="color:#2563eb; margin-right:8px;"></i>Setup Cozy-Library</h1>
         <?php
-require_once 'config/database.php';
+/*
+ * Alur logic PHP:
+ * 1) Menyiapkan kebutuhan awal aplikasi (konfigurasi/cek dependensi).
+ * 2) Menjalankan validasi prasyarat instalasi.
+ * 3) Menyimpan hasil setup agar aplikasi siap digunakan.
+ */require_once 'config/database.php';
 
 // Test koneksi
 $conn = @new mysqli(DB_HOST, DB_USER, DB_PASS);
@@ -120,7 +125,7 @@ Anggota → username: budi     | password: budi123</pre>';
 $conn->close();
 ?>
     </div>
-    <script src="../assets/js/script.js"></script>
+    <script src="assets/js/script.js"></script>
 </body>
 
 </html>

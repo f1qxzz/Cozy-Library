@@ -1,8 +1,15 @@
 <?php
-require_once '../config/database.php';
+/*
+ * Alur logic PHP:
+ * 1) Memuat dependency utama (database, session, dan helper).
+ * 2) Validasi hak akses sebelum memproses data sensitif.
+ * 3) Proses input GET/POST, jalankan query, lalu siapkan data view.
+ * 4) Render output halaman sesuai role dan konteks fitur.
+ */require_once '../config/database.php';
 require_once '../includes/session.php';
 requireAdmin();
 $conn = getConnection();
+$userId = getPenggunaId();
 
 // ─── Inisialisasi tabel permintaan jika belum ada ────────────────────────────
 $conn->query("
@@ -29,121 +36,116 @@ CREATE TABLE IF NOT EXISTS permintaan_pinjam (
 if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) || isset($_GET['api'])) {
     header('Content-Type: application/json');
 
-    // -- Approve / Reject --
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data   = json_decode(file_get_contents('php://input'), true);
-        $id     = (int)($data['id'] ?? 0);
+        $id     = (int) ($data['id'] ?? 0);
         $action = $data['action'] ?? '';
 
-        if (!$id || !in_array($action, ['approve','reject'])) {
+        if (!$id || !in_array($action, ['approve', 'reject'], true)) {
             echo json_encode(['ok' => false, 'msg' => 'Parameter tidak valid']);
             exit;
         }
 
-        $permRow = $conn->query("SELECT p.*, b.stok, b.id_buku FROM permintaan_pinjam p JOIN buku b ON p.id_buku=b.id_buku WHERE p.id_permintaan=$id")->fetch_assoc();
-        if (!$permRow) {
+        $stmt = $conn->prepare("
+            SELECT t.id_transaksi, t.id_buku, t.status_transaksi, b.stok
+            FROM transaksi t
+            JOIN buku b ON b.id_buku = t.id_buku
+            WHERE t.id_transaksi = ?
+            LIMIT 1
+        ");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $requestRow = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if (!$requestRow) {
             echo json_encode(['ok' => false, 'msg' => 'Data tidak ditemukan']);
             exit;
         }
-        if ($permRow['status'] !== 'Pending') {
+        if ($requestRow['status_transaksi'] !== 'Pending') {
             echo json_encode(['ok' => false, 'msg' => 'Permintaan sudah diproses sebelumnya']);
             exit;
         }
 
         if ($action === 'approve') {
-            if ($permRow['stok'] < 1) {
+            if ((int) $requestRow['stok'] < 1) {
                 echo json_encode(['ok' => false, 'msg' => 'Stok buku habis, tidak bisa disetujui']);
                 exit;
             }
-            $stmt = $conn->prepare("UPDATE permintaan_pinjam SET status='Disetujui', tgl_aksi=NOW(), id_admin=? WHERE id_permintaan=?");
+
+            $stmt = $conn->prepare("UPDATE transaksi SET status_transaksi='Dipinjam', id_petugas=? WHERE id_transaksi=?");
             $stmt->bind_param("ii", $userId, $id);
-            $stmt->execute(); $stmt->close();
+            $stmt->execute();
+            $stmt->close();
 
-            // Buat transaksi otomatis
-            $stmt2 = $conn->prepare("INSERT INTO transaksi(id_anggota,id_buku,tgl_pinjam,tgl_kembali_rencana,status_transaksi) VALUES(?,?,?,?,'Peminjaman')");
-            $stmt2->bind_param("iiss", $permRow['id_anggota'], $permRow['id_buku'], $permRow['tgl_mulai'], $permRow['tgl_selesai']);
-            $stmt2->execute(); $stmt2->close();
-            $conn->query("UPDATE buku SET stok=stok-1, status=IF(stok-1>0,'tersedia','tidak') WHERE id_buku={$permRow['id_buku']}");
-
-            echo json_encode(['ok' => true, 'msg' => 'Permintaan disetujui & transaksi dibuat']);
+            $conn->query("UPDATE buku SET stok=stok-1, status=IF(stok-1>0,'tersedia','tidak') WHERE id_buku=" . (int) $requestRow['id_buku']);
+            echo json_encode(['ok' => true, 'msg' => 'Permintaan disetujui']);
         } else {
-            $stmt = $conn->prepare("UPDATE permintaan_pinjam SET status='Ditolak', tgl_aksi=NOW(), id_admin=? WHERE id_permintaan=?");
+            $stmt = $conn->prepare("UPDATE transaksi SET status_transaksi='Ditolak', id_petugas=? WHERE id_transaksi=?");
             $stmt->bind_param("ii", $userId, $id);
-            $stmt->execute(); $stmt->close();
+            $stmt->execute();
+            $stmt->close();
+
             echo json_encode(['ok' => true, 'msg' => 'Permintaan ditolak']);
         }
         exit;
     }
 
-    // -- Fetch realtime stats + list --
     $filter = $_GET['filter'] ?? 'Semua';
     $search = trim($_GET['search'] ?? '');
 
-    $menunggu  = $conn->query("SELECT COUNT(*) c FROM permintaan_pinjam WHERE status='Pending'")->fetch_assoc()['c'];
-    $disetujui = $conn->query("SELECT COUNT(*) c FROM permintaan_pinjam WHERE status='Disetujui' AND DATE(tgl_aksi)=CURDATE()")->fetch_assoc()['c'];
-    $ditolak   = $conn->query("SELECT COUNT(*) c FROM permintaan_pinjam WHERE status='Ditolak'   AND DATE(tgl_aksi)=CURDATE()")->fetch_assoc()['c'];
+    $menunggu  = $conn->query("SELECT COUNT(*) c FROM transaksi WHERE status_transaksi='Pending'")->fetch_assoc()['c'];
+    $disetujui = $conn->query("SELECT COUNT(*) c FROM transaksi WHERE status_transaksi IN ('Peminjaman','Dipinjam','Pengembalian','Dikembalikan')")->fetch_assoc()['c'];
+    $ditolak   = $conn->query("SELECT COUNT(*) c FROM transaksi WHERE status_transaksi='Ditolak'")->fetch_assoc()['c'];
     $totalBuku = $conn->query("SELECT SUM(stok) s FROM buku")->fetch_assoc()['s'] ?? 0;
 
     $where = "WHERE 1=1";
-    if ($filter !== 'Semua') $where .= " AND p.status='" . $conn->real_escape_string($filter) . "'";
+    if ($filter === 'Pending') {
+        $where .= " AND t.status_transaksi='Pending'";
+    } elseif ($filter === 'Disetujui') {
+        $where .= " AND t.status_transaksi IN ('Peminjaman','Dipinjam','Pengembalian','Dikembalikan')";
+    } elseif ($filter === 'Ditolak') {
+        $where .= " AND t.status_transaksi='Ditolak'";
+    }
     if ($search !== '') {
         $s = $conn->real_escape_string($search);
-        $where .= " AND (a.nama_anggota LIKE '%$s%' OR b.judul_buku LIKE '%$s%')";
+        $where .= " AND (a.nama_anggota LIKE '%$s%' OR a.nis LIKE '%$s%' OR b.judul_buku LIKE '%$s%')";
     }
 
     $rows = $conn->query("
-        SELECT p.id_permintaan, p.no_request, p.tgl_request, p.tgl_mulai, p.tgl_selesai, p.status,
+        SELECT t.id_transaksi AS id_permintaan,
+               CONCAT('TRX-', LPAD(t.id_transaksi, 4, '0')) AS no_request,
+               t.tgl_pinjam AS tgl_request,
+               DATE(t.tgl_pinjam) AS tgl_mulai,
+               DATE(t.tgl_kembali_rencana) AS tgl_selesai,
+               CASE
+                   WHEN t.status_transaksi = 'Pending' THEN 'Pending'
+                   WHEN t.status_transaksi = 'Ditolak' THEN 'Ditolak'
+                   ELSE 'Disetujui'
+               END AS status,
                a.nama_anggota, a.id_anggota,
                b.judul_buku, b.stok
-        FROM permintaan_pinjam p
-        JOIN anggota a ON p.id_anggota=a.id_anggota
-        JOIN buku    b ON p.id_buku=b.id_buku
+        FROM transaksi t
+        JOIN anggota a ON t.id_anggota = a.id_anggota
+        JOIN buku b ON t.id_buku = b.id_buku
         $where
-        ORDER BY FIELD(p.status,'Pending','Disetujui','Ditolak'), p.tgl_request DESC
+        ORDER BY FIELD(t.status_transaksi,'Pending','Dipinjam','Peminjaman','Dikembalikan','Pengembalian','Ditolak'), t.tgl_pinjam DESC
         LIMIT 100
     ");
 
     $list = [];
-    while ($r = $rows->fetch_assoc()) $list[] = $r;
+    while ($r = $rows->fetch_assoc()) {
+        $list[] = $r;
+    }
 
     echo json_encode([
-        'ok'        => true,
-        'stats'     => compact('menunggu','disetujui','ditolak','totalBuku'),
-        'rows'      => $list,
-        'filter'    => $filter,
-        'search'    => $search,
+        'ok'     => true,
+        'stats'  => compact('menunggu', 'disetujui', 'ditolak', 'totalBuku'),
+        'rows'   => $list,
+        'filter' => $filter,
+        'search' => $search,
     ]);
     exit;
-}
-
-// ─── Seed data demo jika kosong ───────────────────────────────────────────────
-$existingCount = $conn->query("SELECT COUNT(*) c FROM permintaan_pinjam")->fetch_assoc()['c'];
-if ($existingCount == 0) {
-    // Ambil beberapa anggota & buku yang ada
-    $anggotaRows = $conn->query("SELECT id_anggota, nama_anggota FROM anggota LIMIT 5");
-    $bukuRows    = $conn->query("SELECT id_buku, judul_buku, stok FROM buku LIMIT 5");
-
-    $anggotaList = []; while ($r = $anggotaRows->fetch_assoc()) $anggotaList[] = $r;
-    $bukuList    = []; while ($r = $bukuRows->fetch_assoc()) $bukuList[] = $r;
-
-    if (count($anggotaList) > 0 && count($bukuList) > 0) {
-        $seeds = [
-            ['R-101', 0, 0, '2026-03-30 10:05', '2026-04-01', '2026-04-07', 'Pending'],
-            ['R-102', 1 % count($anggotaList), 1 % count($bukuList), '2026-03-30 09:45', '2026-04-01', '2026-04-05', 'Pending'],
-            ['R-103', 2 % count($anggotaList), 2 % count($bukuList), '2026-03-29 16:20', '2026-03-30', '2026-04-14', 'Pending'],
-            ['R-100', 3 % count($anggotaList), 3 % count($bukuList), '2026-03-29 14:10', '2026-03-29', '2026-04-05', 'Disetujui'],
-            ['R-099', 4 % count($anggotaList), 4 % count($bukuList), '2026-03-29 08:30', '2026-03-29', '2026-04-12', 'Ditolak'],
-        ];
-        $sInsert = $conn->prepare("INSERT IGNORE INTO permintaan_pinjam(no_request,id_anggota,id_buku,tgl_request,tgl_mulai,tgl_selesai,status) VALUES(?,?,?,?,?,?,?)");
-        foreach ($seeds as $s) {
-            $aIdx = $s[1]; $bIdx = $s[2];
-            $aId  = $anggotaList[$aIdx]['id_anggota'];
-            $bId  = $bukuList[$bIdx]['id_buku'];
-            $sInsert->bind_param("siissss", $s[0], $aId, $bId, $s[3], $s[4], $s[5], $s[6]);
-            $sInsert->execute();
-        }
-        $sInsert->close();
-    }
 }
 
 $page_title = 'Permintaan Peminjaman';
@@ -332,7 +334,7 @@ td { padding: 13px 14px; vertical-align: middle; color: var(--neutral-700); }
           <div class="summary-card">
             <div class="summary-icon green">✅</div>
             <div>
-              <div class="summary-label">Disetujui Hari Ini:</div>
+              <div class="summary-label">Disetujui:</div>
               <div class="summary-value" id="stat-disetujui">—</div>
               <div style="font-size:.75rem;color:var(--neutral-500);margin-top:2px;">Peminjaman</div>
             </div>
@@ -340,7 +342,7 @@ td { padding: 13px 14px; vertical-align: middle; color: var(--neutral-700); }
           <div class="summary-card">
             <div class="summary-icon red">❌</div>
             <div>
-              <div class="summary-label">Ditolak Hari Ini:</div>
+              <div class="summary-label">Ditolak:</div>
               <div class="summary-value" id="stat-ditolak">—</div>
               <div style="font-size:.75rem;color:var(--neutral-500);margin-top:2px;">Peminjaman</div>
             </div>

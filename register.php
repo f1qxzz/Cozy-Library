@@ -1,11 +1,21 @@
 <?php
-require_once 'config/database.php';
+/*
+ * Alur logic PHP:
+ * 1) Validasi input form autentikasi/registrasi.
+ * 2) Mengecek data pengguna ke database dan aturan keamanan.
+ * 3) Menetapkan session pengguna lalu redirect ke role terkait.
+ */require_once 'config/database.php';
 require_once 'includes/session.php';
 initSession();
 
 if (isPenggunaLoggedIn()) {
-    header('Location: ' . (isAdmin() ? 'admin/dashboard.php' : 'petugas/dashboard.php'));
-    exit;
+    $dashboardPath = getPenggunaDashboardPath(getPenggunaLevel());
+    if ($dashboardPath !== null) {
+        header('Location: ' . $dashboardPath);
+        exit;
+    }
+
+    logout();
 }
 if (isAnggotaLoggedIn()) {
     header('Location: anggota/dashboard.php');

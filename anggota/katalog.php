@@ -1,5 +1,11 @@
 <?php
-/**
+/*
+ * Alur logic PHP:
+ * 1) Memuat dependency utama (database, session, dan helper).
+ * 2) Validasi hak akses sebelum memproses data sensitif.
+ * 3) Proses input GET/POST, jalankan query, lalu siapkan data view.
+ * 4) Render output halaman sesuai role dan konteks fitur.
+ *//**
  * ============================================================
  *  anggota/katalog.php  —  Katalog Buku dengan Tampilan Cover
  * ============================================================

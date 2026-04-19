@@ -1,4 +1,5 @@
-<!-- ── PRINT FOOTER (hanya tampil saat cetak) ── -->
+<!-- Komponen ini hanya berisi markup footer cetak; tidak ada logic PHP. -->
+<!-- PRINT FOOTER (hanya tampil saat cetak) -->
 <div class="print-footer">
     <div class="pf-note">
         <strong>Catatan:</strong><br>

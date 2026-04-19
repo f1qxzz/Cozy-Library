@@ -1,5 +1,10 @@
 <?php
-
+/*
+ * Alur logic PHP:
+ * 1) Menyediakan fungsi utilitas terpusat untuk dipakai banyak halaman.
+ * 2) Menjaga validasi input dan normalisasi data pada satu tempat.
+ * 3) Mengembalikan hasil yang siap dipakai oleh controller/view.
+ */
 /**
  * Helper terpusat untuk halaman detail buku lintas role.
  */

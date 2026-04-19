@@ -1,4 +1,0 @@
-[2026-04-10 06:02:52] CRON H-1 INFO: No books are due tomorrow. Processed 0 records.
-[2026-04-10 10:14:08] CRON OVERDUE SUCCESS (Via SMTP): Processed 1 late records. Sent: 1, Failed/Skipped: 0
-[2026-04-11 00:48:13] OVERDUE TEST SUCCESS (Via SMTP): sent to fiqqganz07@gmail.com for TRX-30, telat=5 hari.
-[2026-04-11 00:51:37] CRON OVERDUE SUCCESS (Via SMTP): Processed 2 late records. Sent: 2, Failed/Skipped: 0

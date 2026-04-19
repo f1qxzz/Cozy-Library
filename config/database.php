@@ -1,5 +1,10 @@
 <?php
-/**
+/*
+ * Alur logic PHP:
+ * 1) Membaca konfigurasi koneksi database dari environment/.env.
+ * 2) Membuat dan memvalidasi koneksi MySQL.
+ * 3) Menyediakan fungsi helper agar koneksi dapat dipakai ulang.
+ *//**
  * Konfigurasi Database
  * Aplikasi Peminjaman Buku
  * 
@@ -24,6 +29,79 @@ define('DENDA_PER_HARI', (int)($_ENV['DENDA_PER_HARI'] ?? 1000)); // Rp 1.000 pe
 // Application Settings
 define('APP_ENV', $_ENV['APP_ENV'] ?? 'development');
 define('APP_DEBUG', $_ENV['APP_DEBUG'] ?? false);
+
+function getDefaultPenggunaLevels(): array {
+    return ['admin', 'petugas'];
+}
+
+function parseEnumValues(string $definition): array {
+    if (!preg_match_all("/'([^']+)'/", $definition, $matches)) {
+        return [];
+    }
+
+    return $matches[1];
+}
+
+function getValidPenggunaLevels($conn = null): array {
+    static $cachedLevels = null;
+
+    if ($cachedLevels !== null) {
+        return $cachedLevels;
+    }
+
+    if ($conn instanceof mysqli) {
+        try {
+            $result = $conn->query("SHOW COLUMNS FROM pengguna LIKE 'level'");
+            if ($result && $column = $result->fetch_assoc()) {
+                $levels = parseEnumValues($column['Type'] ?? '');
+                if (!empty($levels)) {
+                    return $cachedLevels = $levels;
+                }
+            }
+        } catch (Throwable $e) {
+            error_log("Failed to read valid pengguna levels from schema: " . $e->getMessage());
+        }
+    }
+
+    return $cachedLevels = getDefaultPenggunaLevels();
+}
+
+function normalizePenggunaLevel(?string $level, $conn = null): ?string {
+    if ($level === null) {
+        return null;
+    }
+
+    $level = strtolower(trim($level));
+    if ($level === '') {
+        return null;
+    }
+
+    foreach (getValidPenggunaLevels($conn) as $validLevel) {
+        if (strtolower($validLevel) === $level) {
+            return $validLevel;
+        }
+    }
+
+    return null;
+}
+
+function isValidPenggunaLevel(?string $level, $conn = null): bool {
+    return normalizePenggunaLevel($level, $conn) !== null;
+}
+
+function getPenggunaDashboardPath(?string $level, $conn = null): ?string {
+    $level = normalizePenggunaLevel($level, $conn);
+
+    if ($level === 'admin') {
+        return 'admin/dashboard.php';
+    }
+
+    if ($level === 'petugas') {
+        return 'petugas/dashboard.php';
+    }
+
+    return null;
+}
 
 function getConnection() {
     // Enable error reporting in development mode

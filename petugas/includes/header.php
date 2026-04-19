@@ -1,5 +1,10 @@
 <?php /* petugas/includes/header.php — v5.0 */
-$page_title = $page_title ?? 'Dashboard';
+/*
+ * Alur logic PHP:
+ * 1) Menyusun komponen layout bersama (header/nav/print) agar konsisten.
+ * 2) Membaca variabel konteks halaman dari file pemanggil.
+ * 3) Merender bagian tampilan bersama tanpa duplikasi kode.
+ */$page_title = $page_title ?? 'Dashboard';
 $page_sub = $page_sub ?? 'Panel Petugas · Cozy-Library';
 
 // Gunakan helper dari session.php — $conn tersedia dari halaman pemanggil

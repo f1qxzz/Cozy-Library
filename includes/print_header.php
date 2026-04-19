@@ -1,5 +1,10 @@
 <?php
-/**
+/*
+ * Alur logic PHP:
+ * 1) Menyusun komponen layout bersama (header/nav/print) agar konsisten.
+ * 2) Membaca variabel konteks halaman dari file pemanggil.
+ * 3) Merender bagian tampilan bersama tanpa duplikasi kode.
+ *//**
  * Cozy-Library — Print Header & Footer
  * Include this file in pages that need a print-friendly header/footer.
  * 

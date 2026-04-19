@@ -1,5 +1,11 @@
 <?php
-require_once '../config/database.php';
+/*
+ * Alur logic PHP:
+ * 1) Memuat dependency utama (database, session, dan helper).
+ * 2) Validasi hak akses sebelum memproses data sensitif.
+ * 3) Proses input GET/POST, jalankan query, lalu siapkan data view.
+ * 4) Render output halaman sesuai role dan konteks fitur.
+ */require_once '../config/database.php';
 require_once '../includes/session.php';
 requireAnggota();
 
@@ -42,7 +48,7 @@ if (isset($_POST['pinjam'])) {
         $msgType = 'warning'; 
     } else {
         // Cek apakah anggota sudah pinjam atau pending buku ini
-        $dupl = $conn->query("SELECT id_transaksi FROM transaksi WHERE id_anggota=$id AND id_buku=$id_buku AND status_transaksi IN ('Pending','Dipinjam')")->num_rows;
+        $dupl = $conn->query("SELECT id_transaksi FROM transaksi WHERE id_anggota=$id AND id_buku=$id_buku AND status_transaksi IN ('Pending','Peminjaman','Dipinjam')")->num_rows;
         if ($dupl > 0) { 
             $msg = 'Anda sudah meminjam atau sedang menunggu persetujuan untuk buku ini!'; 
             $msgType = 'warning'; 
@@ -68,7 +74,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : '';
 $search = $conn->real_escape_string($search);
 $filter_kat = isset($_GET['kat']) ? (int)$_GET['kat'] : 0;
 $q = "SELECT b.*, k.nama_kategori,
-      (SELECT COUNT(*) FROM transaksi t WHERE t.id_buku=b.id_buku AND t.id_anggota=$id AND t.status_transaksi IN ('Pending','Dipinjam')) AS sudah_pinjam
+      (SELECT COUNT(*) FROM transaksi t WHERE t.id_buku=b.id_buku AND t.id_anggota=$id AND t.status_transaksi IN ('Pending','Peminjaman','Dipinjam')) AS sudah_pinjam
       FROM buku b LEFT JOIN kategori k ON b.id_kategori = k.id_kategori WHERE 1=1";
 if ($search) $q .= " AND (b.judul_buku LIKE '%$search%' OR b.pengarang LIKE '%$search%')";
 if ($filter_kat) $q .= " AND b.id_kategori = $filter_kat";
