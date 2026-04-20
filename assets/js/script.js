@@ -10,6 +10,11 @@
 (function () {
   'use strict';
 
+  // Hindari intersep scroll di perangkat sentuh (HP/Tablet).
+  if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
+    return;
+  }
+
   // Faktor lerp: semakin kecil = semakin lambat/smooth (0.06–0.14 ideal)
   var EASE = 0.09;
   // Kecepatan scroll per notch wheel (px)
@@ -124,11 +129,35 @@
    APP LOGIC
    ============================================================ */
 document.addEventListener('DOMContentLoaded', function () {
+  function forceDetailPageScrollOnMobile() {
+    if (window.innerWidth > 992) return;
+    if (!document.querySelector('.bookd-wrap')) return;
+
+    document.documentElement.style.overflowY = 'auto';
+    document.body.style.overflowY = 'auto';
+    document.body.style.overflowX = 'hidden';
+
+    ['.app-wrap', '.main-area', '.content'].forEach(function (sel) {
+      var el = document.querySelector(sel);
+      if (!el) return;
+      el.style.height = 'auto';
+      el.style.maxHeight = 'none';
+      el.style.overflow = 'visible';
+    });
+  }
+
+  forceDetailPageScrollOnMobile();
+  window.addEventListener('resize', forceDetailPageScrollOnMobile);
 
   /* ── Sidebar toggle (mobile) ── */
   var sidebar = document.querySelector('.sidebar');
   var toggle  = document.querySelector('.sidebar-toggle');
   var overlay = document.querySelector('.sidebar-overlay');
+
+  if (window.innerWidth <= 1024) {
+    if (sidebar) sidebar.classList.remove('open');
+    if (overlay) overlay.classList.remove('show');
+  }
 
   if (toggle && sidebar) {
     toggle.addEventListener('click', function (e) {
@@ -213,3 +242,6 @@ function showReset(id, nama) {
   if (tl) tl.textContent = 'Reset Password: ' + nama;
   showModal('resetModal');
 }
+
+
+

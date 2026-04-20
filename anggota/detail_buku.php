@@ -121,7 +121,7 @@ $page_sub = 'Informasi buku dan pengajuan peminjaman';
     <link rel="stylesheet" href="../assets/css/shared/book_detail.css?v=<?= @filemtime('../assets/css/shared/book_detail.css') ?: time() ?>">
     <link rel="stylesheet" href="../assets/css/responsive-fix.css?v=<?= @filemtime('../assets/css/responsive-fix.css') ?: time() ?>">
 </head>
-<body>
+<body class="bookd-page">
 <div class="app-wrap">
     <?php include 'includes/nav.php'; ?>
 
@@ -285,6 +285,6 @@ if (window.history.replaceState) {
     window.history.replaceState(null, null, window.location.href);
 }
 </script>
-<script src="../assets/js/script.js"></script>
+<script src="../assets/js/script.js?v=<?= @filemtime('../assets/js/script.js') ?: time() ?>"></script>
 </body>
 </html>

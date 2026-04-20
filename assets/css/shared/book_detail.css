@@ -33,6 +33,17 @@
     animation: bookdFadeIn .5s ease-out;
 }
 
+/* -- Scroll Safety (Detail Pages) ------------------------- */
+body {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.content {
+    min-height: 0;
+    -webkit-overflow-scrolling: touch;
+}
+
 /* -- Top Bar ---------------------------------------------- */
 .bookd-topbar {
     display: flex;
@@ -859,6 +870,19 @@
 }
 
 @media (max-width: 992px) {
+    html,
+    body {
+        height: auto !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+    }
+    .app-wrap,
+    .main-area,
+    .content {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
     .bookd-layout {
         grid-template-columns: 1fr;
     }
@@ -868,7 +892,14 @@
         margin-inline: auto;
     }
     .bookd-cover img {
-        max-height: 320px;
+        aspect-ratio: auto;
+        height: auto;
+        max-height: 420px;
+        object-fit: contain;
+        background: #f8fafc;
+    }
+    .bookd-cover:hover img {
+        transform: none;
     }
     .bookd-stats {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -924,6 +955,9 @@
         padding: 8px 14px;
         font-size: .8rem;
         white-space: nowrap;
+    }
+    .bookd-cover img {
+        max-height: 360px;
     }
     .bookd-table {
         min-width: 620px;
@@ -1001,7 +1035,7 @@
         padding: 14px;
     }
     .bookd-cover img {
-        max-height: 280px;
+        max-height: 300px;
     }
     .bookd-title {
         font-size: 1.15rem;
