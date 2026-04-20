@@ -282,12 +282,12 @@ $page_sub = 'Informasi buku untuk operasional petugas';
                                         $statusInfo = mapStatusPetugas((string) $item['status_transaksi']);
                                     ?>
                                         <tr>
-                                            <td>#<?= (int) $item['id_transaksi'] ?></td>
-                                            <td><?= htmlspecialchars($item['nama_anggota'] ?: '-') ?></td>
-                                            <td><?= fmtDateTimePetugas($item['tgl_pinjam'] ?? null) ?></td>
-                                            <td><?= fmtDateTimePetugas($item['tgl_kembali_rencana'] ?? null) ?></td>
-                                            <td><?= fmtDateTimePetugas($item['tgl_kembali_aktual'] ?? null) ?></td>
-                                            <td>
+                                            <td data-label="ID">#<?= (int) $item['id_transaksi'] ?></td>
+                                            <td data-label="Peminjam"><?= htmlspecialchars($item['nama_anggota'] ?: '-') ?></td>
+                                            <td data-label="Pinjam"><?= fmtDateTimePetugas($item['tgl_pinjam'] ?? null) ?></td>
+                                            <td data-label="Jatuh Tempo"><?= fmtDateTimePetugas($item['tgl_kembali_rencana'] ?? null) ?></td>
+                                            <td data-label="Kembali"><?= fmtDateTimePetugas($item['tgl_kembali_aktual'] ?? null) ?></td>
+                                            <td data-label="Status">
                                                 <span class="status-badge <?= $statusInfo['class'] ?>">
                                                     <?= htmlspecialchars($statusInfo['label']) ?>
                                                 </span>
