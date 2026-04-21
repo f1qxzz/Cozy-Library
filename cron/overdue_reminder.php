@@ -113,7 +113,7 @@ if ($res && $res->num_rows > 0) {
                         </table>
                     </div>
 
-                    <span class='alert-text'>Penting: Denda bertambah Rp1.000 setiap harinya!</span>
+                    <span class='alert-text'>Penting: Denda bertambah Rp" . number_format($dendaPerHari, 0, ',', '.') . " setiap harinya!</span>
                     <p class='intro' style='font-size: 14px; margin-top: 20px;'>Harap segera kunjungi perpustakaan kami untuk menyerahkan kembali fisik buku beserta penyelesaian biaya administrasi di atas.</p>
                     
                     <div class='footer'>

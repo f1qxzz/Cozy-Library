@@ -49,7 +49,6 @@ if ($search) {
 if ($kat)    $q .= " AND b.id_kategori = $kat";
 $q .= " ORDER BY b.judul_buku";
 $books = $conn->query($q);
-$book_emojis = ['📗','📘','📕','📙','📓','📔','📒'];
 
 $page_title = 'Katalog Buku';
 $page_sub   = 'Jelajahi koleksi Cozy-Library';

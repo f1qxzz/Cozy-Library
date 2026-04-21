@@ -11,7 +11,7 @@ requireAnggota();
 
 // Definisikan konstanta DENDA_PER_HARI jika belum ada
 if (!defined('DENDA_PER_HARI')) {
-    define('DENDA_PER_HARI', 1000);
+    define('DENDA_PER_HARI', 2000);
 }
 
 $conn = getConnection();
@@ -54,7 +54,7 @@ if (isset($_POST['pinjam'])) {
             $msgType = 'warning'; 
         } else {
             $tgl_pinjam = date('Y-m-d H:i:s');
-            $tgl_kembali = date('Y-m-d H:i:s', strtotime('+7 days'));
+            $tgl_kembali = date('Y-m-d H:i:s', strtotime('+14 days'));
             $s = $conn->prepare("INSERT INTO transaksi(id_anggota, id_buku, tgl_pinjam, tgl_kembali_rencana, status_transaksi) VALUES(?, ?, ?, ?, 'Pending')");
             $s->bind_param("iiss", $id, $id_buku, $tgl_pinjam, $tgl_kembali);
             if ($s->execute()) {
@@ -235,7 +235,7 @@ $page_sub   = 'Pilih buku yang ingin dipinjam';
 
                 <div class="alert-info">
                     <i class="fas fa-info-circle"></i>
-                    <span>ℹ️ Durasi peminjaman 7 hari. Denda keterlambatan Rp
+                    <span>ℹ️ Durasi peminjaman 14 hari. Denda keterlambatan Rp
                         <?= number_format(DENDA_PER_HARI, 0, ',', '.') ?>/hari.</span>
                 </div>
             </main>

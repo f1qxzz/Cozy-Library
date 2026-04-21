@@ -6,7 +6,7 @@
  * 3) Mengembalikan hasil yang siap dipakai oleh controller/view.
  */
 if (!defined('DENDA_PER_HARI')) {
-    define('DENDA_PER_HARI', 1000);
+    define('DENDA_PER_HARI', 2000);
 }
 
 function getCanonicalDendaSubquery(): string
@@ -20,6 +20,64 @@ function getCanonicalDendaSubquery(): string
             GROUP BY id_transaksi
         ) latest_denda ON latest_denda.max_id = d1.id_denda
     )";
+}
+
+function getDendaStats(mysqli $conn, ?int $anggotaId = null): array
+{
+    $canonicalDenda = getCanonicalDendaSubquery();
+    $joinTransaksi = $anggotaId !== null ? "JOIN transaksi t ON t.id_transaksi = d.id_transaksi" : "";
+    $where = $anggotaId !== null ? "WHERE t.id_anggota = ?" : "";
+
+    $sql = "
+        SELECT
+            COUNT(*) AS jumlah_denda,
+            COALESCE(SUM(d.total_denda), 0) AS total_denda,
+            COALESCE(SUM(CASE WHEN d.status_bayar = 'belum' THEN d.total_denda ELSE 0 END), 0) AS total_belum,
+            COALESCE(SUM(CASE WHEN d.status_bayar = 'sudah' THEN d.total_denda ELSE 0 END), 0) AS total_sudah,
+            COALESCE(SUM(CASE WHEN d.status_bayar = 'belum' THEN 1 ELSE 0 END), 0) AS jumlah_belum
+        FROM {$canonicalDenda} d
+        {$joinTransaksi}
+        {$where}
+    ";
+
+    if ($anggotaId !== null) {
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            return getEmptyDendaStats();
+        }
+
+        $stmt->bind_param("i", $anggotaId);
+        $stmt->execute();
+        $stats = $stmt->get_result()->fetch_assoc() ?: [];
+        $stmt->close();
+    } else {
+        $result = $conn->query($sql);
+        $stats = $result ? ($result->fetch_assoc() ?: []) : [];
+    }
+
+    return [
+        'jumlah_denda' => (int) ($stats['jumlah_denda'] ?? 0),
+        'total_denda' => (int) ($stats['total_denda'] ?? 0),
+        'total_belum' => (int) ($stats['total_belum'] ?? 0),
+        'total_sudah' => (int) ($stats['total_sudah'] ?? 0),
+        'jumlah_belum' => (int) ($stats['jumlah_belum'] ?? 0),
+    ];
+}
+
+function getEmptyDendaStats(): array
+{
+    return [
+        'jumlah_denda' => 0,
+        'total_denda' => 0,
+        'total_belum' => 0,
+        'total_sudah' => 0,
+        'jumlah_belum' => 0,
+    ];
+}
+
+function getTotalDendaBelumBayar(mysqli $conn, ?int $anggotaId = null): int
+{
+    return getDendaStats($conn, $anggotaId)['total_belum'];
 }
 
 function calculateDendaSummary(array $transaksi): array

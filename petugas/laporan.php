@@ -7,9 +7,11 @@
  * 4) Render output halaman sesuai role dan konteks fitur.
  */require_once '../config/database.php';
 require_once '../includes/session.php';
+require_once '../includes/denda_helper.php';
 requirePetugas();
 
 $conn = getConnection();
+syncDendaWithTransaksi($conn);
 
 
 // ── Parameter Filter ─────────────────────────────────────────
@@ -31,8 +33,9 @@ $buku_tersedia = $conn->query("SELECT COUNT(*) c FROM buku WHERE status='tersedi
 $total_anggota = $conn->query("SELECT COUNT(*) c FROM anggota")->fetch_assoc()['c'];
 $total_pinjam = $conn->query("SELECT COUNT(*) c FROM transaksi")->fetch_assoc()['c'];
 $aktif_pinjam = $conn->query("SELECT COUNT(*) c FROM transaksi WHERE status_transaksi IN ('Peminjaman','Dipinjam')")->fetch_assoc()['c'];
-$total_denda = $conn->query("SELECT COALESCE(SUM(total_denda),0) s FROM denda")->fetch_assoc()['s'];
-$denda_belum = $conn->query("SELECT COALESCE(SUM(total_denda),0) s FROM denda WHERE status_bayar='belum'")->fetch_assoc()['s'];
+$dendaStats = getDendaStats($conn);
+$total_denda = $dendaStats['total_denda'];
+$denda_belum = $dendaStats['total_belum'];
 
 // ── Build Query berdasarkan Jenis Laporan ───────────────────
 $rows_cache = [];
@@ -140,6 +143,7 @@ switch ($jenis) {
         $select_tgl_bayar = $has_tgl_bayar ? 'd.tgl_bayar' : 'NULL AS tgl_bayar';
         $order_col = $has_tgl_denda ? 'd.tgl_denda' : 'd.id_denda';
         $filter_col = $has_tgl_denda ? 'd.tgl_denda' : ($has_created ? 'd.created_at' : null);
+        $canonicalDenda = getCanonicalDendaSubquery();
 
         if ($filter_col) {
             $where = buildDateWhere($dari, $sampai, $filter_col, $params, $types);
@@ -150,7 +154,7 @@ switch ($jenis) {
         $sql = "SELECT d.id_denda, a.nis, a.nama_anggota, b.judul_buku,
                        d.jumlah_hari, d.tarif_per_hari, d.total_denda,
                        d.status_bayar, $select_tgl_denda, $select_tgl_bayar
-                FROM denda d
+                FROM {$canonicalDenda} d
                 JOIN transaksi t ON t.id_transaksi = d.id_transaksi
                 JOIN anggota a   ON a.id_anggota   = t.id_anggota
                 JOIN buku b      ON b.id_buku       = t.id_buku

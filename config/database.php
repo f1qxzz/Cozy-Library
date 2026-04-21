@@ -14,17 +14,19 @@
 // Load .env.local jika ada (untuk development/staging)
 if (file_exists(__DIR__ . '/../.env.local')) {
     $env = parse_ini_file(__DIR__ . '/../.env.local');
-    foreach ($env as $k => $v) {
+foreach ($env as $k => $v) {
         $_ENV[$k] = $v;
     }
 }
+
+date_default_timezone_set($_ENV['APP_TIMEZONE'] ?? 'Asia/Jakarta');
 
 // Database Configuration (dengan fallback ke default)
 define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
 define('DB_USER', $_ENV['DB_USER'] ?? 'root');
 define('DB_PASS', $_ENV['DB_PASS'] ?? '');
 define('DB_NAME', $_ENV['DB_NAME'] ?? 'perpus_30');
-define('DENDA_PER_HARI', (int)($_ENV['DENDA_PER_HARI'] ?? 1000)); // Rp 1.000 per hari
+define('DENDA_PER_HARI', (int)($_ENV['DENDA_PER_HARI'] ?? 2000)); // Rp 1.000 per hari
 
 // Application Settings
 define('APP_ENV', $_ENV['APP_ENV'] ?? 'development');

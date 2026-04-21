@@ -7,8 +7,10 @@
  * 4) Render output halaman sesuai role dan konteks fitur.
  */require_once '../config/database.php';
 require_once '../includes/session.php';
+require_once '../includes/denda_helper.php';
 requireAdmin();
 $conn = getConnection();
+syncDendaWithTransaksi($conn);
 
 // ── Quick Action: Setujui / Tolak permintaan Pending ─────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aksi_cepat'])) {
@@ -74,7 +76,7 @@ $ta = cnt($conn, "SELECT COUNT(*) c FROM anggota");
 $tp = cnt($conn, "SELECT COUNT(*) c FROM pengguna");
 $ap = cnt($conn, "SELECT COUNT(*) c FROM transaksi WHERE status_transaksi IN ('Dipinjam', 'Peminjaman')");
 $tl = cnt($conn, "SELECT COUNT(*) c FROM transaksi WHERE status_transaksi IN ('Dipinjam', 'Peminjaman') AND tgl_kembali_rencana < NOW()");
-$td = cnt($conn, "SELECT COALESCE(SUM(total_denda),0) s FROM denda WHERE status_bayar='belum'", 's');
+$td = getTotalDendaBelumBayar($conn);
 $kh = cnt($conn, "SELECT COUNT(*) c FROM transaksi WHERE status_transaksi IN ('Pengembalian', 'Dikembalikan') AND DATE(tgl_kembali_aktual) = CURDATE()");
 
 // ── Permintaan Pending untuk quick-action table ──────────────────────────────

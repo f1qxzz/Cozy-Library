@@ -7,9 +7,11 @@
  * 4) Render output halaman sesuai role dan konteks fitur.
  */require_once '../config/database.php';
 require_once '../includes/session.php';
+require_once '../includes/denda_helper.php';
 requireAnggota();
 $conn = getConnection();
 $id   = getAnggotaId();
+syncDendaWithTransaksi($conn);
 
 // Data anggota
 $anggotaStmt = $conn->prepare("SELECT foto, nama_anggota, nis, kelas, email FROM anggota WHERE id_anggota = ?");
@@ -35,9 +37,19 @@ function cnt($c, $q, $f = 'c') {
     return $r ? ($r->fetch_assoc()[$f] ?? 0) : 0;
 }
 
+function hitungSisaHariPinjam(string $tglKembaliRencana): int {
+    $selisihDetik = strtotime($tglKembaliRencana) - time();
+
+    if ($selisihDetik < 0) {
+        return -(int)ceil(abs($selisihDetik) / 86400);
+    }
+
+    return (int)ceil($selisihDetik / 86400);
+}
+
 $ak  = cnt($conn, "SELECT COUNT(*) c FROM transaksi WHERE id_anggota=$id AND status_transaksi IN ('Pending','Peminjaman','Dipinjam')");
 $tt  = cnt($conn, "SELECT COUNT(*) c FROM transaksi WHERE id_anggota=$id");
-$dn  = cnt($conn, "SELECT COALESCE(SUM(d.total_denda),0) s FROM denda d JOIN transaksi t ON d.id_transaksi=t.id_transaksi WHERE t.id_anggota=$id AND d.status_bayar='belum'", 's');
+$dn  = getTotalDendaBelumBayar($conn, $id);
 $ul  = cnt($conn, "SELECT COUNT(*) c FROM ulasan_buku WHERE id_anggota=$id");
 
 $rows = $conn->query(
@@ -179,10 +191,10 @@ $page_sub   = 'Portal Anggota · Cozy-Library';
                             <tbody>
                                 <?php if ($rows && $rows->num_rows > 0): while ($r = $rows->fetch_assoc()):
                                     $due       = strtotime($r['tgl_kembali_rencana']);
-                                    $sisa      = (int)ceil(($due - time()) / 86400);
+                                    $sisa      = hitungSisaHariPinjam($r['tgl_kembali_rencana']);
                                     $isPending = $r['status_transaksi'] === 'Pending';
                                     if ($isPending)     { $sc='sl-w';  $icon='fa-hourglass-half';     $st='Menunggu'; }
-                                    elseif ($sisa < 0)  { $sc='sl-ov'; $icon='fa-exclamation-triangle'; $st='Terlambat '.abs($sisa).'h'; }
+                                    elseif ($sisa < 0)  { $sc='sl-ov'; $icon='fa-exclamation-triangle'; $st='Terlambat '.abs($sisa).' hari'; }
                                     elseif ($sisa <= 2) { $sc='sl-w';  $icon='fa-clock';              $st=$sisa.' hari lagi'; }
                                     else                { $sc='sl-ok'; $icon='fa-check-circle';        $st=$sisa.' hari lagi'; }
                                 ?>

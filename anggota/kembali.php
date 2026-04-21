@@ -7,15 +7,12 @@
  * 4) Render output halaman sesuai role dan konteks fitur.
  */require_once '../config/database.php';
 require_once '../includes/session.php';
+require_once '../includes/denda_helper.php';
 requireAnggota();
-
-// Definisikan konstanta DENDA_PER_HARI jika belum ada
-if (!defined('DENDA_PER_HARI')) {
-    define('DENDA_PER_HARI', 1000);
-}
 
 $conn = getConnection();
 $id = getAnggotaId();
+syncDendaWithTransaksi($conn);
 $msg = ''; $msgType = '';
 
 // Ambil data user untuk header
@@ -35,6 +32,16 @@ foreach (explode(' ', trim($userData['nama_anggota'] ?? getAnggotaName())) as $w
 $fotoPath = (!empty($userData['foto']) && file_exists('../' . $userData['foto'])) 
             ? '../' . htmlspecialchars($userData['foto']) 
             : null;
+
+function hitungSisaHariPinjam(string $tglKembaliRencana): int {
+    $selisihDetik = strtotime($tglKembaliRencana) - time();
+
+    if ($selisihDetik < 0) {
+        return -(int)ceil(abs($selisihDetik) / 86400);
+    }
+
+    return (int)ceil($selisihDetik / 86400);
+}
 
 if (isset($_POST['kembalikan'])) {
     $msg = 'Pengembalian diproses oleh petugas. Silakan bawa buku ke meja layanan untuk diselesaikan.';
@@ -115,9 +122,9 @@ $page_sub   = 'Kembalikan buku yang sudah selesai dibaca';
                             </thead>
                             <tbody>
                                 <?php if ($aktif && $aktif->num_rows > 0): while($r = $aktif->fetch_assoc()):
-                                    $sisa = floor((strtotime($r['tgl_kembali_rencana']) - time()) / 86400);
-                                    $late = $sisa < 0;
                                     $isPending = $r['status_transaksi'] === 'Pending';
+                                    $sisa = hitungSisaHariPinjam($r['tgl_kembali_rencana']);
+                                    $late = !$isPending && $sisa < 0;
                                 ?>
                                 <tr>
                                     <td class="book-cover-cell">
@@ -135,15 +142,15 @@ $page_sub   = 'Kembalikan buku yang sudah selesai dibaca';
                                         <small class="text-muted"><?= htmlspecialchars($r['pengarang']) ?></small>
                                     </td>
                                     <td><?= date('d/m/Y', strtotime($r['tgl_pinjam'])) ?></td>
-                                    <td><?= date('d/m/Y', strtotime($r['tgl_kembali_rencana'])) ?></td>
+                                    <td><?= $isPending ? '<span class="text-muted">&mdash;</span>' : date('d/m/Y', strtotime($r['tgl_kembali_rencana'])) ?></td>
                                     <td>
                                         <?php if ($isPending): ?>
                                         <span class="badge badge-warning">
                                             <i class="fas fa-hourglass-half"></i> Menunggu Persetujuan
                                         </span>
                                         <?php else: ?>
-                                        <span class="badge badge-success">
-                                            <i class="fas fa-check-circle"></i> Dipinjam
+                                        <span class="badge" style="background:rgba(59,130,246,.15);color:#2563eb;">
+                                            <i class="fas fa-book-open"></i> Dipinjam
                                         </span>
                                         <?php endif; ?>
                                     </td>
@@ -153,8 +160,9 @@ $page_sub   = 'Kembalikan buku yang sudah selesai dibaca';
                                             <i class="fas fa-clock"></i> Menunggu admin
                                         </span>
                                         <?php elseif ($late):
-                                            $d = abs($sisa);
-                                            $denda_est = $d * DENDA_PER_HARI;
+                                            $dendaSummary = calculateDendaSummary($r);
+                                            $d = $dendaSummary['jumlah_hari'];
+                                            $denda_est = $dendaSummary['total_denda'];
                                         ?>
                                         <span class="badge badge-danger">
                                             <i class="fas fa-exclamation-triangle"></i> Terlambat <?= $d ?> hari
@@ -177,7 +185,7 @@ $page_sub   = 'Kembalikan buku yang sudah selesai dibaca';
                                 </tr>
                                 <?php endwhile; else: ?>
                                 <tr>
-                                    <td colspan="7">
+                                    <td colspan="6">
                                         <div class="empty-state">
                                             <div class="empty-state-ico">📚</div>
                                             <div class="empty-state-title">Tidak ada buku yang perlu dikembalikan</div>
@@ -204,7 +212,7 @@ $page_sub   = 'Kembalikan buku yang sudah selesai dibaca';
                             <div style="flex: 1;">
                                 <p style="color: var(--neutral-600); margin-bottom: 8px;">
                                     <i class="fas fa-clock" style="color: var(--soft-purple); margin-right: 8px;"></i>
-                                    Durasi peminjaman: <strong>7 hari</strong>
+                                    Durasi peminjaman: <strong>14 hari</strong>
                                 </p>
                                 <p style="color: var(--neutral-600);">
                                     <i class="fas fa-coins" style="color: var(--soft-purple); margin-right: 8px;"></i>

@@ -52,7 +52,7 @@ if (isset($_POST['pinjam']) && $book) {
         $msgType = 'info';
     } else {
         $tglPinjam = date('Y-m-d H:i:s');
-        $tglRencana = date('Y-m-d H:i:s', strtotime('+7 days'));
+        $tglRencana = date('Y-m-d H:i:s', strtotime('+14 days'));
 
         $insert = $conn->prepare("
             INSERT INTO transaksi (id_anggota, id_buku, tgl_pinjam, tgl_kembali_rencana, status_transaksi)

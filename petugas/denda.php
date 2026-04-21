@@ -59,15 +59,7 @@ $q .= " ORDER BY d.created_at DESC";
 $dendas = $conn->query($q);
 
 // Statistik
-$stats = $conn->query("
-    SELECT
-        COUNT(*) AS jumlah_denda,
-        COALESCE(SUM(d.total_denda), 0) AS total_denda,
-        COALESCE(SUM(CASE WHEN d.status_bayar = 'belum' THEN d.total_denda ELSE 0 END), 0) AS total_belum,
-        COALESCE(SUM(CASE WHEN d.status_bayar = 'sudah' THEN d.total_denda ELSE 0 END), 0) AS total_sudah,
-        SUM(CASE WHEN d.status_bayar = 'belum' THEN 1 ELSE 0 END) AS jumlah_belum
-    FROM {$canonicalDenda} d
-")->fetch_assoc();
+$stats = getDendaStats($conn);
 
 $total_denda = (int) ($stats['total_denda'] ?? 0);
 $total_belum = (int) ($stats['total_belum'] ?? 0);

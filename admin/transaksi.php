@@ -74,13 +74,12 @@ if (isset($_POST['kembalikan'])) {
     $tgl_kembali = $_POST['tgl_kembali'] ?? date('Y-m-d');
     $t = $conn->query("SELECT * FROM transaksi WHERE id_transaksi=$id_t AND status_transaksi IN ('Dipinjam','Peminjaman')")->fetch_assoc();
     if ($t) {
-        $days        = max(0, (strtotime($tgl_kembali) - strtotime($t['tgl_kembali_rencana'])) / (60*60*24));
-        $denda_total = ceil($days) * 1000;
         $s = $conn->prepare("UPDATE transaksi SET status_transaksi='Dikembalikan', tgl_kembali_aktual=? WHERE id_transaksi=?");
         $s->bind_param("si", $tgl_kembali, $id_t); $s->execute(); $s->close();
         $conn->query("UPDATE buku SET stok=stok+1, status='tersedia' WHERE id_buku=" . (int)$t['id_buku']);
+        $dendaSummary = upsertDendaForTransaksi($conn, $id_t, $t['tgl_kembali_rencana'], $tgl_kembali);
+        $denda_total = $dendaSummary['total_denda'];
         if ($denda_total > 0) {
-            upsertDendaForTransaksi($conn, $id_t, $t['tgl_kembali_rencana'], $tgl_kembali);
             $msg = "Buku dikembalikan. Denda: Rp ".number_format($denda_total,0,',','.'); $msgType = 'warning';
         } else {
             $msg = 'Buku berhasil dikembalikan. Tidak ada denda.'; $msgType = 'success';
@@ -115,13 +114,12 @@ if (isset($_POST['return'])) {
     $id_t = (int)$_POST['id_transaksi'];
     $tgl_kembali = $_POST['tgl_kembali'];
     $t = $conn->query("SELECT * FROM transaksi WHERE id_transaksi=$id_t")->fetch_assoc();
-    $days = max(0, (strtotime($tgl_kembali)-strtotime($t['tgl_kembali_rencana']))/(60*60*24));
-    $denda_total = ceil($days) * 1000;
     $s = $conn->prepare("UPDATE transaksi SET status_transaksi='Dikembalikan',tgl_kembali_aktual=? WHERE id_transaksi=?");
     $s->bind_param("si",$tgl_kembali,$id_t); $s->execute(); $s->close();
     $conn->query("UPDATE buku SET stok=stok+1, status='tersedia' WHERE id_buku={$t['id_buku']}");
+    $dendaSummary = upsertDendaForTransaksi($conn, $id_t, $t['tgl_kembali_rencana'], $tgl_kembali);
+    $denda_total = $dendaSummary['total_denda'];
     if ($denda_total > 0) {
-        upsertDendaForTransaksi($conn, $id_t, $t['tgl_kembali_rencana'], $tgl_kembali);
         $msg="Buku dikembalikan. Denda: Rp ".number_format($denda_total,0,',','.'); $msgType='warning';
     } else {
         $msg='Buku berhasil dikembalikan. Tidak ada denda.'; $msgType='success';
@@ -449,7 +447,7 @@ $page_sub   = 'Pencatatan Peminjaman & Pengembalian Buku';
                             <label class="form-label">Rencana Kembali <span
                                     style="color: var(--danger-500);">*</span></label>
                             <input type="date" name="tgl_kembali_rencana" class="form-control"
-                                value="<?= date('Y-m-d', strtotime('+7 days')) ?>" required>
+                                value="<?= date('Y-m-d', strtotime('+14 days')) ?>" required>
                         </div>
                     </div>
                 </div>
@@ -497,7 +495,7 @@ $page_sub   = 'Pencatatan Peminjaman & Pengembalian Buku';
                                class="form-control" value="<?= date('Y-m-d') ?>" required>
                     </div>
                     <p class="text-muted text-xs" style="margin-top:10px;">
-                        <i class="fas fa-info-circle"></i> Denda Rp 1.000/hari jika terlambat dari jatuh tempo.
+                        <i class="fas fa-info-circle"></i> Denda Rp <?= number_format(DENDA_PER_HARI, 0, ',', '.') ?>/hari jika terlambat dari jatuh tempo.
                     </p>
                 </div>
                 <div class="modal-footer">

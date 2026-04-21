@@ -31,6 +31,7 @@ $smtpPort = $_ENV['SMTP_PORT'] ?? 587;
 $smtpUser = $_ENV['SMTP_USER'] ?? '';
 $smtpPass = $_ENV['SMTP_PASS'] ?? '';
 $useSmtp  = (!empty($smtpUser) && !empty($smtpPass) && $smtpUser !== 'email.anda@gmail.com');
+$dendaPerHari = defined('DENDA_PER_HARI') ? DENDA_PER_HARI : 1000;
 
 // Query transaksi yang masa pinjamnya tinggal 1 hari (H-1)
 $sql = "SELECT t.id_transaksi, a.nama_anggota, a.email, b.judul_buku, t.tgl_pinjam, t.tgl_kembali_rencana
@@ -75,7 +76,7 @@ if ($res && $res->num_rows > 0) {
               <p>Ini adalah notifikasi sistem otomatis dari perpustakaan <strong>Cozy-Library</strong> bahwa pengembalian buku peminjaman Anda bernomor TRX-{$r['id_transaksi']} sudah hampir tiba.</p>
               <p>Mohon segera mengembalikan buku: <br>
               <span class='book-title'>\"{$buku}\"</span></p>
-              <p>Sebelum atau paling lambat pada: <strong>{$jatuh}</strong> (Besok). Pengembalian melewati pada tanggal tersebut akan dikenai sanksi denda Rp1.000 / hari.</p>
+              <p>Sebelum atau paling lambat pada: <strong>{$jatuh}</strong> (Besok). Pengembalian melewati pada tanggal tersebut akan dikenai sanksi denda Rp" . number_format($dendaPerHari, 0, ',', '.') . " / hari.</p>
               <p>Terima kasih atas disiplin sirkulasi Anda.<br>-- Cozy-Library Admin Team</p>
               <div class='footer'>Email ini digenerate secara otomatis. Mohon jangan dibalas.</div>
           </div>

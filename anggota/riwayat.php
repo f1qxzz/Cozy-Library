@@ -7,10 +7,12 @@
  * 4) Render output halaman sesuai role dan konteks fitur.
  */require_once '../config/database.php';
 require_once '../includes/session.php';
+require_once '../includes/denda_helper.php';
 requireAnggota();
 
 $conn = getConnection();
 $id = getAnggotaId();
+syncDendaWithTransaksi($conn);
 
 // Ambil data user untuk header
 $userId = getAnggotaId();
@@ -30,23 +32,17 @@ $fotoPath = (!empty($userData['foto']) && file_exists('../' . $userData['foto'])
             ? '../' . htmlspecialchars($userData['foto']) 
             : null;
 
+$canonicalDenda = getCanonicalDendaSubquery();
 $trans = $conn->query("SELECT t.*, b.judul_buku, b.pengarang, b.penerbit, b.cover, d.total_denda, d.status_bayar 
                        FROM transaksi t 
                        JOIN buku b ON t.id_buku = b.id_buku 
-                       LEFT JOIN denda d ON t.id_transaksi = d.id_transaksi 
+                       LEFT JOIN {$canonicalDenda} d ON t.id_transaksi = d.id_transaksi 
                        WHERE t.id_anggota = $id 
                        ORDER BY t.tgl_pinjam DESC");
 
 // Hitung statistik
 $totalPinjam = $trans->num_rows;
-$totalDenda = 0;
-$trans->data_seek(0);
-while($r = $trans->fetch_assoc()) {
-    if ($r['total_denda'] > 0 && $r['status_bayar'] === 'belum') {
-        $totalDenda += $r['total_denda'];
-    }
-}
-$trans->data_seek(0);
+$totalDenda = getTotalDendaBelumBayar($conn, $id);
 
 $page_title = 'Riwayat Peminjaman';
 $page_sub   = 'Lihat semua aktivitas peminjaman Anda';

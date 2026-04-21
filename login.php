@@ -173,7 +173,7 @@ $quote = $quotes[date('z') % count($quotes)];
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon"><i class="fas fa-clock"></i></div>
-                        <div class="stat-value">7 Hari</div>
+                        <div class="stat-value">14 Hari</div>
                         <div class="stat-label">Masa Pinjam</div>
                     </div>
                     <div class="stat-card">
